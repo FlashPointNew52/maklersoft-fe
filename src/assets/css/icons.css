@@ -1,0 +1,234 @@
+[class^="icon-"],
+[class*=" icon-"] {
+  font-family: 'Segoe MDL2 Assets';
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+
+  display: inline;
+  width: auto;
+  height: auto;
+  /*line-height: normal;*/
+  vertical-align: baseline;
+  background-image: none;
+  background-position: 0% 0%;
+  background-repeat: repeat;
+  margin-top: 0;
+}
+
+.icon-add:before {
+  content: "\E109";
+}
+
+.icon-cancel:before {
+  content: "\E10A";
+}
+
+.icon-start:before {
+  content: "\E8A9";
+}
+
+.icon-home:before {
+  content: "\E10F";
+}
+
+.icon-person::before {
+    content: " ";
+    background-image: url("/assets/context_menu/appoint.png");
+    background-size: contain;
+      width: 15px;
+      height: 15px;
+      display: block;
+      float: left;
+      margin-right: 5px;
+}
+
+.icon-req-list::before {
+  content: '\E1EF';
+}
+
+.icon-month:before {
+  content: "\E163";
+}
+
+.icon-task:before {
+    content: " ";
+    background-image: url("/assets/context_menu/task.png");
+    background-size: contain;
+      width: 15px;
+      height: 15px;
+      display: block;
+      float: left;
+      margin-right: 5px;
+}
+
+.icon-advert:before {
+    content: " ";
+    background-image: url("/assets/context_menu/adv.png");
+    background-size: contain;
+      width: 15px;
+      height: 15px;
+      display: block;
+      float: left;
+      margin-right: 5px;
+}
+
+.icon-settings:before {
+  content: "\E115";
+}
+
+.icon-arrow-right:before {
+  content: '\E0AB';
+}
+
+.icon-arrow-left:before {
+  content: '\E0A6';
+}
+
+.icon-arrow-up:before {
+  content: '\E110';
+}
+
+.icon-arrow-down:before {
+  content: '\E1FD';
+}
+
+.icon-chevron-up:before {
+  content: '\E010';
+}
+
+.icon-chevron-down:before {
+  content: '\E011';
+}
+
+.icon-tag:before {
+  content: "\E1CB";
+}
+
+.icon-photo:before {
+  content: "\E114";
+}
+
+.icon-search:before {
+  content: "\E094";
+}
+
+.icon-deal:before {
+  content: "\E81E";
+}
+
+.icon-globus:before {
+  content: "\E128";
+}
+
+.icon-edit:before {
+    content: " ";
+    background-image: url("/assets/context_menu/stage.png");
+    background-size: contain;
+      width: 15px;
+      height: 15px;
+      display: block;
+      float: left;
+      margin-right: 5px;
+}
+
+.icon-table:before {
+  content: "\E14C";
+}
+
+.icon-square:before {
+  content: "\E8A9";
+}
+
+.icon-check:before {
+  content: "\E001";
+}
+
+.icon-dcheck:before {
+  content: " ";
+  background-image: url("/assets/context_menu/check.png");
+  background-size: contain;
+    width: 15px;
+    height: 15px;
+    display: block;
+    float: left;
+    margin-right: 5px;
+}
+
+.icon-triangle-down:before {
+  content: "\E813";
+}
+
+.icon-circle:before {
+  content: "\E91F";
+}
+
+.icon-contact:before {
+  content: "\E1D4";
+}
+
+.icon-organisation:before {
+  content: "\E72D";
+}
+
+.icon-user:before {
+  content: "\E13D";
+}
+
+.icon-none:before {
+  content: "\FFFD";
+  opacity: 0;
+}
+
+
+.icon-raw:before {
+  content: "\E8A9";
+}
+
+.icon-work:before {
+  content: "\E001";
+}
+
+
+.icon-document:before {
+    content: " ";
+    background-image: url("/assets/context_menu/open.png");
+    background-size: contain;
+    width: 15px;
+    height: 15px;
+    display: block;
+    float: left;
+    margin-right: 5px;
+}
+
+.icon-trash:before {
+    content: " ";
+    background-image: url("/assets/context_menu/remove.png");
+    background-size: contain;
+    width: 15px;
+    height: 15px;
+    display: block;
+    float: left;
+    margin-right: 5px;
+}
+
+.icon-upload:before {
+    content: "\E114";
+}
+
+.icon_plus:before{
+    content: "+";
+}
+
+.icon_minus:before{
+    content: "\2212";
+}
+
+.icon_arrow_up:after{
+    content: "\2191"
+}
+.icon_arrow_bottom:after{
+    content: "\2193"
+
+}

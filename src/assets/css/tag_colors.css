@@ -1,0 +1,35 @@
+
+.tag-red {
+  color: rgb(253, 123, 126);
+  /*'rgb(203, 73, 76)'*/
+}
+
+.tag-orange {
+  color: rgb(254, 188, 70);
+  /*'rgb(204, 138, 20)'*/
+}
+
+.tag-yellow {
+  color: rgb(244, 229, 77);
+  /*'rgb(194, 179, 27)'*/
+}
+
+.tag-green {
+  color: rgb(180, 224, 66);
+  /*'rgb(130, 174, 16)'*/
+}
+
+.tag-blue {
+  color: rgb(131, 201, 252);
+  /*'rgb(81, 151, 202)'*/
+}
+
+.tag-violet {
+  color: rgb(228, 166, 252);
+  /*selected_color: 'rgb(178, 116, 202)'*/
+}
+
+.tag-gray {
+  color: rgb(200, 200, 200);
+  /*selected_color: 'rgb(150, 150, 150)'*/
+}

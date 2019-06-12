@@ -1,0 +1,42 @@
+* {
+    color:#32323D;
+    box-sizing: border-box;
+    font-size: 12px;
+}
+
+.link{
+    color: #3b5998 !important;
+    cursor: pointer;
+}
+
+.link:hover{
+    color: #253D77 !important;
+}
+
+.inactive{
+    color: #72727D;
+}
+
+.green{
+    color: #24780A;
+}
+
+.green:hover{
+    color: #035a00;
+}
+
+.dark-green{
+    color: #035a00;
+}
+
+.red{
+    color: #D00020;
+}
+
+.grey{
+    color: #BDC0C1;
+}
+
+input::placeholder {
+    color: #BDC0C1;
+}
