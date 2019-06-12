@@ -86,7 +86,7 @@ import {User} from "../../entity/user";
                     <div class="tile-content iconic">
                         <span class="icon icon-contact"></span>
                     </div>
-                    <span class="tile-label">Контакты</span>
+                    <span class="tile-label">Очень важные контакты</span>
                 </div>
 
                 <div class="tile bg-teal fg-white" (click)="turnTo('list_organisation', {})">
