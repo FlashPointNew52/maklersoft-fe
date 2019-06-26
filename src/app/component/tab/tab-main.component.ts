@@ -448,9 +448,9 @@ import {Chart} from 'chart.js'
                     </div>
                     <div class="num white-font">17</div>
                 </div>
-                <div class="tile-top main">
+                <div class="tile-top main" (click)="turnTo('daily', {})">
                     <div class="flex-col tile-left">
-                        <div class="tile-title white-font" (click)="turnTo('daily', {})">ЕЖЕДНЕВНИК</div>
+                        <div class="tile-title white-font">ЕЖЕДНЕВНИК</div>
                         <div class="tile-description white-font">Задачи, Выполненые, Просроченые...</div>
                     </div>
                     <div class="num white-font">17</div>

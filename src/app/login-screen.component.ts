@@ -14,10 +14,9 @@ import {Observable} from "rxjs";
           z-index: 9999;
           position: fixed;
           background-color: #f7f7f7;
-          /*display: flex;*/
+          display: flex;
           align-items: center;
           justify-content: center;
-          display: none !important;
       }
 
       .log_screen[hidden] {
