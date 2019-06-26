@@ -9,7 +9,7 @@ export class HubService {
       some_prop: 'some_val',
       seenOffers: [],
       modifiedOffers: []
-  }
+  };
 
   getProperty(name: string) {
       return this.stash[name];

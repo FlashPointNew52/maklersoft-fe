@@ -10,7 +10,7 @@ export class ConfigService {
     }
 }
 
-var CONFIG: Config = {
+let CONFIG: Config = {
     version: "b17.9",
     map: {
         default: {
@@ -369,4 +369,4 @@ var CONFIG: Config = {
     RESTServer: "http://maklersoft.com:4567",
     //RESTServer: "http://localhost:4567",
 
-}
+};

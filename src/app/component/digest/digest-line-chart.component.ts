@@ -1,4 +1,4 @@
-///<reference path="../../../../node_modules/@angular/core/src/metadata/directives.d.ts"/>
+
 import {
   Component,
   OnInit,
@@ -18,7 +18,7 @@ declare let google:any;
     selector: 'digest-line-chart',
     changeDetection: ChangeDetectionStrategy.OnPush,
     inputs: ['title','variant'],
-    styles: [`
+    styles: [` 
         .container {
             background-color: white;
             font-size: 16px;
@@ -84,7 +84,7 @@ declare let google:any;
 })
 
 export class DigestLineChartComponent implements OnInit, AfterViewInit {
-    @ViewChild('graf') graf: ElementRef;
+    @ViewChild('graf', { static: true }) graf: ElementRef;
     chartID: string = "Chart"+Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
     hard_data: boolean = false;
     public variant: number = 0;

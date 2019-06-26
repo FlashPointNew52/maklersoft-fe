@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
-
+import {HttpClient} from '@angular/common/http';
 import {ConfigService} from './config.service';
-
+import {map} from 'rxjs/operators';
 import {Photo} from '../class/photo';
 
 
@@ -11,7 +10,7 @@ export class FileService {
 
   RS: String = "";
 
-  constructor(private _configService: ConfigService, private _http: Http) {
+  constructor(private _configService: ConfigService, private _http: HttpClient) {
     this.RS = this._configService.getConfig().RESTServer;
   };
 
@@ -19,14 +18,11 @@ export class FileService {
     console.log('getPhotos');
 
     return new Promise<Photo[]>(resolve => {
-    var _resourceUrl = this.RS + '/api/v1/photo/list/' + entityId;
-    var headers = new Headers();
-    this._http.get(_resourceUrl, {
-        headers: headers
-      })
-      .map(res => res.json())
-      .subscribe(
-        data => {
+    let _resourceUrl = this.RS + '/api/v1/photo/list/' + entityId;
+    this._http.get(_resourceUrl).pipe(
+      map((res: Response) => res)).subscribe(
+        raw => {
+          let data = JSON.parse(JSON.stringify(raw));
           resolve(data);
           if(data.result == "OK") {
           }

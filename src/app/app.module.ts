@@ -1,9 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {NgxMaskModule} from 'ngx-mask'
-
+import { ChartsModule } from 'ng2-charts';
 import {FormsModule} from '@angular/forms';
-import {HttpModule} from "@angular/http";
 import {RouterModule, Routes} from '@angular/router';
 
 import {AppComponent} from "./app.component";
@@ -30,7 +29,7 @@ import {TabAdvertisingComponent} from "./component/tab/tab-advertising.component
 import {TabActivityComponent} from "./component/tab/tab-activity.component";
 import {TabListActivityComponent} from "./component/tab/tab-list-activity.component";
 import {TabDailyComponent} from "./component/tab/tab-daily.component";
-
+import {TabConfigComponent} from "./component/tab/tab-config.component";
 //new ui
 import {SlidingMenuComponent} from "./component/ui-elements/sliding-menu";
 import {MultiSelectComponent} from "./component/ui-elements/multiselect";
@@ -103,9 +102,10 @@ import {SelectsComponent} from "./component/ui-elements/selects";
 import {InputLineComponent} from "./component/ui-elements/input-line";
 import {SwitchButtonComponent} from "./component/ui-elements/switch-button";
 import {ConditionsSwitchesComponent} from "./component/ui-elements/conditions-switches";
+import { HttpClientModule } from '@angular/common/http';
 
 const appRoutes: Routes = [
-    { path: 'admin', loadChildren: 'app/admin.module#AdminModule' },
+    { path: 'admin', loadChildren: 'src/app/admin.module#AdminModule' },
     { path: 'main', component: MainComponent },
     { path: '',
         redirectTo: '/main',
@@ -120,7 +120,7 @@ const appRoutes: Routes = [
         FormatDatePipe,
         StrNnPipe,
         phoneBlockAsStringPipe,
-
+        TabConfigComponent,
         LoginScreenComponent,
         //AdminPageComponent,
 
@@ -216,7 +216,8 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
+      ChartsModule,
+    HttpClientModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAi9zTbzWtEhLVZ8syBV6l7d3QMNLRokVY'
     }),

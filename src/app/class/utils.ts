@@ -24,6 +24,12 @@ export class Utils{
             });
     }
 
+    public static getDateForGraph(number: number) {
+        return moment(number).format("D MMMM");
+    }
+    public static getTitleDateForGraph(number: number) {
+        return moment(number).format("D MMMM, YYYY");
+    }
     public static getNumWithDellimet(n){
         n += "";
         n = new Array(4 - n.length % 3).join("U") + n;

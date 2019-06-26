@@ -83,7 +83,7 @@ declare let google:any;
 })
 
 export class DigestTimelineChartComponent implements OnInit, AfterViewInit {
-    @ViewChild('graf') graf: ElementRef;
+    @ViewChild('graf', { static: true }) graf: ElementRef;
     chartID: string = "Chart"+Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
     hard_data: boolean = false;
     chartData =  new google.visualization.DataTable();

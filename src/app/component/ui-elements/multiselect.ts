@@ -1,7 +1,5 @@
 import {Component, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit, ViewChild} from "@angular/core";
 import {Output, EventEmitter} from '@angular/core';
-import {forEach} from "@angular/router/src/utils/collection";
-import {SelectsComponent} from "./selects";
 
 @Component({
     selector: 'multiselect-menu',

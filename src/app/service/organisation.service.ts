@@ -1,15 +1,13 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
 
 import {AsyncSubject} from "rxjs/AsyncSubject";
-
+import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 import {SessionService} from "./session.service";
-
+import {HttpClient} from '@angular/common/http';
 import {User} from "../entity/user";
 import {Organisation} from '../entity/organisation';
 import {PhoneBlock} from "../class/phoneBlock";
-import {Person} from "../entity/person";
 
 
 
@@ -18,7 +16,7 @@ export class OrganisationService {
 
     RS: String = "";
 
-    constructor(private _configService: ConfigService, private _http: Http, private _sessionService: SessionService) {
+    constructor(private _configService: ConfigService, private _http: HttpClient, private _sessionService: SessionService) {
         this.RS = this._configService.getConfig().RESTServer + '/api/v1/organisation/';
     };
 
@@ -34,13 +32,13 @@ export class OrganisationService {
         query.push("filter=" + JSON.stringify(filter));
         query.push("sort=" + JSON.stringify(sort));
 
-        var _resourceUrl = this.RS + 'list?' + query.join("&");
+        let _resourceUrl = this.RS + 'list?' + query.join("&");
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
-
-                    var organisations: Organisation[] = data.result;
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
+                    let organisations: Organisation[] = data.result;
 
                     ret_subj.next(organisations);
                     ret_subj.complete();
@@ -57,17 +55,16 @@ export class OrganisationService {
     get(organisationId: number) {
         console.log('org get');
 
-        var _resourceUrl = this.RS + 'get/' + organisationId;
+        let _resourceUrl = this.RS + 'get/' + organisationId;
 
-        var ret_subj = <AsyncSubject<Organisation>>new AsyncSubject();
+        let ret_subj = <AsyncSubject<Organisation>>new AsyncSubject();
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
+                    let o: Organisation = data.result;
 
-                    var o: Organisation = data.result;
-
-                    // TODO: pass copy????
                     ret_subj.next(o);
                     ret_subj.complete();
                 },
@@ -83,20 +80,20 @@ export class OrganisationService {
     save(org: Organisation) {
         console.log('org save');
 
-        var _user: User = this._sessionService.getUser();
+        let _user: User = this._sessionService.getUser();
         org.accountId = _user.accountId;
 
-        var _resourceUrl = this.RS + 'save'
+        let _resourceUrl = this.RS + 'save';
 
-        var ret_subj = <AsyncSubject<Organisation>>new AsyncSubject();
+        let ret_subj = <AsyncSubject<Organisation>>new AsyncSubject();
 
-        var data_str = JSON.stringify(org);
+        let data_str = JSON.stringify(org);
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
-
-                    var o: Organisation = data.result;
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
+                    let o: Organisation = data.result;
 
                     ret_subj.next(o);
                     ret_subj.complete();
@@ -112,15 +109,15 @@ export class OrganisationService {
 
     findByPhone(phones: PhoneBlock) {
         let ret_subj = <AsyncSubject<Organisation>>new AsyncSubject();
-        let _resourceUrl = this.RS + 'findByPhone'
+        let _resourceUrl = this.RS + 'findByPhone';
 
         let data_str = JSON.stringify(phones);
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-        .map(res => res.json()).subscribe(data => {
-            let notFound = true;
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+        map((res: Response) => res)).subscribe(
+            raw => {
+          let data = JSON.parse(JSON.stringify(raw));
             let p: Organisation = data.result;
-            // TODO: pass copy????
             ret_subj.next(p);
             ret_subj.complete();
         }, err => {

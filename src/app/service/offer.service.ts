@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
-
+import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
-
+import {HttpClient} from '@angular/common/http';
 import {Offer} from '../entity/offer';
 import {AsyncSubject} from "rxjs/AsyncSubject";
 import {GeoPoint} from "../class/geoPoint";
@@ -22,7 +21,7 @@ export class OfferService {
     RS: String = "";
 
 
-    constructor(private _http: Http, private _configService: ConfigService, private _sessionService: SessionService) {
+    constructor(private _http: HttpClient, private _configService: ConfigService, private _sessionService: SessionService) {
         this.RS = this._configService.getConfig().RESTServer + '/api/v1/offer/';
     }
 
@@ -52,9 +51,10 @@ export class OfferService {
 
         let ret_subj = <AsyncSubject<ListResult>>new AsyncSubject();
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
                     let obj: ListResult = new ListResult();
                     if(data.result){
                         obj.hitsCount = data.result.hitsCount;
@@ -88,10 +88,10 @@ export class OfferService {
         let ret_subj = <AsyncSubject<Offer>>new AsyncSubject();
 
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
-
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
                     let o: Offer = data.result;
 
                     // TODO: pass copy????
@@ -125,9 +125,10 @@ export class OfferService {
         let ret_res = <AsyncSubject<String>>new AsyncSubject();
 
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
                     let o: String = data.result;
                     ret_res.next(o);
                     ret_res.complete();
@@ -157,9 +158,10 @@ export class OfferService {
 
         let ret_subj = <AsyncSubject<ListResult>>new AsyncSubject();
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-            data => {
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
                 let obj: ListResult = new ListResult();
 
                 obj.hitsCount = data.result.hitsCount;

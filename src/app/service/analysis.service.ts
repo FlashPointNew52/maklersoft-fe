@@ -7,7 +7,7 @@ export class AnalysisService {
     }
 }
 
-var OBJ_ANALYSIS = {
+let OBJ_ANALYSIS = {
     ch1_data: [
         ['Задача', 'Значение'],
         ['Звонок', 42],
@@ -42,4 +42,4 @@ var OBJ_ANALYSIS = {
     ],
     ch3_data_v1: 6,
     ch3_data_v2: 19,
-}
+};

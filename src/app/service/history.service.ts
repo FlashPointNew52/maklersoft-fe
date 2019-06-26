@@ -14,7 +14,7 @@ export class HistoryService {
     }
 }
 
-var OBJ_HISTORY: HistoryRecord[] = [
+let OBJ_HISTORY: HistoryRecord[] = [
     {
         id: 6511,
         ts: 0,

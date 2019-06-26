@@ -187,14 +187,13 @@ import {HubService} from '../../service/hub.service';
 export class UIUploadFile implements OnInit{
     activeColor: string = 'green';
     public obj_id: any;
-    public obj_type: string = "offers"
+    public obj_type: string = "offers";
     baseColor: string = '#ccc';
     overlayColor: string = 'rgba(255,255,255,0.5)';
     type: string = 'image';
     dragging: boolean = false;
     loaded: boolean = false;
     imageLoaded: boolean = false;
-    fileSrc: Array<any> = [];
     format:string;
     pattern: RegExp;
     multiple: boolean;
@@ -265,7 +264,7 @@ export class UIUploadFile implements OnInit{
 
         function readFile(index) {
            if( index >= files.length )return;
-           var file = files[index];
+           let file = files[index];
            if (!file.type.match(pattern))  {
                alert("Файл " + file.name + " не поддерживается");
                readFile(index+1);
@@ -276,15 +275,16 @@ export class UIUploadFile implements OnInit{
                readFile(index+1);
                return;
            }
-           reader.onload = ((e) =>{
+           reader.onload = (() =>{
                if(type == 'image'){
-                   _uploadService.uploadPhoto(null, [reader.result], obj_type, objId, file.name).subscribe(data => {
+
+                   _uploadService.uploadPhoto(null, file, obj_type, objId, file.name).subscribe(data => {
                        progressState.emit(100);
                        addNewFile.emit(data);
                        readFile(index+1);
                    });
                } else if(type == 'document'){
-                   _uploadService.uploadDoc(null, [reader.result], obj_type, objId, file.name).subscribe(data => {
+                   _uploadService.uploadDoc(null, file, obj_type, objId, file.name).subscribe(data => {
                        progressState.emit(100);
                        addNewFile.emit(data);
                        readFile(index+1);
