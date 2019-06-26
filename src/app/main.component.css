@@ -86,7 +86,7 @@
     display: inline-flex;
     justify-content: space-between;
     align-items: center;
-    margin: 36px 55px 0 0;
+    margin: 36px 45px 0 0;
 }
 
 .const_menu .button {
@@ -121,4 +121,28 @@
     background: #f8f8f8 url(/assets/person_icon/photo.png) center;
     background-size: cover;
     border-radius: 35px;
+}
+.user_menu:hover .user_photo {
+    background-image: url('../assets/log hover.jpeg') !important;
+}
+.user_menu:active .user_photo {
+    background-image: url('../assets/logout.jpeg') !important;
+}
+.search-block{
+    position: absolute;
+    top: 45px;
+    left: calc(50vw - 225px);
+}
+.search{
+    width: 450px;
+    height: 30px;
+    background-color: #FAFAFA;
+    border: 1px solid #EBEBEB;
+}
+.magnifier{
+    position: relative;
+    left: -30px;
+    height: 18px;
+    width: 18px;
+    top: 4px;
 }

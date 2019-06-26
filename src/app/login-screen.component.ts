@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
 import {ConfigService} from "./service/config.service";
 import {SessionService} from "./service/session.service";
 import {UserService} from "./service/user.service";
@@ -36,7 +35,7 @@ import {Observable} from "rxjs";
           min-height: 154px;
           background-color: white;
           margin: calc(50vh - 77px) auto 0;
-          box-shadow: 0px 1px 50px 2px rgba(206,208,209,0.6);
+          box-shadow: 0 1px 50px 2px rgba(206,208,209,0.6);
           display: flex;
           flex-direction: column;
           position: relative;
@@ -56,7 +55,7 @@ import {Observable} from "rxjs";
           top: 11px;
           width: 13px;
           height: 13px;
-          background-image: url(/assets/cross.png);
+          background-image: url(../assets/cross.png);
           background-size: contain;
       }
 
@@ -99,7 +98,7 @@ import {Observable} from "rxjs";
           background-color: #fff;
           border: 1px solid rgba(211, 213, 214, 1);
           border-radius: 0;
-          box-shadow: 0px 1px 50px 2px rgba(211, 213, 214, 0.6);
+          box-shadow: 0 1px 50px 2px rgba(211, 213, 214, 0.6);
       }
 
       .motto {
@@ -333,7 +332,7 @@ export class LoginScreenComponent implements OnInit{
                 this.message = result;
             else {
                 this._userService.cacheUserAndOrg();
-            };
+            }
         });
     }
 
@@ -409,7 +408,7 @@ export class LoginScreenComponent implements OnInit{
         }
         this._sessionService.registrate(this.org_name, this.user_name, this.mail, this.phone).subscribe(res =>{
             if(res == null){
-                this.message = "Регистрация прошла успешно! Для входа используйте пароль, отправленный Вам в SMS и на почтовый адрес."
+                this.message = "Регистрация прошла успешно! Для входа используйте пароль, отправленный Вам в SMS и на почтовый адрес.";
                 this.typeWindow = 1;
             } else
                 this.message = res;

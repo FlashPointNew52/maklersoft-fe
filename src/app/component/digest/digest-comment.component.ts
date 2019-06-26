@@ -13,125 +13,121 @@ import {SessionService} from "../../service/session.service";
     selector: 'digest-comment',
     inputs: ['comment'],
     styles: [`
-      .comment_body {
-          width: 100%;
-          height: 100%;
-          display: inline-block;
-          font-size: 12px;
-          position: relative;
-          min-height: 111px;
-          line-height: 10px;
-      }
+        .comment_body {
+            width: 100%;
+            height: 100%;
+            display: inline-block;
+            font-size: 12px;
+            position: relative;
+            min-height: 111px;
+            line-height: 10px;
+        }
 
-      .photo {
-          width: 35px;
-          height: 35px;
-          margin: 15px 25px 0 30px;
-          float: left;
-          background-image: url(/assets/user_icon/no-user-photo.png);
-          background-size: cover;
-          background-position: center;
-          border-radius: 35px;
-      }
+        .photo {
+            width: 35px;
+            height: 35px;
+            margin: 15px 25px 0 30px;
+            float: left;
+            background-image: url(/assets/user_icon/no-user-photo.png);
+            background-size: cover;
+            background-position: center;
+            border-radius: 35px;
+        }
 
-      .name {
-          margin-top: 20px;
-          color: #3B4345;
-          font-weight: bold;
-          margin-right: 15px;
-          float: left;
-          height: 13px;
-          max-width: calc(100% - 261px);
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-      }
+        .name {
+            margin-top: 20px;
+            color: #3B4345;
+            font-weight: bold;
+            margin-right: 15px;
+            float: left;
+            height: 13px;
+            max-width: calc(100% - 261px);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
 
-      .name > span{
-          text-transform: uppercase;
-      }
+        .name > span {
+            text-transform: uppercase;
+        }
 
-      .date {
-          margin-top: 20px;
-          color: #677578;
-          height: 13px;
-      }
+        .date {
+            margin-top: 20px;
+            color: #677578;
+            height: 13px;
+        }
 
-      .menu {
-          position: absolute;
-          top: 10px;
-          right: 20px;
-          width: 20px;
-          height: 20px;
-          font-size: 25px;
-          line-height: 6px;
-          width: 20px;
-          height: 20px;
-          color: #252f32;
-          cursor: pointer;
-      }
+        .menu {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            width: 20px;
+            height: 20px;
+            font-size: 25px;
+            line-height: 6px;
+            height: 20px;
+            color: #252f32;
+            cursor: pointer;
+        }
 
-      .company {
-          color: #677578;
-          font-style: italic;
-          height: 10px;
-          margin-top: 5px;
-      }
+        .company {
+            color: #677578;
+            font-style: italic;
+            height: 10px;
+            margin-top: 5px;
+        }
 
-      .text {
-          margin-top: 12px;
-          color: #252F32;
-          line-height: 14px;
-          overflow: hidden;
-          width: calc(100% - 132px);
-          word-break: break-all;
-          margin-left: 90px;
-      }
+        .text {
+            margin-top: 12px;
+            color: #252F32;
+            line-height: 14px;
+            overflow: hidden;
+            width: calc(100% - 132px);
+            word-break: break-all;
+            margin-left: 90px;
+        }
 
-      .more{
-          color: #3F51B5;
-          cursor: pointer;
-          line-height: 15px;
-          margin-left: 90px;
-      }
+        .more {
+            color: #3F51B5;
+            cursor: pointer;
+            line-height: 15px;
+            margin-left: 90px;
+        }
 
-      .more:hover{
-          text-decoration: underline;
-      }
+        .more:hover {
+            text-decoration: underline;
+        }
 
-      .estimate {
-          width: 50px;
-          height: 15px;
-          position: absolute;
-          bottom: 5px;
-          right: 128px;
-          line-height: 15px;
-      }
+        .estimate {
+            width: 50px;
+            height: 15px;
+            position: absolute;
+            bottom: 5px;
+            right: 128px;
+            line-height: 15px;
+        }
 
-      .estimate div:first-child {
-          width: 15px;
-          height: 15px;
-          float: right;
-          display: block;
-          margin-top: -3px;
-          background: url(/assets/person_icon/like.png) center;
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
-          margin-left: 10px;
-          background-color: #c8c8c8;
-      }
+        .estimate div:first-child {
+            width: 15px;
+            height: 15px;
+            float: right;
+            display: block;
+            margin-top: -3px;
+            background-size: cover;
+            margin-left: 10px;
+            background: #c8c8c8 url(/assets/person_icon/like.png) no-repeat center;
+        }
 
-      .estimate div:last-child {
-          color: #677578;
-          width: calc(100% - 20px);
-          height: 15px;
-          text-align: right;
-      }
+        .estimate div:last-child {
+            color: #677578;
+            width: calc(100% - 20px);
+            height: 15px;
+            text-align: right;
+        }
 
-      .estimate .selected {
-          background-color: #8c8c8c  !important;
-      }
+        .estimate .selected {
+            background-color: #8c8c8c !important;
+        }
     `],
 
     template: `
@@ -168,7 +164,7 @@ export class DigestCommentComponent implements OnInit, AfterViewInit {
     public comment: Comment;
     @Output() edit_comment: EventEmitter<any> = new EventEmitter();
     @Output() delete_event: EventEmitter<any> = new EventEmitter();
-    @ViewChild('textElem') textElement: ElementRef;
+    @ViewChild('textElem', { static: true }) textElement: ElementRef;
     user: User = new User();
     ses_agent: User = new User();
     show_menu: boolean = false;

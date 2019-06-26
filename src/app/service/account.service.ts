@@ -2,13 +2,11 @@
  * Created by Aleksandr on 23.01.17.
  */
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
 
+import {HttpClient} from '@angular/common/http';
+import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
-
-import {Offer} from '../entity/offer';
 import {AsyncSubject} from "rxjs/AsyncSubject";
-import {GeoPoint} from "../class/geoPoint";
 import {Account} from "../entity/account";
 
 
@@ -18,21 +16,22 @@ export class AccountService {
     RS: String;
 
 
-    constructor(private _configService: ConfigService, private _http: Http) {
+    constructor(private _configService: ConfigService, private _http: HttpClient) {
         this.RS = this._configService.getConfig().RESTServer + '/api/v1/account/';
     };
 
     list() {
         console.log('account list');
 
-        var _resourceUrl = this.RS + 'list'
+        let _resourceUrl = this.RS + 'list';
 
-        var ret_subj = <AsyncSubject<Account[]>>new AsyncSubject();
+        let ret_subj = <AsyncSubject<Account[]>>new AsyncSubject();
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-            data => {
-                var accounts: Account[] = data.result;
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
+                let accounts: Account[] = data.result;
 
                 ret_subj.next(accounts);
                 ret_subj.complete();
@@ -46,18 +45,18 @@ export class AccountService {
     save(account: Account) {
         console.log('account save');
 
-        var _resourceUrl = this.RS + 'save';
+        let _resourceUrl = this.RS + 'save';
 
-        var data_str = JSON.stringify(account);
+        let data_str = JSON.stringify(account);
 
-        var ret_subj = <AsyncSubject<Account>>new AsyncSubject();
+        let ret_subj = <AsyncSubject<Account>>new AsyncSubject();
 
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-            data => {
-
-                var a: Account = data.result;
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
+                let a: Account = data.result;
 
                 ret_subj.next(a);
                 ret_subj.complete();

@@ -1,13 +1,11 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
-
+import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 
 import {Person} from '../entity/person';
 import {AsyncSubject} from "rxjs/AsyncSubject";
-
+import {HttpClient} from '@angular/common/http';
 import 'rxjs/add/operator/map';
-import {User} from "../entity/user";
 import {SessionService} from "./session.service";
 import {PhoneBlock} from "../class/phoneBlock";
 
@@ -17,7 +15,7 @@ import {PhoneBlock} from "../class/phoneBlock";
 export class PersonService {
     RS: String = "";
 
-    constructor(private _http: Http, private _configService: ConfigService, private _sessionService: SessionService) {
+    constructor(private _http: HttpClient, private _configService: ConfigService, private _sessionService: SessionService) {
         this.RS = this._configService.getConfig().RESTServer + '/api/v1/person/';
     }
 
@@ -35,10 +33,10 @@ export class PersonService {
 
         let _resourceUrl = this.RS + 'list?' + query.join("&");
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
-
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
                     let persons: Person[] = data.result;
                     ret_subj.next(persons);
                     ret_subj.complete();
@@ -58,15 +56,12 @@ export class PersonService {
         let ret_subj = <AsyncSubject<Person>>new AsyncSubject();
 
         let _resourceUrl = this.RS + 'get/' + personId;
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+                raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
+                    let p: Person = data.result;
 
-                    let notFound = true;
-
-                    var p: Person = data.result;
-
-                    // TODO: pass copy????
                     ret_subj.next(p);
                     ret_subj.complete();
                 },
@@ -80,21 +75,20 @@ export class PersonService {
 
     save(person: Person) {
         let ret_subj = <AsyncSubject<Person>>new AsyncSubject();
-        let _resourceUrl = this.RS + 'save'
+        let _resourceUrl = this.RS + 'save';
 
         delete person["selected"];
         let data_str = JSON.stringify(person);
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
-                    let notFound = true;
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+                raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
                     let p: Person;
                     if(data.code){
                         p = data.obj;
                     } else
                         p = data.result;
-                    // TODO: pass copy????
                     ret_subj.next(p);
                     ret_subj.complete();
                 },
@@ -108,15 +102,15 @@ export class PersonService {
 
     findByPhone(phones: PhoneBlock) {
         let ret_subj = <AsyncSubject<Person>>new AsyncSubject();
-        let _resourceUrl = this.RS + 'findByPhone'
+        let _resourceUrl = this.RS + 'findByPhone';
 
         let data_str = JSON.stringify(phones);
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-        .map(res => res.json()).subscribe(data => {
-            let notFound = true;
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+        map((res: Response) => res)).subscribe(raw => {
+          let data = JSON.parse(JSON.stringify(raw));
             let p: Person = data.result;
-            // TODO: pass copy????
+
             ret_subj.next(p);
             ret_subj.complete();
         }, err => {

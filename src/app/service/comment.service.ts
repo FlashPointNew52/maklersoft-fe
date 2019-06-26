@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
-
+import {HttpClient} from '@angular/common/http';
 import {ConfigService} from './config.service';
-
+import {map} from 'rxjs/operators';
 import {Comment} from '../entity/comment';
 import {AsyncSubject} from "rxjs/AsyncSubject";
 
@@ -18,7 +17,7 @@ export class CommentService {
     RS: String = "";
 
 
-    constructor(private _http: Http, private _configService: ConfigService, private _sessionService: SessionService) {
+    constructor(private _http: HttpClient, private _configService: ConfigService, private _sessionService: SessionService) {
       this.RS = this._configService.getConfig().RESTServer + '/api/v1/comment/';
     };
 
@@ -31,9 +30,10 @@ export class CommentService {
 
         let _resourceUrl = this.RS + 'list?' + query.join("&");
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-          .map(res => res.json()).subscribe(
-          data => {
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+          map((res: Response) => res)).subscribe(
+          raw => {
+            let data = JSON.parse(JSON.stringify(raw));
             let obj: ListResult = new ListResult();
             if(data.result){
               obj.hitsCount = data.result.hitsCount;
@@ -57,10 +57,10 @@ export class CommentService {
 
         let data_str = JSON.stringify(comment);
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-            data => {
-
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
                 let p: Comment = data.result;
 
                 ret_subj.next(p);
@@ -81,10 +81,10 @@ export class CommentService {
         let data_str = JSON.stringify({accountId: user.accountId, user: user.id});
 
         console.log(data_str);
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-            data => {
-
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
               let p: String = data.result;
 
               ret_subj.next(p);
@@ -104,10 +104,10 @@ export class CommentService {
 
         let data_str = JSON.stringify({accountId: user.accountId, user: user.id});
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-        .map(res => res.json()).subscribe(
-          data => {
-
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+        map((res: Response) => res)).subscribe(
+          raw => {
+            let data = JSON.parse(JSON.stringify(raw));
             let p: Comment = data.result;
 
             ret_subj.next(p);
@@ -132,10 +132,10 @@ export class CommentService {
         let data_str = JSON.stringify(data_send);
 
         console.log(data_str);
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-          .map(res => res.json()).subscribe(
-            data => {
-
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+          map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
               let p: boolean = data.result;
 
               ret_subj.next(p);

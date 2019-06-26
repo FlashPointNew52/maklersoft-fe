@@ -21,11 +21,15 @@ import {User} from "./entity/user";
     selector: 'main',
     styleUrls: ['./main.component.css'],
     template: `
-        <div class='const_menu'>
+        <div class="search-block">
+            <input class="search">
+            <img alt="поиск" class="magnifier" src="../assets/лупа.png">
+        </div>
+        <div class='const_menu'> 
             <div class="button" style="background-image: url(/assets/notebook_icon/call.png)"><span></span></div>
-            <div class="button" style="background-image: url(/assets/notebook_icon/chat.png)"><span></span></div>
+            <div class="button" style="background-image: url(/assets/notebook_icon/chat.png)"><span></span></div> 
             <div class="button" style="background-image: url(/assets/notebook_icon/task.png)"><span></span></div>
-            <div class="button" style="background-image: url(/assets/notebook_icon/note.png)"><span></span></div>
+            <div class="button" style="background-image: url(/assets/notebook_icon/note.png);width: 28px; height: 28px"><span></span></div>
             <div class="user_menu">
                 <div class="user_photo" [style.background-image]="'url('+( user | async)?.photoMini+')'"></div>
             </div>
@@ -56,6 +60,7 @@ export class MainComponent {
     public tabs: Tab[] = [];
     public tabHeight = 0;
     public vtHeight = 0;
+    hover = false;
 
     user: Observable<User>;
 

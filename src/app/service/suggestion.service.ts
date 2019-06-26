@@ -1,10 +1,6 @@
-/**
- * Created by owl on 3/14/17.
- */
-
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
-
+import {HttpClient} from '@angular/common/http';
+import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 
 import {AsyncSubject} from "rxjs/AsyncSubject";
@@ -19,7 +15,7 @@ export class SuggestionService {
     RS: String = "";
 
 
-    constructor(private _configService: ConfigService, private _http: Http) {
+    constructor(private _configService: ConfigService, private _http: HttpClient) {
         this.RS = this._configService.getConfig().RESTServer + '/api/v1/offer/';
     };
 
@@ -187,7 +183,7 @@ export class SuggestionService {
         let sgs: string[] = [];
 
         /*
-        var _resourceUrl = this.RS + 'suggestion?'
+        let _resourceUrl = this.RS + 'suggestion?'
             + '&prefix=' + prefix;
         */
 
@@ -198,10 +194,10 @@ export class SuggestionService {
             + "&components=" + 'country:ru'
             +'&key=AIzaSyAi9zTbzWtEhLVZ8syBV6l7d3QMNLRokVY';
 
-        this._http.get(_resourceUrl, { })
-            .map(res => res.json()).subscribe(
-            data => {
-
+        this._http.get(_resourceUrl, { }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
                 let sgs: string[] = [];
 
                 data.results.forEach(e => {
@@ -226,7 +222,7 @@ export class SuggestionService {
                 });
 
                 let arr = [];
-                for(var i = 0; i < sgs.length; i++) {
+                for(let i = 0; i < sgs.length; i++) {
                     if(arr.indexOf(sgs[i]) == -1) {
                         arr.push(sgs[i]);
                     }

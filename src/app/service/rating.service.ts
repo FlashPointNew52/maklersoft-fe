@@ -1,24 +1,18 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
-
+import {HttpClient} from '@angular/common/http';
 import {ConfigService} from './config.service';
-
+import {map} from 'rxjs/operators';
 import {Rating} from '../entity/rating';
 import {AsyncSubject} from "rxjs/AsyncSubject";
 
 import 'rxjs/add/operator/map';
-import {User} from "../entity/user";
-import {SessionService} from "./session.service";
-import {Comment} from "../entity/comment";
-
-
 
 @Injectable()
 export class RatingService {
     RS: String = "";
 
 
-    constructor(private _http: Http, private _configService: ConfigService, private _sessionService: SessionService) {
+    constructor(private _http: HttpClient, private _configService: ConfigService) {
         this.RS = this._configService.getConfig().RESTServer + '/api/v1/rating/';
     }
 
@@ -29,9 +23,10 @@ export class RatingService {
 
         let data_str = JSON.stringify(rating);
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-            data => {
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
                 let p: Rating = data.result;
 
                 ret_subj.next(p);
@@ -52,10 +47,10 @@ export class RatingService {
 
         let _resourceUrl = this.RS + 'get?' + query.join("&");
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-        .map(res => res.json()).subscribe(
-          data => {
-
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+        map((res: Response) => res)).subscribe(
+          raw => {
+            let data = JSON.parse(JSON.stringify(raw));
             let rating: Rating = data.result;
             ret_subj.next(rating);
             ret_subj.complete();

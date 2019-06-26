@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
-
 import {AsyncSubject} from "rxjs/AsyncSubject";
-
+import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 import {SessionService} from "./session.service";
 import {OrganisationService} from "./organisation.service";
 import {User} from '../entity/user';
+import {HttpClient} from '@angular/common/http';
 
 
 
@@ -21,7 +20,7 @@ export class UserService {
     public cacheUsers: any = [];
     public cacheOrgs: any = [];
 
-    constructor(private _http: Http, private _configService: ConfigService,
+    constructor(private _http: HttpClient, private _configService: ConfigService,
                 private _sessionService: SessionService,
                 private _organisationService: OrganisationService
     ) {
@@ -43,7 +42,7 @@ export class UserService {
                     this.cacheOrgAndUser.push({class:'submenu', value: org.id, label: org.name, items: items});
                     this.cacheOrgs.push({class: 'entry', value: org.id, label: org.name});
                 });
-            };
+            }
         });
 
         this.list(0, 300, {"cashed": true},{"changeDate":"DESC"}, "").subscribe(users =>{
@@ -71,9 +70,10 @@ export class UserService {
         let _resourceUrl = this.RS + 'list?' + query.join("&");
 
 
-        this._http.get(_resourceUrl, {withCredentials: true})
-        .map(res => res.json()).subscribe(
-            data => {
+        this._http.get(_resourceUrl, {withCredentials: true}).pipe(
+        map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
                 let users: User[] = data.result;
                 ret_subj.next(users);
                 ret_subj.complete();
@@ -109,9 +109,10 @@ export class UserService {
 
         let ret_subj = <AsyncSubject<User[]>>new AsyncSubject();
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+                raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
                     let users: User[] = data.result;
 
                     ret_subj.next(users);
@@ -131,12 +132,12 @@ export class UserService {
 
         let ret_subj = <AsyncSubject<User>>new AsyncSubject();
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+                raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
                     let u: User = data.result;
 
-                    // TODO: pass copy????
                     ret_subj.next(u);
                     ret_subj.complete();
                 },
@@ -154,16 +155,16 @@ export class UserService {
         user.accountId = _user.accountId;
 
 
-        let _resourceUrl = this.RS + 'save'
+        let _resourceUrl = this.RS + 'save';
 
         let ret_subj = <AsyncSubject<User>>new AsyncSubject();
 
         let data_str = JSON.stringify(user);
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
-
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+                raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
                     let u: User = data.result;
 
                     // TODO: pass copy????
@@ -180,16 +181,16 @@ export class UserService {
 
     saveX(user: User) {
 
-        let _resourceUrl = this.RS + 'save'
+        let _resourceUrl = this.RS + 'save';
 
         let ret_subj = <AsyncSubject<User>>new AsyncSubject();
 
         let data_str = JSON.stringify(user);
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-            data => {
-
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+              let data = JSON.parse(JSON.stringify(raw));
                 let u: User = data.result;
 
                 // TODO: pass copy????

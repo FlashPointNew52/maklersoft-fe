@@ -96,8 +96,8 @@ export class UiSliderLineComponent implements OnInit, OnChanges, AfterViewInit {
 
   @Output() new_value: EventEmitter<any> = new EventEmitter();
   @Output() moved: EventEmitter<any> = new EventEmitter();
-  @ViewChild('lineElem') lineElement: ElementRef;
-  @ViewChild('slideElem') slideElement: ElementRef;
+  @ViewChild('lineElem', { static: true }) lineElement: ElementRef;
+  @ViewChild('slideElem', { static: true }) slideElement: ElementRef;
 
   slider_on: boolean = false;
   isMove: boolean = false;

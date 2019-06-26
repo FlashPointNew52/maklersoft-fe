@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
 import {AsyncSubject} from "rxjs/AsyncSubject";
-
+import {HttpClient} from '@angular/common/http';
 import {ConfigService} from './config.service';
-
+import {map} from 'rxjs/operators';
 import {Account} from "../entity/account";
 import {User} from "../entity/user";
 import { Observable } from 'rxjs/Observable';
@@ -32,7 +31,7 @@ export class SessionService {
         account: null
     };
 
-    constructor(private _configService: ConfigService, private _http: Http
+    constructor(private _configService: ConfigService, private _http: HttpClient
     ) {
         this.RS = this._configService.getConfig().RESTServer + '/session/';
 
@@ -75,8 +74,9 @@ export class SessionService {
             password: password
         });
         let ret_subj = <AsyncSubject<string>>new AsyncSubject();
-        this._http.post(_endpointUrl, data_str, { withCredentials: true })
-        .map(res => res.json()).subscribe(data => {
+        this._http.post(_endpointUrl, data_str, { withCredentials: true }).pipe(
+        map((res: Response) => res)).subscribe(raw => {
+          let data = JSON.parse(JSON.stringify(raw));
             if (data.result == "OK") {
                 this.dataStore.authorized = true;
                 this._authorized.next(this.dataStore.authorized);
@@ -122,9 +122,10 @@ export class SessionService {
           phone: phone
       });
 
-      this._http.post(_resourceUrl, data_str, { withCredentials: true })
-      .map(res => res.json()).subscribe(data => {
+      this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+      map((res: Response) => res)).subscribe(raw => {
           let msg: string;
+        let data = JSON.parse(JSON.stringify(raw));
           if(data.result == "OK")
               msg = null;
           else if(data.result == "FAIL" && data.msg == "301:User not found")
@@ -158,9 +159,10 @@ export class SessionService {
           password: password
       });
 
-      this._http.post(_resourceUrl, data_str, { withCredentials: true })
-      .map(res => res.json()).subscribe(data => {
+      this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+      map((res: Response) => res)).subscribe(raw => {
           let msg: string;
+        let data = JSON.parse(JSON.stringify(raw));
           if(data.result == "OK")
                 msg = null;
           else if(data.result == "FAIL" && data.msg == "301:User not found")
@@ -198,9 +200,10 @@ export class SessionService {
             phone: phone
         });
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true }).map(res => res.json()).subscribe(
-            data => {
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(map((res: Response) => res)).subscribe(
+            raw => {
                 let msg: string;
+              let data = JSON.parse(JSON.stringify(raw));
                 if(data.result == "OK")
                     msg = null;
                 else if(data.result == "FAIL" && data.msg == "001:Wrong format phone")
@@ -233,10 +236,10 @@ export class SessionService {
 
         let _endpointUrl = this.RS + 'logout';
 
-        this._http.post(_endpointUrl, "", { withCredentials: true })
-            .map(res => res.json())
+        this._http.post(_endpointUrl, "", { withCredentials: true }).pipe(
+            map((res: Response) => res))
             .subscribe(
-                data => {
+              () => {
                     this.dataStore.authorized = false;
                     this._authorized.next(this.dataStore.authorized);
 
@@ -251,9 +254,10 @@ export class SessionService {
         let ret_subj = <AsyncSubject<boolean>>new AsyncSubject();
         let _endpointUrl = this.RS + 'check';
 
-        this._http.get(_endpointUrl, { withCredentials: true })
-            .map(res => res.json()).subscribe(
-                data => {
+        this._http.get(_endpointUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+                raw => {
+                  let data = JSON.parse(JSON.stringify(raw));
                     if (data.result == "OK") {
                         this.dataStore.authorized = true;
                         this._authorized.next(this.dataStore.authorized);
