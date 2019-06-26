@@ -68,7 +68,7 @@ export class PhoneBlock extends ObjectBlock{
         for (let key in block) {
             if (block[key] != null && key != "constructor"){
                 let temp = block[key].toString().replace(/[^\d]/g, "");
-                if(temp.length != 11)
+                if(temp.length < 10)
                     ret = false;
             }
         }

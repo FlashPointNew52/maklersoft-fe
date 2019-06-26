@@ -37,10 +37,11 @@ export class Contact {
     sourceCode: number;
 
     isMiddleman: boolean;
-    type: number;
+    type: string;
 
     constructor (name?) {
         //this.agent = new User();
+        this.type = "person";
         this.addressBlock = new AddressBlock();
         this.phoneBlock = new PhoneBlock();
         this.emailBlock = new EmailBlock();
@@ -51,8 +52,9 @@ export class Contact {
         if(name){
             this.name = name;
         }
-
-        this.stateCode = "undefined";
+        this.loyalty = "undefined";
+        this.typeCode = "unknown";
+        this.stageCode = "potential";
     }
 
     public static typeOptions = {

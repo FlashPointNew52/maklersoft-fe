@@ -103,6 +103,10 @@ import {InputLineComponent} from "./component/ui-elements/input-line";
 import {SwitchButtonComponent} from "./component/ui-elements/switch-button";
 import {ConditionsSwitchesComponent} from "./component/ui-elements/conditions-switches";
 import { HttpClientModule } from '@angular/common/http';
+import {SlidingTagComponent} from "./component/ui-elements/sliding-tag";
+import {InputAreaComponent} from "./component/ui-elements/input-area";
+import {FilterSelectComponent} from "./component/ui-elements/filter-select";
+import {FilterSelectTagComponent} from "./component/ui-elements/filter-select-tag";
 
 const appRoutes: Routes = [
     { path: 'admin', loadChildren: 'src/app/admin.module#AdminModule' },
@@ -211,8 +215,12 @@ const appRoutes: Routes = [
         SelectsComponent,
         InputLineComponent,
         SwitchButtonComponent,
-        ConditionsSwitchesComponent
-  ],
+        ConditionsSwitchesComponent,
+        SlidingTagComponent,
+        InputAreaComponent,
+        FilterSelectComponent,
+        FilterSelectTagComponent
+    ],
   imports: [
     BrowserModule,
     FormsModule,
@@ -221,6 +229,11 @@ const appRoutes: Routes = [
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAi9zTbzWtEhLVZ8syBV6l7d3QMNLRokVY'
     }),
+      BrowserModule,
+      FormsModule,
+      AgmCoreModule.forRoot({
+          apiKey: 'AIzaSyAi9zTbzWtEhLVZ8syBV6l7d3QMNLRokVY'
+      }),
     //YaCoreModule.forRoot(),
     RouterModule.forRoot(appRoutes, { useHash: true }),
     NgxMaskModule.forRoot()

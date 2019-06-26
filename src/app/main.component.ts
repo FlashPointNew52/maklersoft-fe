@@ -31,7 +31,7 @@ import {User} from "./entity/user";
             <div class="button" style="background-image: url(/assets/notebook_icon/task.png)"><span></span></div>
             <div class="button" style="background-image: url(/assets/notebook_icon/note.png);width: 28px; height: 28px"><span></span></div>
             <div class="user_menu">
-                <div class="user_photo" [style.background-image]="'url('+( user | async).photoMini+')'"></div>
+                <div class="user_photo" [style.background-image]="'url('+( user | async)?.photoMini+')'"></div>
             </div>
         </div>
         <div class="tab-list">

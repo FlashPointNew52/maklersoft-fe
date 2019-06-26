@@ -10,12 +10,12 @@ export class Utils{
         return moment(date * 1000).calendar(null, {
                 sameDay: '[Сегодня в] LT',
                 nextDay: '[Завтра в] LT',
-                nextNextDay: '[Послезавтра]',
+                nextNextDay: '[Послезавтра в] LT',
                 nextWeek: 'DD.MM.YYYY',
                 lastDay: '[Вчера в] LT',
                 lastWeek:  function (now) {
                     if (moment(this).startOf('day').diff(moment(now).startOf('day'), 'day', true) == -2) {
-                      return '[Позавчера]';
+                      return '[Позавчера в] LT';
                     } else {
                       return 'DD.MM.YYYY';
                     }
@@ -34,6 +34,10 @@ export class Utils{
         n += "";
         n = new Array(4 - n.length % 3).join("U") + n;
         return n.replace(/([0-9U]{3})/g, "$1 ").replace(/U/g, "");
+    }
+
+    public static getNumWithWhitespace(str){
+        return str.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
     }
 
     public static inLastDay(date: number) {

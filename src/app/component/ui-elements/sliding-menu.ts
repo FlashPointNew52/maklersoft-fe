@@ -4,11 +4,11 @@ import {Output, EventEmitter} from '@angular/core';
 @Component({
     selector: 'sliding-menu',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['name','options', 'value', 'class'],
+    inputs: ['name','options', 'value', 'class', 'disabled'],
     template: `
-        <div (click)="hidden=!hidden" [ngClass]="class" class="menu_header" [class.active]="!hidden">
-            <span>{{name}}</span>
-            <span>{{ options[value]?.label }}</span>
+        <div (click)="hidden=!hidden" [ngClass]="class" class="menu_header" [class.active]="!hidden && !disabled" [class.inactive]="disabled">
+            <span [class.inactive]="disabled">{{ name }}</span>
+            <span [class.inactive]="disabled">{{ options[value]?.label }}</span>
         </div>
         <div [hidden]="hidden" class="hidden_menu">
             <div *ngFor="let opt of objectKeys(options)" [class.selected]="opt == value"
@@ -53,6 +53,7 @@ export class SlidingMenuComponent {
     public name: string = "";
     public value: any;
     public class: any;
+    public disabled: boolean = false;
 
     objectKeys = Object.keys;
     hidden: boolean = true;
