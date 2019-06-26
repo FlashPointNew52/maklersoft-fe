@@ -8,7 +8,6 @@ import {OfferService, OfferSource} from '../../service/offer.service';
 import {Offer} from '../../entity/offer';
 import {Request} from '../../entity/request';
 import {HubService} from "../../service/hub.service";
-import {Observable} from "rxjs";
 import {UserService} from "../../service/user.service";
 import {SessionService} from "../../service/session.service";
 
@@ -19,80 +18,108 @@ import {SessionService} from "../../service/session.service";
     styles: [`
         .work-area {
             float: left;
-            height: calc(100vh - 122px);
-            margin-top: 122px;
-            width: calc(100vw - 30px);
+            width: calc(100% - 1px);
+            height: calc(100% - 122px);
+            position: relative;
+        }
+
+        digest-request{
+            border-bottom: 1px solid #d3d5d6;
+            width: 100%;
+            height: 130px;
+            display: block;
+        }
+
+        digest-list digest-request:last-of-type{
+            border-bottom: 1px solid #d3d5d6;
         }
     `],
     template: `
         <div class="search-form">
-            <input type="text" class="input_line" placeholder="" [style.width]="'calc(100% - 108px)'"
+            <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'100%'"
                 [(ngModel)]="searchQuery" (keyup)="searchParamChanged()"
-            ><span class="find_icon"></span>
-            <div (click)="toggleDraw()" class="deactivate_draw" [class.activate_draw]="mapDrawAllowed">ОБВЕСТИ</div>
+            ><span class="find_icon_right"></span>
             <div class="tool-box">
-                <ui-filter-select class="filter"
+                <filter-select
+                     [name]="'Тип сделки'"
                      [options]="[
-                                  {class: 'entry', value: 'sale', label: 'Продажа'},
-                                  {class: 'entry', value: 'rent', label: 'Аренда'}
+                                  {value: 'sale', label: 'Покупка'},
+                                  {value: 'alternative', label: 'Альтернатива'},
+                                  {value: 'exchange', label: 'Мена'},
+                                  {value: 'rent', label: 'Аренда'}
                      ]"
                      [value]="{'option' : filter.offerTypeCode}"
-                     (onChange)="filter.offerTypeCode = $event.option; searchParamChanged();"
+                     (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
                 >
-                </ui-filter-select>
-                <ui-filter-select class="filter"
-                            [options]="stateCodeOptions"
-                            [value]="{'option' : filter.stateCode}"
-                            (onChange)="filter.stateCode = $event.option; searchParamChanged();"
+                </filter-select>
+                <filter-select
+                    [name]="'Статус контакта'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: 'owner', label: 'Принципал'},
+                                  {value: 'middleman', label: 'Посредник'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
                 >
-                </ui-filter-select>
-                <ui-filter-tag-select class="filter"
-                            [value]="filter?.tag"
-                            (onChange)="filter.tag = $event; searchParamChanged();"
+                </filter-select>
+                <filter-select
+                    [name]="'Статус заявки'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все объекты'},
+                                  {value: 'my', label: 'Мои объекты'},
+                                  {value: 'our', label: 'Наша компания'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
                 >
-                </ui-filter-tag-select>
-                <ui-filter-select class="filter"
-                            [options]="[
-                                {class: 'entry', value: '1', label: '1 день'},
-                                {class: 'entry', value: '3', label: '3 дня'},
-                                {class: 'entry', value: '7', label: 'Неделя'},
-                                {class: 'entry', value: '17', label: '2 недели'},
-                                {class: 'entry', value: '30', label: 'Месяц'},
-                                {class: 'entry', value: '90', label: '3 месяца'},
-                                {class: 'entry', value: 'all', label: 'Все'}
-                            ]"
-                            [value]="{'option' : filter.changeDate}"
-                            (onChange)="filter.changeDate = $event.option; searchParamChanged();"
+                </filter-select>
+                <filter-select
+                    [name]="'Стадия заявки'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: 'inactive', label: 'Не активно'},
+                                  {value: 'active', label: 'Активно'},
+                                  {value: 'listing', label: 'Листинг'},
+                                  {value: 'deal', label: 'Сделка'},
+                                  {value: 'suspended', label: 'Приостановлено'},
+                                  {value: 'archive', label: 'Архив'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
                 >
-                </ui-filter-select>
-                <ui-filter-tag-select class="filter"
-                                              [value]="filter?.tag"
-                                              (onChange)="filter.tag = $event; searchParamChanged();"
+                </filter-select>
+                <filter-select-tag [value]="filter?.tag" (newValue)="filter.tag = $event;"></filter-select-tag>
+                <filter-select
+                    [name]="'Период'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: '1', label: '1 день'},
+                                  {value: '3', label: '3 дня'},
+                                  {value: '7', label: 'Неделя'},
+                                  {value: '14', label: '2 недели'},
+                                  {value: '30', label: 'Месяц'},
+                                  {value: '90', label: '3 месяца'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
                 >
-                </ui-filter-tag-select>
-                <ui-filter-select class="filter"
-                            [options]="[
-                                {class:'submenu', value: 'addDate', label: 'Дате добавления', items:  [
-                                    {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-                                    {class: 'entry', value: 'DESC', label: 'По убыванию'}
-                                ]},
-                                {class:'submenu', value: 'changeDate', label: 'Дате изменения' , items: [
-                                    {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-                                    {class: 'entry', value: 'DESC', label: 'По убыванию'}
-                                ]},
-                                {class:'submenu', value: 'assignDate', label: 'Дате назначения' , items: [
-                                    {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-                                    {class: 'entry', value: 'DESC', label: 'По убыванию'}
-                                ]},
-                                {class:'submenu', value: 'budget', label: 'Бюджету', items: [
-                                    {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-                                    {class: 'entry', value: 'DESC', label: 'По убыванию'}
-                                ]}
-                            ]"
-                            [value]="getSort()"
-                            (onChange)="setSort($event.option, $event.subvalue); searchParamChanged();"
+                </filter-select>
+                <filter-select
+                    [name]="'Сортировка'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: 'inactive', label: 'Не активно'},
+                                  {value: 'active', label: 'Активно'},
+                                  {value: 'listing', label: 'Листинг'},
+                                  {value: 'deal', label: 'Сделка'},
+                                  {value: 'suspended', label: 'Приостановлено'},
+                                  {value: 'archive', label: 'Архив'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
                 >
-                </ui-filter-select>
+                </filter-select>
                 <div class="found">Найдено: {{hitsCount+" "}}/{{" "+requests?.length }}</div>
             </div>
         </div>
@@ -105,7 +132,7 @@ import {SessionService} from "../../service/session.service";
                    <div (click)="toggleSource('import')" [class.active]="this.source != 1">Общая</div>
                    <div (click)="toggleSource('local')"  [class.active]="this.source == 1">Компания</div>
                </div>
-                
+
                 <div class="fixed-button" (click)="toggleLeftPane()">
                     <div class="arrow" [ngClass]="{'arrow-right': paneHidden, 'arrow-left': !paneHidden}"></div>
                 </div>
@@ -114,15 +141,16 @@ import {SessionService} from "../../service/session.service";
                     </digest-request>
                 </div>
         </div>
-         <div class="work-area">
-                <div style="width: 100px; height: 100px;position: absolute; bottom: 0; left: 50%;" (click)="addRequest()"></div>
-         </div>
+        <div class="work-area">
+            <yamap-view>
+
+            </yamap-view>
+        </div>
     `
 })
 
 export class TabListRequestComponent implements OnInit {
     public tab: Tab;
-    isImport: boolean = false;
     source: OfferSource = OfferSource.LOCAL;
     searchQuery: string = "";
     offerTypeCode: string = 'sale';
@@ -130,7 +158,6 @@ export class TabListRequestComponent implements OnInit {
     hitsCount: number = 0;
     page: number = 0;
     perPage: number = 32;
-    main_menu: boolean = true;
     paneHidden: boolean = false;
     paneWidth: number;
     mapDrawAllowed = false;
@@ -144,26 +171,7 @@ export class TabListRequestComponent implements OnInit {
 
     stateCodeOptions = [{value: 'all', label: 'Все'}];
 
-    stageCodeOptions = [
-        {value: 'all', label: 'Все'},
-        {value: 'raw', label: 'Не активен'},
-        {value: 'active', label: 'Активен'},
-        {value: 'listing', label: 'Листинг'},
-        {value: 'deal', label: 'Сделка'},
-        {value: 'suspended', label: 'Приостановлен'},
-        {value: 'archive', label: 'Архив'}
-    ];
-
     sort: any = {};
-
-    agentOpts = [
-        {class: 'entry', value: 'all', label: 'Все заявки', bold: true},
-        {class: 'entry', value: 'realtor', label: 'Конкуренты', bold: true},
-        {class: 'entry', value: 'partner', label: 'Партнеры', bold: true},
-        {class: 'entry', value: 'owner', label: 'Частные лица', bold: true},
-        {class: 'entry', value: 'client', label: 'Клиенты', bold: true},
-        {class: 'entry', value: 'my', label: 'Мои заявки', bold: true}
-    ];
 
     constructor(private _configService: ConfigService,
             private _hubService: HubService,
@@ -184,18 +192,6 @@ export class TabListRequestComponent implements OnInit {
             }
         )
 
-        this._userService.list(0, 10, {}, {}, null).subscribe(agents => {
-            for (let i = 0; i < agents.length; i++) {
-                var a = agents[i];
-                this.agentOpts.push({
-                    class: 'entry',
-                    value: '' + a.id,
-                    label: a.name,
-                    bold: false
-                });
-            }
-        });
-
         this.listRequests();
     }
 
@@ -209,21 +205,6 @@ export class TabListRequestComponent implements OnInit {
         this.listRequests();
     }
 
-    toggleDraw() {
-        this.mapDrawAllowed = !this.mapDrawAllowed;
-        if (!this.mapDrawAllowed) {
-            this.page = 0;
-            this.requests = [];
-            this.searchArea = [];
-        }
-    }
-
-    finishDraw(e) {
-        this.page = 0;
-        this.requests = [];
-        this.searchArea = e.coords;
-        this.listRequests();
-    }
 
     listRequests() {
         this._requestService.list(this.page, this.perPage, this.source, this.filter, this.sort, this.searchQuery, this.searchArea).subscribe(
@@ -236,9 +217,9 @@ export class TabListRequestComponent implements OnInit {
     }
 
     addRequest() {
-        var tab_sys = this._hubService.getProperty('tab_sys');
-        var r = new Request();
-        r.offerTypeCode = this.filter.offerTypeCode;
+        let tab_sys = this._hubService.getProperty('tab_sys');
+        let r = new Request();
+        //r.offerTypeCode = this.filter.offerTypeCode;
         tab_sys.addTab('request', {request: r});
     }
 

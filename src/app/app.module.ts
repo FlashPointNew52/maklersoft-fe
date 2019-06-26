@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {NgxMaskModule} from 'ngx-mask'
-
+import { TextareaAutosizeModule } from 'ngx-textarea-autosize';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from "@angular/http";
 import {RouterModule, Routes} from '@angular/router';
@@ -103,6 +103,10 @@ import {SelectsComponent} from "./component/ui-elements/selects";
 import {InputLineComponent} from "./component/ui-elements/input-line";
 import {SwitchButtonComponent} from "./component/ui-elements/switch-button";
 import {ConditionsSwitchesComponent} from "./component/ui-elements/conditions-switches";
+import {SlidingTagComponent} from "./component/ui-elements/sliding-tag";
+import {InputAreaComponent} from "./component/ui-elements/input-area";
+import {FilterSelectComponent} from "./component/ui-elements/filter-select";
+import {FilterSelectTagComponent} from "./component/ui-elements/filter-select-tag";
 
 const appRoutes: Routes = [
     { path: 'admin', loadChildren: 'app/admin.module#AdminModule' },
@@ -211,15 +215,20 @@ const appRoutes: Routes = [
         SelectsComponent,
         InputLineComponent,
         SwitchButtonComponent,
-        ConditionsSwitchesComponent
-  ],
+        ConditionsSwitchesComponent,
+        SlidingTagComponent,
+        InputAreaComponent,
+        FilterSelectComponent,
+        FilterSelectTagComponent
+    ],
   imports: [
-    BrowserModule,
-    FormsModule,
-    HttpModule,
-    AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyAi9zTbzWtEhLVZ8syBV6l7d3QMNLRokVY'
-    }),
+      BrowserModule,
+      FormsModule,
+      HttpModule,
+      TextareaAutosizeModule,
+      AgmCoreModule.forRoot({
+          apiKey: 'AIzaSyAi9zTbzWtEhLVZ8syBV6l7d3QMNLRokVY'
+      }),
     //YaCoreModule.forRoot(),
     RouterModule.forRoot(appRoutes, { useHash: true }),
     NgxMaskModule.forRoot()

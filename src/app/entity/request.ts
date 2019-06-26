@@ -9,6 +9,12 @@ export class ValueRange {
     lowerVal: any;
     upperVal: any;
 
+    constructor(){
+        this.fixVal = 0;
+        this.lowerVal = 0;
+        this.upperVal = 0;
+    }
+
     static getHuman(obj: ValueRange, factor: number = 1): string{
         if(obj.fixVal) return ""+obj.fixVal*factor;
         else {
@@ -23,7 +29,6 @@ export class ValueRange {
 }
 
 export class Request {
-
     id: number;
     accountId: number;
 
@@ -76,38 +81,31 @@ export class Request {
 
 
     constructor () {
-        this.offerTypeCode = 'sale';
+        this.offerTypeCode = "sale";
+        this.stageCode = "raw";
         this.searchArea = [];
-        this.person = new Person();
         this.request = '';
+        this.budget = this.roomsCount = this.roomsCount = this.floor = this.square = new ValueRange();
         this.contractBlock = new ContractBlock();
         this.conditions = new ConditionsBlock();
     }
 
     public static offerTypeCodeOptions = {
-        purchase: {label: 'Покупка', items: []},
+        sale: {label: 'Покупка', items: []},
         alternative: {label: 'Альтернатива', items: []},
         exchange: {label: 'Мена', items: []},
         rent: {label: 'Аренда', items: []}
     };
 
-    public static sourceCodeOptions = {
-        internet: {label: 'Интернет площадки'},
-        print: {label: 'Печатные издания'},
-        social: {label: 'Социальные сети'},
-        messengers: {label: 'Мессенджеры'},
-        email: {label: 'E-mail-рассылка'},
-        recommendations: {label: 'Рекомендации'}
-    };
 
-    public static stageCodeOptions = [
-        {value: 'raw', label: 'Не активно'},
-        {value: 'active', label: 'Активно'},
-        {value: 'listing', label: 'Листинг'},
-        {value: 'deal', label: 'Сделка'},
-        {value: 'suspended', label: 'Приостановлено'},
-        {value: 'archive', label: 'Архив'}
-    ];
+    public static stageCodeOptions = {
+        raw: {label: 'Не активно'},
+        active: {label: 'Активно'},
+        listing: {label: 'Листинг'},
+        deal: {label: 'Сделка'},
+        suspended: {label: 'Приостановлено'},
+        archive: {label: 'Архив'}
+    };
 
 
 }

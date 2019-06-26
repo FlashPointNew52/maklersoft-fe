@@ -4,9 +4,9 @@ import {Output, EventEmitter} from '@angular/core';
 @Component({
     selector: 'selects',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['options', 'value'],
+    inputs: ['options', 'value', 'disabled'],
     template: `
-        <div class="value link" (click)="toggleHidden($event)">{{selected?.label}}</div>
+        <div class="value link" (click)="toggleHidden($event)" [class.inactive]="disabled">{{selected?.label}}</div>
         <div (offClick)="clickedOutside($event)" *ngIf="!hidden" class="hidden_menu">
             <ng-container *ngFor="let opt of options">
                 <div (click)="select(opt)" [class.selected]="selected?.value == opt.value">{{opt?.label}}</div>
@@ -41,6 +41,7 @@ import {Output, EventEmitter} from '@angular/core';
 export class SelectsComponent implements OnInit, OnChanges {
     public options: any[]=[];
     public value: any;
+    public disabled: boolean = false;
 
     selected: any;
 
@@ -56,7 +57,8 @@ export class SelectsComponent implements OnInit, OnChanges {
 
     toggleHidden(e: MouseEvent) {
         e.stopPropagation();
-        this.hidden = !this.hidden;
+        if(!this.disabled)
+            this.hidden = !this.hidden;
     }
 
     clickedOutside(event) {

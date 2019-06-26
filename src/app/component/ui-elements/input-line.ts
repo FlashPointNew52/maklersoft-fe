@@ -97,8 +97,8 @@ import {PhoneBlock} from "../../class/phoneBlock";
         }
     `],
     template: `
-        <input type="{{type}}" [value] = "value" class = "input_line" [(ngModel)]="searchQuery" (focus)="setClass($event, 'focus')" (blur)="removeClass($event, 'focus')"
-               (keyup) = "editOpacity($event)" [class.short_field]="queryTipe"
+        <input type="{{type}}" [value] = "value" class = "input_line" [(ngModel)]="searchQuery" [class.focus]="searchQuery.length > 0" (focus)="setClass($event, 'focus')" (blur)="removeClass($event, 'focus')"
+               (keyup) = "edit($event)" [class.short_field]="queryTipe"
         >
         <span class="label">{{name}}</span>
 
@@ -137,7 +137,7 @@ export class InputLineComponent implements OnInit, OnChanges{
     sgList: any[] = [];
     person: any;
     organisation: any;
-    @Output() onChange: EventEmitter<any> = new EventEmitter();
+    @Output() newValue: EventEmitter<any> = new EventEmitter();
 
     constructor(private _suggestionService: SuggestionService,
                 private _personService: PersonService,
@@ -169,7 +169,7 @@ export class InputLineComponent implements OnInit, OnChanges{
         }
 
     }
- 
+
     isClick(event){
         if(this.queryTipe && this.queryTipe == "address"){
             /*let parent: HTMLElement = (<HTMLElement>event.currentTarget).parentElement;
@@ -220,8 +220,8 @@ export class InputLineComponent implements OnInit, OnChanges{
         }
     }
 
-    editOpacity(event) {
-        if(this.searchQuery.length > 2){
+    edit(event) {
+        /*if(this.searchQuery.length > 2){
             this.in_line = (<HTMLElement>event.currentTarget).parentElement.parentElement;
             this.in_line.style.setProperty('z-index', '99');
             if(this.queryTipe){
@@ -237,7 +237,8 @@ export class InputLineComponent implements OnInit, OnChanges{
 
         } else if(!this.queryTipe){
             this.onChange.emit(this.searchQuery);
-        }
+        }*/
+        this.newValue.emit(this.searchQuery);
     }
 
 
@@ -272,7 +273,7 @@ export class InputLineComponent implements OnInit, OnChanges{
                 }
             }
         } else if(this.queryTipe == "address"){
-            this.onChange.emit(new AddressBlock());
+            this.newValue.emit(new AddressBlock());
             this.multiselect.style.setProperty('display','none');
         }
     }
@@ -283,13 +284,13 @@ export class InputLineComponent implements OnInit, OnChanges{
             this.searchQuery = itm;
             //this.isClick(event);
             let fullAddress: AddressBlock =  Offer.parseAddress(itm);
-            this.onChange.emit(fullAddress);
+            this.newValue.emit(fullAddress);
             if(!this.multiselect)
                 this.multiselect = <HTMLElement>(<HTMLElement>event.target).parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getElementsByTagName("UI-MULTISELECT").item(0);
             this.multiselect.style.removeProperty('display');
         } else if(this.queryTipe && (this.queryTipe == "person" || this.queryTipe == "organisation" || this.queryTipe == "user")){
             this.searchQuery = itm.name;
-            this.onChange.emit(itm);
+            this.newValue.emit(itm);
         }
         this.sgList = [];
         this.in_line.style.removeProperty('z-index');
@@ -300,7 +301,7 @@ export class InputLineComponent implements OnInit, OnChanges{
         this.person = new Person();
         tab_sys.addTab('person', {person: this.person});
         setTimeout(() =>{
-            this.onChange.emit(this.person);
+            this.newValue.emit(this.person);
         }, 10000);
 
     }
@@ -310,7 +311,7 @@ export class InputLineComponent implements OnInit, OnChanges{
         this.organisation = new Organisation();
         tab_sys.addTab('organisation', {organisation: this.organisation});
         setTimeout(() =>{
-            this.onChange.emit(this.organisation);
+            this.newValue.emit(this.organisation);
         }, 10000);
     }
 

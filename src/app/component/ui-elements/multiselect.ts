@@ -19,7 +19,10 @@ import {SelectsComponent} from "./selects";
                          (newValue) = "changeType(code, i, $event)"
                 >
                 </selects>
-                <input [value]="vals_arr[i]" [mask]="params[code]?.mask" [prefix] = "params[code]?.prefix" [placeholder]="params[code]?.placeholder">
+                <input [(ngModel)]="vals_arr[i]" [mask]="params[code]?.mask" [prefix] = "params[code]?.prefix"
+                       [placeholder]="params[code]?.placeholder" (keyup)="newValue(code, vals_arr[i])"
+                       (paste)="onPaste($event, i, code)"
+                >
 
             </div>
             <div class="add_button green" (click)="add_field($event)" *ngIf="getOptions()?.length > 0">{{addName}}</div>
@@ -107,22 +110,24 @@ export class MultiSelectComponent implements OnInit, OnChanges{
 
     hidden: boolean = true;
 
-    @Output() result: EventEmitter<any> = new EventEmitter();
+    @Output() newData: EventEmitter<any> = new EventEmitter();
 
     public ngOnInit(): void {
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-        this.vals_arr = [];
-        if(changes.params){
+        if(changes.params && changes.block.currentValue){
             this.keys_arr = Object.keys(this.params);
         }
-        if(changes.block && this.block && this.keys_arr){
+        if(changes.block && this.block && this.keys_arr && changes.block.currentValue && changes.block.currentValue !== changes.block.previousValue
+        ){
             let block_keys = Object.keys(this.block);
+            this.selects_arr = [];
+            this.vals_arr = [];
             for (let key of block_keys) {
                 if(this.block[key]){
                     let len = this.selects_arr.push(key);
-                    this.vals_arr.push(this.block[this.selects_arr[len-1]]);
+                    this.vals_arr.push(this.maskConvert(this.block[this.selects_arr[len-1]], this.params[key] ? this.params[key].mask : ""));
                 }
             }
             this.adds_arr = this.keys_arr.filter(val => this.selects_arr.indexOf(val) == -1);
@@ -137,7 +142,7 @@ export class MultiSelectComponent implements OnInit, OnChanges{
         else
             for_select = [].concat(this.adds_arr);
         for (let key of for_select) {
-            temp.push({value: key, label: this.params[key].label});
+            temp.push({value: key, label: this.params[key] ? this.params[key].label : null});
         }
         return temp;
     }
@@ -153,18 +158,40 @@ export class MultiSelectComponent implements OnInit, OnChanges{
         this.vals_arr.splice(index, 1);
         this.selects_arr.splice(index, 1);
         this.adds_arr.push(code);
+        delete this.block[code];
+        this.newData.emit(this.block);
     }
 
-    select(opt: any) {
-        this.hidden = true;
-        this.result.emit(opt);
+    newValue(code:string, val: any) {
+        this.block[code] = val;
+        this.newData.emit(this.block);
     }
 
     changeType(code: string, index: number, newVal: string){
         if(code != newVal){
             this.selects_arr[index] = newVal;
             this.adds_arr[this.adds_arr.indexOf(newVal)] = code;
-
+            delete this.block[code];
+            this.block[newVal] = this.vals_arr[index];
+            this.newData.emit(this.block);
         }
+    }
+
+    onPaste(event: ClipboardEvent, index: number, code: string){
+        if(this.params[code].mask){
+            let clipboardData = event.clipboardData;
+            let pastedText = clipboardData.getData('text');
+            let temp =  this.params[code].mask.replace(/\D/g,'').length;
+            this.vals_arr[index] = pastedText.substr(pastedText.length - temp);
+        }
+    }
+
+    maskConvert(value, mask){
+        if(mask){
+            let temp =  mask.replace(/\D/g,'').length;
+            return value.substr(value.length - temp);
+        } else
+            return value;
+
     }
 }

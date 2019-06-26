@@ -17,6 +17,9 @@ import {UserService} from '../../service/user.service';
 import {AnalysisService} from '../../service/analysis.service';
 import {SessionService} from "../../service/session.service";
 import {Contact} from "../../entity/contact";
+import {Organisation} from "../../entity/organisation";
+import {Utils} from "../../class/utils";
+import {ObjectBlock} from "../../class/objectBlock";
 
 
 @Component({
@@ -45,7 +48,7 @@ import {Contact} from "../../entity/contact";
 
         .work-area {
             float: left;
-            width: calc(100% - 370px);
+            width: 100%;
             height: calc(100% - 122px);
             position: relative;
         }
@@ -59,25 +62,105 @@ import {Contact} from "../../entity/contact";
 
         .property_face > ui-tag{
             position: absolute;
-            width: 7px;
+            width: 5px;
             height: 100%;
             top: 0;
-            right: 0;
+            left: 0;
         }
     `],
     template: `
         <div class="search-form">
             <input type="text" class="input_line" placeholder="Введите текст запроса" [style.width]="'calc(100% - 108px)'"
-                [(ngModel)]="request.request" (keyup)="searchStringChanged($event)"
+                [(ngModel)]="request.request" (keyup)="searchStringChanged($event)" [disabled]="!editEnabled"
             ><span class="find_icon"></span>
             <div (click)="toggleDraw()" class="deactivate_draw" [class.activate_draw]="mapDrawAllowed">ОБВЕСТИ</div>
+            <div class="tool-box" *ngIf="mode == 1">
+                <filter-select
+                    [name]="'Тип сделки'"
+                    [options]="[
+                                  {value: 'sale', label: 'Продажа'},
+                                  {value: 'alternative', label: 'Альтернатива'},
+                                  {value: 'exchange', label: 'Мена'},
+                                  {value: 'rent', label: 'Аренда'}
+                     ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option;"
+                >
+                </filter-select>
+                <filter-select
+                    [name]="'Статус контакта'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: 'owner', label: 'Принципал'},
+                                  {value: 'middleman', label: 'Посредник'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option;"
+                >
+                </filter-select>
+                <filter-select
+                    [name]="'Статус заявки'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все объекты'},
+                                  {value: 'my', label: 'Мои объекты'},
+                                  {value: 'our', label: 'Наша компания'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option;"
+                >
+                </filter-select>
+                <filter-select
+                    [name]="'Стадия заявки'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: 'inactive', label: 'Не активно'},
+                                  {value: 'active', label: 'Активно'},
+                                  {value: 'listing', label: 'Листинг'},
+                                  {value: 'deal', label: 'Сделка'},
+                                  {value: 'suspended', label: 'Приостановлено'},
+                                  {value: 'archive', label: 'Архив'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option;"
+                >
+                </filter-select>
+                <filter-select-tag [value]="filter?.tag" (newValue)="filter.tag = $event;"></filter-select-tag>
+                <filter-select
+                    [name]="'Период'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: '1', label: '1 день'},
+                                  {value: '3', label: '3 дня'},
+                                  {value: '7', label: 'Неделя'},
+                                  {value: '14', label: '2 недели'},
+                                  {value: '30', label: 'Месяц'},
+                                  {value: '90', label: '3 месяца'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option;"
+                >
+                </filter-select>
+                <filter-select
+                    [name]="'Сортировка'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: 'inactive', label: 'Не активно'},
+                                  {value: 'active', label: 'Активно'},
+                                  {value: 'listing', label: 'Листинг'},
+                                  {value: 'deal', label: 'Сделка'},
+                                  {value: 'suspended', label: 'Приостановлено'},
+                                  {value: 'archive', label: 'Архив'}
+                    ]"
+                    [value]="{'option' : filter.offerTypeCode}"
+                    (newValue)="filter.offerTypeCode = $event.option;"
+                >
+                </filter-select>
+                <div class="found">Найдено: {{hitsCount+" "}}/{{" "+ offers?.length }}</div>
+            </div>
         </div>
 
         <div class = "property_face">
-            <ui-tag
-                [value]="request?.tag"
-            >
-            </ui-tag>
+            <ui-tag [value]="request?.tag"></ui-tag>
             <span class="main_title">{{request.id ? 'ЗАЯВКА' : 'НОВАЯ ЗАЯВКА'}}</span>
             <span class="title">Тип объекта</span>
             <span class="value">
@@ -86,12 +169,12 @@ import {Contact} from "../../entity/contact";
                 </ng-container>
             </span>
             <span class="title">Тип сделки</span><span class="value">{{reqClass.offerTypeCodeOptions[request.offerTypeCode]?.label}}</span>
-            <span class="title">Бюджет</span><span class="value">{{valRange.getHuman(request?.budget)}} тыс. руб.</span>
+            <span class="title">Бюджет</span><span class="value">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}} руб.</span>
         </div>
 
         <hr class='underline'>
 
-        <div class="pane" [style.left.px]="paneHidden ? -370 : 0">
+        <div class="pane" [style.left.px]="paneHidden ? -339 : null">
             <div class = "source_menu">
                 <div [class.active]="mode == 0" (click)="mode = 0">Заявка</div>
                 <div [class.active]="mode == 1" (click)="mode = 1">Предложения</div>
@@ -101,8 +184,8 @@ import {Contact} from "../../entity/contact";
                     <span *ngIf="!canEditable" class="pointer_menu" (click)="$event">...</span>
                 </div>
                 <div class="edit_ready" *ngIf="mode == 1">
-                    <span>Общая база</span>
-                    <switch-button [value]="false"></switch-button>
+                    <span style="margin-right: 10px;">Общая база</span>
+                    <switch-button [value]="this.source == 1 ? true:false" (newValue)="this.source = $event ? 1 : 0; getOffers();"></switch-button>
                 </div>
             </div>
             <div class="fixed-button" (click)="toggleLeftPane()">
@@ -113,63 +196,87 @@ import {Contact} from "../../entity/contact";
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Дата создания</span>
-                            <span class="view-value">{{ request.addDate}}</span>
+                            <span class="view-value">{{ utils.getDateInCalendar(request.addDate) }}</span>
                         </div>
                         <div class="show_block">
                             <span>Предложение</span>
-                            <span class="view-value">{{conClass.typeOptions[contact.type]}}</span>
+                            <span class="view-value">{{conClass.typeOptions[contact.type]?.label}}</span>
                         </div>
                         <div class="show_block">
                             <span>{{contact.type == 'person' ? 'ФИО' : 'Название организации'}}</span>
-                            <span class="view-value">{{ contact?.name}}</span>
+                            <span class="view-value link">{{ contact?.name}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Телефон Личный</span>
-                            <span class="view-value">{{ contact?.phoneBlock?.main}}</span>
+                        <div class="show_block" *ngIf="contact?.phoneBlock?.main">
+                            <span>Личный телефон</span>
+                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.main | mask: "+0 (000) 000-00-00"}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Телефон Личный</span>
-                            <span class="view-value">{{ contact?.phoneBlock?.main}}</span>
+                        <div class="show_block" *ngIf="contact?.phoneBlock?.cellphone">
+                            <span>Личный телефон</span>
+                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.cellphone | mask: "+0 (000) 000-00-00"}}</span>
                         </div>
-                        <div class="show_block">
+                        <div class="show_block" *ngIf="contact?.phoneBlock?.office">
+                            <span>Рабочий телефон</span>
+                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.office | mask: "+0 (000) 000-00-00"}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="contact?.phoneBlock?.fax">
+                            <span>Рабочий телефон</span>
+                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.fax | mask: "+0 (000) 000-00-00"}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="contact?.phoneBlock?.home">
+                            <span>Домашний телефон</span>
+                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.home | mask: "+0 (000) 000-00-00"}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="contact?.phoneBlock?.other">
+                            <span>Другой телефон</span>
+                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.other | mask: "+0 (000) 000-00-00"}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="contact?.phoneBlock?.ip">
+                            <span>Внутренний телефон</span>
+                            <span class="view-value link">{{ contact?.phoneBlock?.ip}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="contact?.messengerBlock?.whatsapp">
                             <span>WhatsApp</span>
-                            <span class="view-value">{{ contact?.messengerBlock?.whatsapp}}</span>
+                            <span class="view-value link">{{ contact?.messengerBlock?.whatsapp}}</span>
                         </div>
-                        <div class="show_block">
+                        <div class="show_block" *ngIf="contact?.messengerBlock?.viber">
                             <span>Viber</span>
-                            <span class="view-value">{{ contact?.messengerBlock?.viber}}</span>
+                            <span class="view-value link">{{ contact?.messengerBlock?.viber}}</span>
                         </div>
-                        <div class="show_block">
+                        <div class="show_block" *ngIf="contact?.messengerBlock?.telegram">
                             <span>Telegram</span>
-                            <span class="view-value">{{ contact?.messengerBlock?.telegram}}</span>
+                            <span class="view-value link">{{ contact?.messengerBlock?.telegram}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Email Основной</span>
-                            <span class="view-value">{{ contact?.emailBlock?.main}}</span>
+                        <div class="show_block" *ngIf="contact?.emailBlock?.main">
+                            <span>Основной Email</span>
+                            <span class="view-value link">{{ contact?.emailBlock?.main}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Email Рабочий</span>
-                            <span class="view-value">{{ contact?.emailBlock?.work}}</span>
+                        <div class="show_block" *ngIf="contact?.emailBlock?.work">
+                            <span>Рабочий Email</span>
+                            <span class="view-value link">{{ contact?.emailBlock?.work}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Email Другой</span>
-                            <span class="view-value">{{ contact?.emailBlock?.other}}</span>
+                        <div class="show_block" *ngIf="contact?.emailBlock?.other">
+                            <span>Другой Email</span>
+                            <span class="view-value link">{{ contact?.emailBlock?.other}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Web-сайт Основной</span>
-                            <span class="view-value">{{ contact?.siteBlock?.main}}</span>
+                        <div class="show_block" *ngIf="contact?.siteBlock?.main">
+                            <span>Основной Web-сайт</span>
+                            <span class="view-value link">{{ contact?.siteBlock?.main}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Web-сайт Рабочий</span>
-                            <span class="view-value">{{ contact?.siteBlock?.other}}</span>
+                        <div class="show_block" *ngIf="contact?.siteBlock?.work">
+                            <span>Рабочий Web-сайт</span>
+                            <span class="view-value link">{{ contact?.siteBlock?.work}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Web-сайт Другой</span>
-                            <span class="view-value">{{ contact?.siteBlock?.other}}</span>
+                        <div class="show_block" *ngIf="contact?.siteBlock?.other">
+                            <span>Другой Web-сайт</span>
+                            <span class="view-value link">{{ contact?.siteBlock?.other}}</span>
                         </div>
                         <div class="show_block">
                             <span>Соцсети</span>
                             <ui-view-social [block]="contact?.socialBlock"></ui-view-social>
+                        </div>
+                        <div class="show_block">
+                            <span>Источник</span>
+                            <span class="view-value">{{ conClass.sourceCodeOptions[contact?.sourceCode]?.label}}</span>
                         </div>
                         <div class="show_block">
                             <span>Статус</span>
@@ -177,51 +284,61 @@ import {Contact} from "../../entity/contact";
                         </div>
                         <div class="show_block">
                             <span>Тип контакта</span>
-                            <span class="view-value">{{ contact?.typeCode}}</span>
+                            <span class="view-value">{{ conClass.typeCodeOptions[contact?.typeCode]?.label}}</span>
                         </div>
                         <div class="show_block">
                             <span>Лояльность</span>
-                            <span class="view-value">{{ contact?.stateCode}}</span>
+                            <span class="view-value">{{ conClass.loyaltyOptions[contact?.loyalty]?.label}}</span>
                         </div>
                         <div class="show_block">
-                            <span>Стадия</span>
-                            <span class="view-value">{{ contact?.stageCode}}</span>
-                        </div>
-                        <div class="show_block">
-                            <span>Ответственный</span>
-                            <span class="view-value">{{ request.agent?.name}}</span>
-                        </div>
-                        <div class="show_block">
-                            <span>Источник заявки</span>
-                            <span class="view-value">{{ request?.sourceCode}}</span>
+                            <span>Стадия контакта</span>
+                            <span class="view-value">{{ conClass.stageCodeOptions[contact?.stageCode]?.label}}</span>
                         </div>
                         <div class="show_block">
                             <span>Сделка</span>
-                            <span class="view-value">{{ request.offerTypeCode}}</span>
+                            <span class="view-value">{{ reqClass.offerTypeCodeOptions[request.offerTypeCode]?.label}}</span>
                         </div>
                         <div class="show_block">
-                            <span>Договор</span>
-                            <span class="view-value">{{ request.contractBlock?.number}}</span>
+                            <span>Стадия заявки</span>
+                            <span class="view-value">{{ reqClass.stageCodeOptions[request?.stageCode]?.label}}</span>
                         </div>
                         <div class="show_block">
-                            <span>Действие договора</span>
-                            <span class="view-value">{{ request.contractBlock?.begin}}-{{request.contractBlock?.end}}</span>
+                            <span>Ответственный</span>
+                            <span class="view-value link">{{ request.agent?.name}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Договор продлён</span>
-                            <span class="view-value">{{ request.contractBlock?.continued}}</span>
-                        </div>
-                        <div class="show_block">
-                            <span>Договор расторгнут</span>
-                            <span class="view-value">{{ request.contractBlock?.terminated}}</span>
-                        </div>
+                        <ng-container *ngIf="block.getAsArray(request.contractBlock)?.length == 0">
+                            <div class="show_block" >
+                                <span>Договор</span>
+                                <span class="view-value">Нет</span>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="block.getAsArray(request.contractBlock)?.length > 0">
+                            <div class="show_block" *ngIf="request?.contractBlock?.number">
+                                <span>Номер договора</span>
+                                <span class="view-value">{{ request.contractBlock?.number}}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.contractBlock?.begin || request.contractBlock?.end">
+                                <span>Действие договора</span>
+                                <span class="view-value">{{ request.contractBlock?.begin}}-{{request.contractBlock?.end}}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.contractBlock?.continued">
+                                <span>Договор продлён</span>
+                                <span class="view-value">{{ request.contractBlock?.continued}}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.contractBlock?.terminated">
+                                <span>Договор расторгнут</span>
+                                <span class="view-value">{{ request.contractBlock?.terminated}}</span>
+                            </div>
+                        </ng-container>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <sliding-menu [name] = "'Предложение'" [options]="conClass.typeOptions"
                                       [value]="contact?.type"
                                       (result) = "contact.type = $event"
                         ></sliding-menu>
-                        <input-line [name]="contact.type == 'person' ? 'ФИО' : 'Название организации'" [value]="contact?.name"></input-line>
+                        <input-line [name]="contact.type == 'person' ? 'ФИО' : 'Название организации'" [value]="contact?.name"
+                               (newValue)="contact.name = $event"
+                        ></input-line>
                         <multiselect-menu
                             [name]="'Телефон контакта'" [block]="contact?.phoneBlock" [addName]="'Добавить телефон'"
                             [params]="{ 'main': {label: 'Личный', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
@@ -232,6 +349,7 @@ import {Contact} from "../../entity/contact";
                                         'home': {label: 'Домашний', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
                                         'other': {label: 'Другой', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'}
                                     }"
+                            (newData)="findContact($event)"
                         ></multiselect-menu>
                         <multiselect-menu
                             [name]="'Мессенджеры'" [block]="contact?.messengerBlock" [addName]="'Добавить мессенджер'"
@@ -239,6 +357,7 @@ import {Contact} from "../../entity/contact";
                                         'viber' : {label: 'Viber', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
                                         'telegram': {label: 'Telegram', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'}
                                     }"
+                            (newData)="contact.messengerBlock = $event"
                         ></multiselect-menu>
                         <multiselect-menu
                             [name]="'E-mail'" [block]="contact?.emailBlock" [addName]="'Добавить email'"
@@ -246,6 +365,7 @@ import {Contact} from "../../entity/contact";
                                         'work' : {label: 'Рабочий', placeholder: 'E-mail'},
                                         'other': {label: 'Другой', placeholder: 'E-mail'}
                                     }"
+                            (newData)="contact.emailBlock = $event"
                         ></multiselect-menu>
                         <multiselect-menu
                             [name]="'Web-сайт'" [block]="contact?.siteBlock" [addName]="'Добавить сайт'"
@@ -253,6 +373,7 @@ import {Contact} from "../../entity/contact";
                                         'work' : {label: 'Рабочий', placeholder: 'Сайт'},
                                         'other': {label: 'Другой', placeholder: 'Сайт'}
                                     }"
+                            (newData)="contact.siteBlock = $event"
                         ></multiselect-menu>
                         <multiselect-menu
                             [name]="'Соцсети'" [block]="contact?.socialBlock" [addName]="'Добавить соцсеть'"
@@ -262,6 +383,7 @@ import {Contact} from "../../entity/contact";
                                         'instagram': {label: 'Instagram', placeholder: 'Адрес страницы'},
                                         'twitter': {label: 'Twitter', placeholder: 'Адрес страницы'}
                                     }"
+                            (newData)="contact.socialBlock = $event"
                         ></multiselect-menu>
                         <sliding-menu [name] = "'Источник'" [options]="conClass.sourceCodeOptions"
                                       [value]="contact?.sourceCode"
@@ -291,7 +413,10 @@ import {Contact} from "../../entity/contact";
                                       [value]="request?.stageCode"
                                       (result) = "request.stageCode = $event"
                         ></sliding-menu>
-                        <input-line [name]="'Ответственный'" [value]="request?.agent?.name"></input-line>
+                        <sliding-menu [name] = "'Ответственный'" [options]="agentOpts"
+                                      [value]="request?.agentId"
+                                      (result) = "agentChanged($event)"
+                        ></sliding-menu>
                         <multiselect-menu
                             [name]="'Договор'" [block]="request?.contractBlock" [addName]="'Добавить данные'"
                             [params]="{ 'number': {label: 'Номер', placeholder: 'Номер договора'},
@@ -300,11 +425,12 @@ import {Contact} from "../../entity/contact";
                                         'continued': {label: 'Продлен', placeholder: 'Продление'},
                                         'terminated': {label: 'Расторгнут', placeholder: 'Расторжение'}
                                     }"
+                            (newData)="request.contractBlock = $event"
                         ></multiselect-menu>
-                        <ui-tag-block [value]="request?.tag"></ui-tag-block>
+                        <sliding-tag [value]="request?.tag" (newValue)="request.tag = $event"></sliding-tag>
                     </ng-container>
                 </ui-tab>
-                <ui-tab [title]="'УСЛОВИЯ'" *ngIf="request.offerTypeCode != 'rent'">
+                <ui-tab [title]="'УСЛОВИЯ'" *ngIf="request.offerTypeCode != 'rent'" (tabSelect)="update = {}">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Новостройка</span>
@@ -322,10 +448,7 @@ import {Contact} from "../../entity/contact";
                             <span>Рейтинг</span>
                             <span class="view-value">{{ request?.rate}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Дополнительно</span>
-                            <span class="view-value">{{ request?.description}}</span>
-                        </div>
+                        <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="true" [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <div class="show_block">
@@ -336,12 +459,12 @@ import {Contact} from "../../entity/contact";
                             <span>Обременение</span>
                             <switch-button [value]="request?.encumbrance" (newValue)="request.encumbrance = $event"></switch-button>
                         </div>
-                        <input-line [name]="'Год постройки'" [value]="request?.buildYear"></input-line>
-                        <input-line [name]="'Рейтинг'" [value]="request?.rate"></input-line>
-                        <input-line [name]="'Дополнительно'" [value]="request?.description"></input-line>
+                        <input-line [name]="'Год постройки'" [value]="request?.buildYear" (newValue)="request.buildYear = $event"></input-line>
+                        <input-line [name]="'Рейтинг'" [value]="request?.rate" (newValue)="request.rate = $event"></input-line>
+                        <input-area [name]="'Дополнительно'" [value]="request?.description" (newValue)="request.description = $event" [update]="update"></input-area>
                     </ng-container>
                 </ui-tab>
-                <ui-tab [title]="'УСЛОВИЯ'" *ngIf="request.offerTypeCode == 'rent'">
+                <ui-tab [title]="'УСЛОВИЯ'" *ngIf="request.offerTypeCode == 'rent'" (tabSelect)="update = {}">
                     <ng-container *ngIf="!editEnabled">
                         <conditions-switches [block]="request.conditions" [disabled]="true"></conditions-switches>
                         <div class="show_block">
@@ -356,24 +479,21 @@ import {Contact} from "../../entity/contact";
                             <span>Рейтинг</span>
                             <span class="view-value">{{ request?.rate}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Дополнительно</span>
-                            <span class="view-value">{{ request.description}}</span>
-                        </div>
+                        <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="true" [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <conditions-switches [block]="request.conditions" [disabled]="false"></conditions-switches>
-                        <input-line [name]="'Дата заезда'" [value]="request?.arrival_date"></input-line>
-                        <input-line [name]="'Период проживания'" [value]="request?.period"></input-line>
-                        <input-line [name]="'Рейтинг'" [value]="request?.rate"></input-line>
-                        <input-line [name]="'Дополнительно'" [value]="request?.description"></input-line>
+                        <input-line [name]="'Дата заезда'" [value]="request?.arrival_date" (newValue)="request.arrival_date = $event"></input-line>
+                        <input-line [name]="'Период проживания'" [value]="request?.period" (newValue)="request.period = $event"></input-line>
+                        <input-line [name]="'Рейтинг'" [value]="request?.rate" (newValue)="request.rate = $event"></input-line>
+                        <input-area [name]="'Дополнительно'" [value]="request?.description" (newValue)="request.description = $event" [update]="update"></input-area>
                     </ng-container>
                 </ui-tab>
-                <ui-tab [title]="'БЮДЖЕТ'" *ngIf="request.offerTypeCode != 'rent'">
+                <ui-tab [title]="'БЮДЖЕТ'" *ngIf="request.offerTypeCode != 'rent'" (tabSelect)="update = {}">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Бюджет</span>
-                            <span class="view-value">{{ valRange.getHuman(request?.budget)}} тыс. руб.</span>
+                            <span class="view-value">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}} руб.</span>
                         </div>
                         <div class="show_block">
                             <span>Наличные</span>
@@ -395,41 +515,37 @@ import {Contact} from "../../entity/contact";
                             <span>Комиссия</span>
                             <switch-button [value]="request?.commission" [disabled]="true"></switch-button>
                         </div>
-                        <div class="show_block">
-                            <span>Дополнительно</span>
-                            <span class="view-value">{{ request?.costInfo}}</span>
-                        </div>
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" [disabled]="true" [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
-                        <input-line [name]="'Дата заезда'" [value]="request?.budget"></input-line>
                         <div class="show_block">
                             <span>Наличные</span>
-                            <switch-button [value]="request?.cash"></switch-button>
+                            <switch-button [value]="request?.cash" (newValue)="request.cash = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Ипотека</span>
-                            <switch-button [value]="request?.mortgage"></switch-button>
+                            <switch-button [value]="request?.mortgage" (newValue)="request.mortgage = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Сертификат</span>
-                            <switch-button [value]="request?.certificate"></switch-button>
+                            <switch-button [value]="request?.certificate" (newValue)="request.certificate = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Материнский капитал</span>
-                            <switch-button [value]="request?.maternalCapital"></switch-button>
+                            <switch-button [value]="request?.maternalCapital" (newValue)="request.maternalCapital = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Комиссия</span>
-                            <switch-button [value]="request?.commission"></switch-button>
+                            <switch-button [value]="request?.commission" (newValue)="request.commission = $event"></switch-button>
                         </div>
-                        <input-line [name]="'Дополнительно'" [value]="request?.costInfo"></input-line>
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" (newValue)="request.costInfo = $event" [update]="update"></input-area>
                     </ng-container>
                 </ui-tab>
-                <ui-tab [title]="'БЮДЖЕТ'" *ngIf="request.offerTypeCode == 'rent'">
+                <ui-tab [title]="'БЮДЖЕТ'" *ngIf="request.offerTypeCode == 'rent'" (tabSelect)="update={}">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Бюджет</span>
-                            <span class="view-value">{{ valRange.getHuman(request?.budget)}} тыс. руб.</span>
+                            <span class="view-value">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}} руб.</span>
                         </div>
                         <div class="show_block">
                             <span>Форма оплаты</span>
@@ -451,13 +567,9 @@ import {Contact} from "../../entity/contact";
                             <span>Комиссия</span>
                             <switch-button [value]="request?.commission" [disabled]="true"></switch-button>
                         </div>
-                        <div class="show_block">
-                            <span>Дополнительно</span>
-                            <span class="view-value">{{ request?.costInfo}}</span>
-                        </div>
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" [disabled]="true" [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
-                        <input-line [name]="'Бюджет'" [value]="request?.budget"></input-line>
                         <div class="show_block">
                             <span>Комунальные платежи</span>
                             <switch-button [value]="request?.paymentMethod"></switch-button>
@@ -478,26 +590,41 @@ import {Contact} from "../../entity/contact";
                             <span>Комиссия</span>
                             <switch-button [value]="request?.commission"></switch-button>
                         </div>
-                        <input-line [name]="'Дополнительно'" [value]="request?.costInfo"></input-line>
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" (newValue)="request.costInfo = $event" [update]="update"></input-area>
                     </ng-container>
                 </ui-tab>
-                <div more class="more">ЕЩЁ...</div>
+                <div more class="more">ЕЩЁ...
+                    <div>
+                        <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Карта</div>
+                        <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
+                        <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка</div>
+                        <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История</div>
+                        <div class="delete red" (click)="$event">Удалить заявку</div>
+                    </div>
+                </div>
             </ui-tabs-menu>
 
             <ui-tabs-menu *ngIf="mode == 1">
-                <ui-tab [title]="'ВСЕ'">
+                <ui-tab [title]="'ВСЕ'" (tabSelect)="middleman = 'all' ; getOffers();">
+                    <digest-offer *ngFor="let offer of offers" [offer]="offer"
+                    ></digest-offer>
                 </ui-tab>
-                <ui-tab [title]="'ПРИНЦИПАЛ'">
+                <ui-tab [title]="'ПРИНЦИПАЛ'" (tabSelect)="middleman = 'owner'; getOffers();">
+                    <digest-offer *ngFor="let offer of offers" [offer]="offer"
+                    ></digest-offer>
                 </ui-tab>
-                <ui-tab [title]="'ПОСРЕДНИК'">
+                <ui-tab [title]="'ПОСРЕДНИК'" (tabSelect)="middleman = 'middleman'; getOffers();">
+                    <digest-offer *ngFor="let offer of offers" [offer]="offer"
+                    ></digest-offer>
                 </ui-tab>
             </ui-tabs-menu>
         </div>
 
         <div class="work-area">
-            <yamap-view>
-
-            </yamap-view>
+            <ng-container [ngSwitch]="workAreaMode">
+                <yamap-view *ngSwitchCase="'map'" [drawMap] = "mapDrawAllowed">
+                </yamap-view>
+            </ng-container>
         </div>
     `
 })
@@ -506,24 +633,39 @@ export class TabRequestComponent implements OnInit{
     public tab: Tab;
     public request: Request = new Request();
     mode: number = 0;
+    workAreaMode: string = 'map';
     canEditable: boolean = true;
     page: number = 0;
     source: OfferSource = OfferSource.LOCAL;
     offers: Offer[];
-    contact: Contact = new Contact;
+    middleman = 'all';
+    contact: Contact = new Contact();
+    update: any;
+
+    hitsCount: number = 0;
 
     offClass = Offer;
     conClass = Contact;
     reqClass  = Request;
     valRange = ValueRange;
+    block = ObjectBlock;
+    utils = Utils;
 
+    agentOpts: any = {
+        null: {label: "Не назначено"}
+    };
+
+    filter: any = {
+        agentId: 'all',
+        stateCode: 'all',
+        tag: 'all',
+        offerTypeCode: 'sale',
+    };
 
     editEnabled: boolean = false;
     mapDrawAllowed: boolean = false;
     paneHidden: boolean = false;
 
-    latCentr: any;
-    lonCentr: any;
     constructor(private _hubService: HubService,
                 private _configService: ConfigService,
                 private _offerService: OfferService,
@@ -536,6 +678,10 @@ export class TabRequestComponent implements OnInit{
                 private _sessionService: SessionService,
                 private _organisationService: OrganisationService
     ) {
+        this.agentOpts[this._sessionService.getUser().id] = {label: this._sessionService.getUser().name};
+        for(let user of _userService.cacheUsers){
+            this.agentOpts[user.value] = {label: user.label};
+        }
 
         setTimeout(() => {
             if (this.request.id) {
@@ -547,42 +693,25 @@ export class TabRequestComponent implements OnInit{
     }
 
     ngOnInit() {
+
         this.request = this.tab.args.request;
-        if (this.request.id == null) {
+        if(this.request.id == null) {
             this.editEnabled = true;
         }
 
-
-        /*if (this.request.personId != null) {
-            this._personService.get(this.request.personId).subscribe(
-                data => {
-                    this.request.person = data;
-                    this.agentOrCompany = this.request.person;
-                    console.log(this.request);
-                }
-            );
-        } else{
-            this.agentOrCompany = new Person();
-            this.request.person = this.agentOrCompany;
-        }*/
-
-
-        /*if (this.request.agentId != null) {
-            this._userService.get(this.request.agentId).subscribe(agent => {
-                this.request.agent = agent;
-            });
-        }*/
+        if(this.request.person){
+            this.contact = this.request.person;
+            this.contact.type = "person";
+        } else if(this.request.company){
+            this.contact = this.request.company;
+            this.contact.type = "organisation";
+        }
 
         this.calcSize();
 
     }
 
     searchStringChanged(e) {
-        let c = this;
-        /*clearTimeout(this.suggestionTo);
-        this.suggestionTo = setTimeout(function() {
-            c.searchParamChanged(e);
-        }, 500);*/
     }
 
     onResize(e) {
@@ -593,10 +722,9 @@ export class TabRequestComponent implements OnInit{
 
     }
 
-
-    agentChanged(e) {
-        this.request.agentId = e.selected.value;
-        if (this.request.agentId != null) {
+    agentChanged(event) {
+        this.request.agentId = event;
+        if(this.request.agentId != null) {
             this._userService.get(this.request.agentId).subscribe(agent => {
                 this.request.agent = agent;
             });
@@ -633,26 +761,42 @@ export class TabRequestComponent implements OnInit{
 
         if (!this.chechForm())
             return;
-        /*if(!this.agentOrCompany.id && PhoneBlock.getNotNullData(this.agentOrCompany.phoneBlock) != ""){
-                this._personService.save(this.agentOrCompany).subscribe(person => {
-                    setTimeout(() => {
-                        this.request.personId = person.id;
-                        delete this.request.person;
-                        this.agentOrCompany = person;
-                        this._requestService.save(this.request).subscribe(request => {
-                            setTimeout(() => {
-                                this.request = request;
-                            });
-                            this.toggleEdit();
+
+        if(this.contact.type == 'person'){
+            this._personService.save(this.contact as Person).subscribe(person => {
+                if(person) {
+                    this.request.personId = person.id;
+                    this.request.person = person;
+                    delete this.request.company;
+                    delete this.request.companyId;
+                    this.contact = person;
+                    this.contact.type = "person";
+                    this._requestService.save(this.request).subscribe(request => {
+                        setTimeout(() => {
+                            this.request = request;
                         });
+                        this.toggleEdit();
                     });
-                });
-        } else{*/
-                this._requestService.save(this.request).subscribe(request => {
-                        this.request = request;
-                    this.toggleEdit();
-                });
-       /* }*/
+                }
+            });
+        } else{
+            this._organisationService.save(this.contact as Organisation).subscribe(org => {
+                if(org) {
+                    this.request.companyId = org.id;
+                    this.request.company = org;
+                    delete this.request.person;
+                    delete this.request.personId;
+                    this.contact = org;
+                    this.contact.type = "organisation";
+                    this._requestService.save(this.request).subscribe(request => {
+                        setTimeout(() => {
+                            this.request = request;
+                        });
+                        this.toggleEdit();
+                    });
+                }
+            });
+       }
     }
 
     chechForm(){
@@ -660,20 +804,24 @@ export class TabRequestComponent implements OnInit{
             alert("Введите текст запроса");
             return false;
         }
-        /*if(PhoneBlock.getNotNullData(this.agentOrCompany.phoneBlock) == ""){
+        if(PhoneBlock.getNotNullData(this.contact.phoneBlock) == ""){
             alert("Не указан контактный телефон");
             return false;
-        }*/
+        }
+        if(!PhoneBlock.check(PhoneBlock.removeSymb(this.contact.phoneBlock))){
+            alert("Один из телефонов указан неверно");
+            return false;
+        }
+        if(!this.contact.name || this.contact.name.length < 5){
+            alert("Не указано имя контакта или имя слишком короткое");
+            return false;
+        }
         return true;
     }
 
-    offersSelected() {
-        this.getOffers(0, 16);
-    }
-
-
-    getOffers(page, per_page) {
-        this._offerService.list(page, per_page, this.source, {offerTypeCode: this.request.offerTypeCode}, null, this.request.request, this.request.searchArea).subscribe(
+    getOffers() {
+        this.offers = [];
+        this._offerService.list(0, 100, this.source, {offerTypeCode: this.request.offerTypeCode, isMiddleman: this.middleman}, null, this.request.request, this.request.searchArea).subscribe(
             offers => {
                 this.offers = offers.list;
             },
@@ -681,50 +829,167 @@ export class TabRequestComponent implements OnInit{
         );
     }
 
-
-    getOfferDigest(r: Offer) {
-        return Offer.getDigest(r);
-    }
-
-
-    openOffer(offer: Offer) {
-        var tab_sys = this._hubService.getProperty('tab_sys');
-        tab_sys.addTab('offer', {offer: offer});
-    }
-
-    get_length(obj: any){
-        let count = 0;
-        for (let prop in obj) {
-            if(obj[prop])
-                count++;
-        }
-        return count;
-    }
-
-    find_contact(structure: any){
-        for(let field in structure){ //9144174361
-            if(structure[field] && structure[field].length > 9){
-                let temp = structure[field];
-                temp = temp.replace(/\(|\)|\+|\-|\s|/g, '');
-                if(temp.charAt(0) == '7' || temp.charAt(0) == '8')
-                  temp = temp.substring(1);
-                if(temp.length> 9){
-                    temp = "7"+temp;
-                    this._personService.list(0, 1, 'local', {phone:temp}, null, null).subscribe(persons => {
-                        if(persons[0]){
-                            alert("Указанный телефон принадлежит контакту \""+persons[0].name+"\". Введите другой телефон!");
+    findContact(structure: any){
+        if(Object.keys(structure).length == 0 && this.contact.id){
+            let type = this.contact.type;
+            this.contact = new Contact();
+            this.contact.type = type;
+        } else if (!this.contact.id) {
+            let phones = PhoneBlock.removeSymb(structure);
+            if(PhoneBlock.check(phones)) {
+                if(this.contact.type == "person")
+                    this._personService.findByPhone(phones).subscribe((data)=>{
+                        if(data != null){
+                            this.contact = data;
+                            this.contact.type = 'person';
                         } else{
-                            /*this._organisationService.list(temp, true).subscribe(org => {
-                                if(org[0]){
-                                    alert("Указанный телефон принадлежит контрагенту \""+org[0].name+"\". Введите другой телефон!")
-                                }
-                            });*/
+                            this.contact.phoneBlock = structure;
                         }
                     });
-                    return;
-                }
+                else
+                    this._organisationService.findByPhone(phones).subscribe((data)=>{
+                        if(data != null){
+                            this.contact = data;
+                            this.contact.type = 'organisation';
+                        } else{
+                            this.contact.phoneBlock = structure;
+                        }
+                    });
             }
         }
     }
 
+    /*
+    contextMenu(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        let c = this;
+        let users: User[] = this._userService.listCached("", 0, "");
+        let uOpt = [];
+
+        users.forEach(u => {
+            if(u.id != this._sessionService.getUser().id)
+                uOpt.push(
+                    {class: "entry", disabled: false, label: u.name, callback: () => {
+                            this.clickMenu({event: "add_to_local", agent: u});
+                        }},
+                );
+        });
+
+        let stateOpt = [];
+        let states = [
+            {value: 'raw', label: 'Не активен'},
+            {value: 'active', label: 'Активен'},
+            {value: 'work', label: 'В работе'},
+            {value: 'suspended', label: 'Приостановлен'},
+            {value: 'archive', label: 'Архив'}
+        ];
+        let stageOpt = [];
+        let stages = [
+            {value: 'contact', label: 'Первичный контакт'},
+            {value: 'pre_deal', label: 'Заключение договора'},
+            {value: 'show', label: 'Показ'},
+            {value: 'prep_deal', label: 'Подготовка договора'},
+            {value: 'decision', label: 'Принятие решения'},
+            {value: 'negs', label: 'Переговоры'},
+            {value: 'deal', label: 'Сделка'}
+        ];
+        states.forEach(s => {
+            stateOpt.push(
+                {class: "entry", disabled: false, label: s.label, callback: function() {
+                        this.offer.stateCode = s.value;
+                        this.save();
+                    }}
+            );
+        });
+        stages.forEach(s => {
+            stageOpt.push(
+                {class: "entry", disabled: false, label: s.label, callback: function() {
+                        this.offer.stageCode = s.value;
+                        this.save();
+                    }}
+            );
+        });
+        let menu = {
+            pX: e.pageX,
+            pY: e.pageY,
+            scrollable: false,
+            items: [
+                {class: "entry", disabled: false, icon: "", label: 'Проверить', callback: () => {
+                        this.openPopup = {visible: true, task: "check"};
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Показать фото",
+                    callback: () => {
+                        this.clickMenu({event: "photo"});
+                    }
+                },
+                {class: "delimiter"},
+                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
+                        {class: "entry", disabled: !this.tab.args.canEditable, label: "В базу компании",
+                            callback: () => {
+                                this.clickMenu({event: "add_to_local"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "В контакты",
+                            callback: () => {
+                                this.clickMenu({event: "add_to_person"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "В контрагенты",
+                            callback: () => {
+                                this.clickMenu({event: "add_to_company"});
+                            }
+                        },
+                    ]},
+                {class: "submenu", disabled: false, icon: "", label: "Назначить", items: [
+                        {class: "entry", disabled: this.tab.args.canEditable, label: "Не назначено",
+                            callback: () => {
+                                this.clickMenu({event: "del_agent", agent: null});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "",
+                            callback: () => {
+                                this.clickMenu({event: "add_to_local", agent: this._sessionService.getUser()});
+                            }
+                        },
+                        {class: "delimiter"}
+                    ].concat(uOpt)},
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: [
+
+                    ]},
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: [
+
+                    ]},
+                {class: "delimiter"},
+                {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
+                        {class: "entry", disabled: false, label: "Произвольно", callback: function() {alert('yay s1!');}},
+                        {class: "entry", disabled: false, label: "Шаблон 1", callback: function() {alert('yay s2!');}},
+                        {class: "entry", disabled: false, label: "Шаблон 2", callback: function() {alert('yay s2!');}},
+                        {class: "entry", disabled: false, label: "Шаблон 3", callback: function() {alert('yay s2!');}},
+                    ]},
+                {class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
+                        {class: "entry", disabled: false, label: "Произвольно", callback: function() {alert('yay s1!');}},
+                        {class: "entry", disabled: false, label: "Шаблон 1", callback: function() {alert('yay s2!');}},
+                        {class: "entry", disabled: false, label: "Шаблон 2", callback: function() {alert('yay s2!');}},
+                        {class: "entry", disabled: false, label: "Шаблон 3", callback: function() {alert('yay s2!');}},
+                    ]},
+                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
+                        {class: "entry", disabled: false, label: "Произвольно", callback: function() {alert('yay s1!');}},
+                        {class: "delimiter"},
+                        {class: "entry", disabled: false, label: "На основной", callback: function() {alert('yay s1!');}},
+                        {class: "entry", disabled: false, label: "На рабочий", callback: function() {alert('yay s1!');}},
+                        {class: "entry", disabled: false, label: "На мобильный", callback: function() {alert('yay s2!');}},
+                    ]},
+                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: [
+                        {class: "entry", disabled: false, label: "Произвольно", callback: function() {alert('yay s1!');}},
+                        {class: "entry", disabled: false, label: "Шаблон 1", callback: function() {alert('yay s2!');}},
+                        {class: "entry", disabled: false, label: "Шаблон 2", callback: function() {alert('yay s2!');}},
+                        {class: "entry", disabled: false, label: "Шаблон 3", callback: function() {alert('yay s2!');}},
+                    ]},
+            ]
+        };
+
+        this._hubService.shared_var['cm'] = menu;
+        this._hubService.shared_var['cm_hidden'] = false;
+    }*/
 }
