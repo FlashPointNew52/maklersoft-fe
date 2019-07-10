@@ -11,6 +11,9 @@
     --box-backgroung: #ffffff;
     --box-hover-element: #eeeeee;
     --box-shadow: 0 1px 6px 0 #bdc0c1;
+    --selected-digest: #D3D5d6;
+    --billet-hover: #f6f6f6;
+
 }
 
 * {

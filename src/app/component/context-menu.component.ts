@@ -192,6 +192,7 @@ export class ContextMenuComponent implements OnInit, OnChanges {
         if (item.callback && item.class != "tag") {
             item.callback();
         }
+        this.hidden = true;
     }
 
     docClick() {

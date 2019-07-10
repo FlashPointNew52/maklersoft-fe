@@ -3,9 +3,9 @@ import {HttpClient} from '@angular/common/http';
 import {ConfigService} from './config.service';
 import {map} from 'rxjs/operators';
 import {Comment} from '../entity/comment';
-import {AsyncSubject} from "rxjs/AsyncSubject";
+import {AsyncSubject} from "rxjs";
 
-import 'rxjs/add/operator/map';
+
 import {User} from "../entity/user";
 import {SessionService} from "./session.service";
 import {ListResult} from "../class/listResult";

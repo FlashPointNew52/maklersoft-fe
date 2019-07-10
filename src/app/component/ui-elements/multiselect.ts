@@ -160,7 +160,7 @@ export class MultiSelectComponent implements OnInit, OnChanges{
         this.newData.emit(this.block);
     }
 
-    newValue(code:string, val: any) {
+    newValue(code: string, val: any) {
         this.block[code] = val;
         this.newData.emit(this.block);
     }

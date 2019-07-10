@@ -3,9 +3,9 @@ import {HttpClient} from '@angular/common/http';
 import {ConfigService} from './config.service';
 import {map} from 'rxjs/operators';
 import {Rating} from '../entity/rating';
-import {AsyncSubject} from "rxjs/AsyncSubject";
+import {AsyncSubject} from "rxjs";
 
-import 'rxjs/add/operator/map';
+
 
 @Injectable()
 export class RatingService {

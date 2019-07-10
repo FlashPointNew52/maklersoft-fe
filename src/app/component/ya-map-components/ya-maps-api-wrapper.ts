@@ -1,6 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Observer } from 'rxjs';
+import { Observable ,  Observer } from 'rxjs';
 
 import * as mapTypes from './ya-maps-types';
 import { YaMapsAPILoader } from './services/ya-maps-loader';

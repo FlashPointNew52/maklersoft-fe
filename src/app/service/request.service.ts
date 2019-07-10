@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {ConfigService} from './config.service';
 import {GeoPoint} from "../class/geoPoint";
 import {Request} from '../entity/request';
-import {AsyncSubject} from "rxjs/AsyncSubject";
+import {AsyncSubject} from "rxjs";
 import {User} from "../entity/user";
 import {SessionService} from "./session.service";
 import {Offer} from "../entity/offer";
@@ -21,23 +21,18 @@ export class RequestService {
         this.RS = this._configService.getConfig().RESTServer + '/api/v1/request/';
     };
 
-    list(page: number, perPage: number, source: OfferSource, filter: any, sort: any, searchQuery: string, searchArea: GeoPoint[]) {
+    list(page: number, perPage: number, filter: any, sort: any, searchQuery: string, searchArea: GeoPoint[]) {
         console.log('request list');
 
         let query = [];
 
         let user: User = this._sessionService.getUser();
-        let source_str = 'local';
-        if (source == OfferSource.IMPORT) {
-            source_str = 'import';
-        }
 
         query.push('accountId=' + user.accountId);
         query.push('userId=' + user.id);
         query.push('page=' + page);
         query.push('per_page=' + perPage);
         query.push('search_query=' + searchQuery);
-        query.push('source=' + source_str);
         query.push('filter=' + JSON.stringify(filter));
         if (sort) {
             query.push('sort=' + JSON.stringify(sort));
@@ -83,8 +78,8 @@ export class RequestService {
 
         let ret_subj = <AsyncSubject<Request[]>>new AsyncSubject();
 
-        this._http.get(_resourceUrl, { withCredentials: true })
-            .map((res: Response) => res).subscribe(
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
             raw => {
               let data = JSON.parse(JSON.stringify(raw));
                 let requests: Request[] = data.result;

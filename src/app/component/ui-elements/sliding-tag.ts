@@ -12,7 +12,7 @@ import {Tags} from "../../class/tags";
             <span>{{ tags[value]?.label }}</span>
         </div>
         <div [hidden]="hidden" class="hidden_menu">
-            <div *ngFor="let tag of tags" (click)="select(tag)" [class.selected]=" tag == value">
+            <div *ngFor="let tag of tags" (click)="select(tag)" [class.selected]=" tag.id == value">
                 <div [style.background-color]="tag.color" class="tag"></div>
                 <span>{{tag.label}}</span>
             </div>

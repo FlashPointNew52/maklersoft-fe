@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Task} from '../class/task';
-import 'rxjs/add/operator/map';
-import { Observable } from 'rxjs';
-import { Subject } from 'rxjs/Subject';
+
+import { Observable ,  Subject } from 'rxjs';
 
 @Injectable()
 export class NotebookService {

@@ -107,9 +107,10 @@ import {SlidingTagComponent} from "./component/ui-elements/sliding-tag";
 import {InputAreaComponent} from "./component/ui-elements/input-area";
 import {FilterSelectComponent} from "./component/ui-elements/filter-select";
 import {FilterSelectTagComponent} from "./component/ui-elements/filter-select-tag";
+import {TabSystemComponent} from "./component/tab-system.component";
 
 const appRoutes: Routes = [
-    { path: 'admin', loadChildren: 'src/app/admin.module#AdminModule' },
+    { path: 'admin', loadChildren: 'app/admin.module#AdminModule' },
     { path: 'main', component: MainComponent },
     { path: '',
         redirectTo: '/main',
@@ -125,8 +126,9 @@ const appRoutes: Routes = [
         StrNnPipe,
         phoneBlockAsStringPipe,
         TabConfigComponent,
+        TabSystemComponent,
         LoginScreenComponent,
-        //AdminPageComponent,
+        // AdminPageComponent,
 
         MainComponent,
         ContextMenuComponent,

@@ -4,10 +4,9 @@ import {Utils} from '../class/utils';
 import {HubService} from '../service/hub.service';
 import {NotebookTask} from './notebook/notebook-task.component';
 import {NotebookService} from '../service/notebook.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription , Observable} from 'rxjs';
 import {SessionService} from '../service/session.service';
 import {User} from '../entity/user';
-import {Observable} from "rxjs";
 
 @Component({
     selector: 'notebook',

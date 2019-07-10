@@ -53,7 +53,7 @@ export class InputAreaComponent implements OnChanges{
     public value: string = "";
     public disabled: boolean = false;
 
-    @ViewChild("textarea") textarea: ElementRef;
+    @ViewChild("textarea", { static: true }) textarea: ElementRef;
     @Output() newValue: EventEmitter<any> = new EventEmitter();
 
     public ngOnChanges(changes: SimpleChanges): void {

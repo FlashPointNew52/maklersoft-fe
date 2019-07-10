@@ -1,12 +1,10 @@
 import {Injectable} from '@angular/core';
-import {AsyncSubject} from "rxjs/AsyncSubject";
+import {AsyncSubject,  Observable ,  BehaviorSubject } from "rxjs";
 import {HttpClient} from '@angular/common/http';
 import {ConfigService} from './config.service';
 import {map} from 'rxjs/operators';
 import {Account} from "../entity/account";
 import {User} from "../entity/user";
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 
 @Injectable()
@@ -232,8 +230,6 @@ export class SessionService {
     }
 
     logout() {
-        console.log('logout');
-
         let _endpointUrl = this.RS + 'logout';
 
         this._http.post(_endpointUrl, "", { withCredentials: true }).pipe(

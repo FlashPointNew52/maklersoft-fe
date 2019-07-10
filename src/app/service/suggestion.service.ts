@@ -3,9 +3,9 @@ import {HttpClient} from '@angular/common/http';
 import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 
-import {AsyncSubject} from "rxjs/AsyncSubject";
+import {AsyncSubject} from "rxjs";
 
-import 'rxjs/add/operator/map';
+
 //import {Pattern} from "@angular/cli/plugins/glob-copy-webpack-plugin";
 
 

@@ -38,7 +38,7 @@ import {PhoneBlock} from "../../class/phoneBlock";
       }
 
       .search-form.table-mode {
-        border: 1px solid #fff;
+        border: 1px solid var(--box-backgroung);
       }
 
       .tool-box {
@@ -84,7 +84,7 @@ import {PhoneBlock} from "../../class/phoneBlock";
       .digest-list {
         overflow-x: scroll;
         border-right: 1px solid #ccc;
-        background-color: rgb(255, 255, 255);
+        background-color: var(--box-backgroung);
         height: calc(100% - 115px);
       }
 
@@ -138,20 +138,12 @@ import {PhoneBlock} from "../../class/phoneBlock";
         border: 1px solid rgba(204, 204, 204, 0.47);
       }
 
-      /*.seen {
-        background-color: #dbe2f0 !important;
-      }
-
-      .modified {
-        background-color: #dff0d8 !important;
-    }*/
-
       .alreadyAdd:hover {
          background-color: #f6f6f6 !important;
       }
 
       .selected {
-        background-color: #D3D5d6 !important;
+        background-color: var(--selected-digest) !important;
       }
 
       .src-sel {
@@ -410,7 +402,6 @@ import {PhoneBlock} from "../../class/phoneBlock";
                         (scrollToOffer) = "scrollToOffer($event)"
                         (showSameOffers) = "showSameOffers($event)"
                 >
-
                 </yamap-view>
             </div>
         </div>
