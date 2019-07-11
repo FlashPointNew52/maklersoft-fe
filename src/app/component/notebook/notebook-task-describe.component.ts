@@ -172,7 +172,7 @@ import 'moment/locale/ru.js';
                         name="daytimePicker"
                         [(ngModel)]="date_start"
                         (ngModelChange)="new_date($event)"
-                        [config]="datePickerConfig"
+                        [config]="datePickerConfig" 
                         [theme]="'dp-main_calendar'">
                     </dp-time-select>
                     <dp-time-select style="display: block;float: left;width: 50%;"

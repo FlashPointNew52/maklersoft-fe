@@ -14,7 +14,7 @@ import {
         .context-menu-wrapper {
             font-size: 12px;
             position: absolute;
-            z-index: 999;
+            z-index: 9999;
             width: 205px;
             padding: 26px 0;
             border: 0px solid;
@@ -114,7 +114,7 @@ import {
             [style.top]="menu?.pY + 'px'"
             [class.context-menu-scrollable]="menu?.scrollable"
             [hidden]="hidden"
-            (offClick)="docClick()"
+            (offClick)="docClick()" 
         >
             <div
                 *ngFor="let i of menu?.items"
@@ -207,7 +207,6 @@ export class ContextMenuComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-
         let cm_element = this.elementRef.nativeElement.querySelector('.context-menu-wrapper');
 
         if (this.menu && !this.hidden) {

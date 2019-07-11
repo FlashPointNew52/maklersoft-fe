@@ -4,9 +4,15 @@ import {NgxMaskModule} from 'ngx-mask'
 import { ChartsModule } from 'ng2-charts';
 import {FormsModule} from '@angular/forms';
 import {RouterModule, Routes} from '@angular/router';
-
+import {DpDatePickerModule} from 'ng2-date-picker';
 import {AppComponent} from "./app.component";
 import {AgmCoreModule } from '@agm/core';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material';
+import {MatMomentDateModule} from '@angular/material-moment-adapter';
+import {ChatViewComponent} from "./component/notebook/chat-view.component";
+import { TextareaAutosizeModule } from 'ngx-textarea-autosize';
 //import {YaCoreModule } from './component/ya-map-component/core.module';
 import {ContextMenuComponent} from "./component/context-menu.component";
 import {NotebookComponent} from "./component/notebook.component";
@@ -120,6 +126,7 @@ const appRoutes: Routes = [
 
 @NgModule({
     declarations: [
+        ChatViewComponent,
         AppComponent,
         FormatDatePipe,
         StrNnPipe,
@@ -222,8 +229,12 @@ const appRoutes: Routes = [
         FilterSelectTagComponent
     ],
   imports: [
+      TextareaAutosizeModule,
+      MatDatepickerModule, MatNativeDateModule, MatMomentDateModule,
+      BrowserAnimationsModule,
     BrowserModule,
-    FormsModule,
+      DpDatePickerModule,
+      FormsModule,
       ChartsModule,
     HttpClientModule,
     AgmCoreModule.forRoot({

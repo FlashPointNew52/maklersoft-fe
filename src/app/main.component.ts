@@ -26,10 +26,10 @@ import {User} from "./entity/user";
             <img alt="поиск" class="magnifier" src="../assets/лупа.png">
         </div>
         <div class='const_menu'> 
-            <div class="button" style="background-image: url(/assets/notebook_icon/call.png)"><span></span></div>
-            <div class="button" style="background-image: url(/assets/notebook_icon/chat.png)"><span></span></div> 
-            <div class="button" style="background-image: url(/assets/notebook_icon/task.png)"><span></span></div>
-            <div class="button" style="background-image: url(/assets/notebook_icon/note.png);width: 28px; height: 28px"><span></span></div>
+            <div class="button" style="background-image: url(/assets/notebook_icon/call.png)" (click)="openNotebook('call', $event)"><span></span></div>
+            <div class="button" style="background-image: url(/assets/notebook_icon/chat.png)" (click)="openNotebook('chat', $event)"><span></span></div> 
+            <div class="button" style="background-image: url(/assets/notebook_icon/task.png)" (click)="openNotebook('task', $event)"><span></span></div>
+            <div class="button" style="background-image: url(/assets/notebook_icon/note.png);width: 28px; height: 28px" (click)="openNotebook('note', $event)"><span></span></div>
             <div class="user_menu">
                 <div class="user_photo" [style.background-image]="'url('+( user | async)?.photoMini+')'"></div>
             </div>
@@ -76,7 +76,12 @@ export class MainComponent {
     ngAfterContentInit() {
         this.addTab('main', {});
     }
+    openNotebook(name, event) {
+        let block = this._hubService.getProperty('notebook');
 
+        block.setMode(name, event);
+        block.setShow(true, event);
+    }
     calcTabHeight() {
         let nominalHeight = 160;
         let minimalHeight = 60;

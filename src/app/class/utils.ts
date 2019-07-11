@@ -35,7 +35,9 @@ export class Utils{
         n = new Array(4 - n.length % 3).join("U") + n;
         return n.replace(/([0-9U]{3})/g, "$1 ").replace(/U/g, "");
     }
-
+    public static getCurrentTime(number: number) {
+        return moment(number).get('hour') + '.' + moment(number).get('minute');
+    }
     public static getNumWithWhitespace(str){
         return str.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
     }

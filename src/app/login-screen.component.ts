@@ -8,11 +8,11 @@ import {Observable} from "rxjs";
 @Component({
     selector: 'login-screen',
     styles: [`
-      .log_screen {
+      .log_screen { 
           width: 100vw;
           height: 100vh;
           z-index: 9999;
-          position: fixed;
+          position: fixed; 
           background-color: #f7f7f7;
           display: flex;
           align-items: center;

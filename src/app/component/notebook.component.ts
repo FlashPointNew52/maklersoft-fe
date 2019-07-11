@@ -4,7 +4,6 @@ import {Utils} from '../class/utils';
 import {HubService} from '../service/hub.service';
 import {NotebookTask} from './notebook/notebook-task.component';
 import {NotebookService} from '../service/notebook.service';
-import { Subscription } from 'rxjs/Subscription';
 import {SessionService} from '../service/session.service';
 import {User} from '../entity/user';
 import {Observable} from "rxjs";
@@ -17,14 +16,17 @@ import {Observable} from "rxjs";
         top: 0px;
         right: 0px;
         height: 100%;
-        background-color: #eeeeee;
+        overflow-y: auto;
+        background-color: white;
         z-index: 1000;
+        box-shadow: #677578 0px 2px 10px 0px;
     }
 
       .head {
         width: 100%;
-        height: 0;
-
+        height: 50px;
+        display: flex;
+          border-bottom: 1px solid #d3d5d6;
       }
 
       .notebook > .border-stripe {
@@ -76,11 +78,11 @@ import {Observable} from "rxjs";
         height: 30px;
         text-align: center;
         line-height: 30px;
-        font-size: 14px !important;
         cursor: pointer;
-        color: #12195C;
-        position: absolute;
-        left: 15px;
+          color: #32323D;
+          font-size: 12px;
+          position: relative;
+          right: calc(-100% + 150px);
         top: 10px;
       }
 
@@ -108,41 +110,50 @@ import {Observable} from "rxjs";
         margin: 0;
         border-color: #4aa24a;
     }
+        .curr_date{
+            position: relative;
+            right: -165px;
+            top: 15px;
+            color: #32323D;
+            font-size: 12px;
+            width: fit-content;
+        }
     `],
     template: `
-        <div class="notebook" *ngIf="authorized | async">
+        <div class="notebook" [hidden]="this.hidden" [style.width.px]="this.hidden == true ? 0 : 400">
             
             <div class="head">
+                <div class="curr_date">{{curr_date}}</div>
                 <div class="tab-button" (click)="toggleNotebook()">Закрыть</div>
             </div>
-            <div class="event-tab" *ngIf="show==1 || show==2">
-                <div class="head"></div>
-                <notebook-task-describe [task] = "data" [mode]="state" (update) = "update_tab_daily($event)"></notebook-task-describe>
-            </div>
-            <div class="main-tab" (click)="toggleEvent()" *ngIf="show==0 || show==2">
-                <ul class = "main_menu">
-                  <li (click) = "selectMenu(0)" [class.menu_active] = "menuNumber == 0">Задачи</li>
-                  <li (click) = "selectMenu(1)" [class.menu_active] = "menuNumber == 1">Заметки</li>
-                  <li (click) = "selectMenu(2)" [class.menu_active] = "menuNumber == 2">IP-телефония</li>
-                  <li (click) = "selectMenu(3)" [class.menu_active] = "menuNumber == 3">Чат</li>
-                </ul>
-                <notebook-task *ngIf="menuNumber == 0">  </notebook-task>
-            </div>
+            <chat-view (closeEvent)="toggleNotebook()" *ngIf="mode == 'chat'"></chat-view>
+            <!--<div class="event-tab" *ngIf="show==1 || show==2">-->
+                <!--<div class="head"></div>-->
+                <!--<notebook-task-describe [task] = "data" [mode]="state" (update) = "update_tab_daily($event)"></notebook-task-describe>-->
+            <!--</div>-->
+            <!--<div class="main-tab" (click)="toggleEvent()" *ngIf="show==0 || show==2">-->
+                <!--<ul class = "main_menu">-->
+                  <!--<li (click) = "selectMenu(0)" [class.menu_active] = "menuNumber == 0">Задачи</li>-->
+                  <!--<li (click) = "selectMenu(1)" [class.menu_active] = "menuNumber == 1">Заметки</li>-->
+                  <!--<li (click) = "selectMenu(2)" [class.menu_active] = "menuNumber == 2">IP-телефония</li>-->
+                  <!--<li (click) = "selectMenu(3)" [class.menu_active] = "menuNumber == 3">Чат</li>-->
+                <!--</ul>-->
+                <!--<notebook-task *ngIf="menuNumber == 0">  </notebook-task>-->
+            <!--</div>-->
         </div>
     `
 })
 
 export class NotebookComponent implements OnInit{
+    mode: string;
     hidden = true;
     eventHidden = true;
     utils = Utils;
     menuNumber: number = 0;
-    subscription: Subscription;
-    show: number = null;
     type: string;
     data: any;
     state: string;
-
+    curr_date: any;
     authorized: Observable<boolean>;
 
     //positionOptions = User.positionOptions;
@@ -153,25 +164,37 @@ export class NotebookComponent implements OnInit{
             private _notebookService: NotebookService,
             private _sessionService: SessionService
     ) {
+        this.curr_date = Utils.getTitleDateForGraph(this.curr_date);
         this.authorized = _sessionService.authorized;
-        this._hubService.shared_var['nb_width'] = 1;
-        this.subscription = _notebookService.get().subscribe(message => {
-            this.show = message.show;
-            this.data = message.data;
-            this.state = message.state;
-        });
+        _hubService.setProperty('notebook', this);
+        this.hidden = true;
+        // this._hubService.shared_var['nb_width'] = 1;
+        // this.subscription = _notebookService.get().subscribe(message => {
+        //     this.show = message.show;
+        //     this.data = message.data;
+        //     this.state = message.state;
+        // });
     }
 
     ngOnInit(){
 
     }
-
+    setMode(name, event) {
+        console.log('setmode');
+        this.mode = name;
+        event.stopPropagation();
+    }
+    setShow( value: boolean, event) {
+        console.log('setshow');
+        this.hidden = !value;
+        event.stopPropagation();
+    }
     toggleNotebook() {
         this.hidden = !this.hidden;
-        if(this.hidden)
-            this.show = 0;
-        else this.show = -1;
-        this.emitWidth();
+        // if(this.hidden)
+        //     this.show = 0;
+        // else this.show = -1;
+        // this.emitWidth();
     }
 
     toggleEvent() {
@@ -194,7 +217,6 @@ export class NotebookComponent implements OnInit{
 
     selectMenu(num: number){
        this.menuNumber = num;
-       this.show = 2;
     }
 
     update_tab_daily(event){

@@ -52,7 +52,7 @@ import {Chart} from 'chart.js'
 
         .tile-board {
             height: calc(100vh - 100px);
-            overflow: scroll;
+            overflow-y: scroll;
             position: relative;
             background-color: #f1f1f2;
             padding-left: 30px;
@@ -786,7 +786,7 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="block">
                             <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="progress-bar one">
                                     <div class="grayback one"></div>
                                     <div class="strips"></div>
@@ -804,7 +804,7 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="block">
                             <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="progress-bar four">
                                     <div class="grayback four"></div>
                                     <div class="strips"></div>
@@ -822,7 +822,7 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="block">
                             <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="progress-bar one">
                                     <div class="grayback one"></div>
                                     <div class="strips"></div>
@@ -831,7 +831,7 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="block">
                             <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="progress-bar two">
                                     <div class="grayback two"></div>
                                     <div class="strips"></div>
@@ -840,43 +840,7 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="block">
                             <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
-                                <div class="progress-bar four">
-                                    <div class="grayback four"></div>
-                                    <div class="strips"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="person-act-info">
-                        <div class="block block-person">
-                            <img src="../../../assets/photo%20(2).PNG">
-                            <div class="flex-col person">
-                                <div class="title-info user-name">ИВАНОВ Иван Иванович</div>
-                                <div class="title job">Менеджер по продажам</div>
-                            </div>
-                        </div>
-                        <div class="block">
-                            <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
-                                <div class="progress-bar one">
-                                    <div class="grayback one"></div>
-                                    <div class="strips"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="block">
-                            <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
-                                <div class="progress-bar two">
-                                    <div class="grayback two"></div>
-                                    <div class="strips"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="block">
-                            <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="progress-bar four">
                                     <div class="grayback four"></div>
                                     <div class="strips"></div>
@@ -894,7 +858,7 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="block">
                             <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="progress-bar one">
                                     <div class="grayback one"></div>
                                     <div class="strips"></div>
@@ -903,7 +867,7 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="block">
                             <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="progress-bar two">
                                     <div class="grayback two"></div>
                                     <div class="strips"></div>
@@ -912,7 +876,43 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="block">
                             <div class="flex-col inner-person-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
+                                <div class="progress-bar four">
+                                    <div class="grayback four"></div>
+                                    <div class="strips"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="person-act-info">
+                        <div class="block block-person">
+                            <img src="../../../assets/photo%20(2).PNG">
+                            <div class="flex-col person">
+                                <div class="title-info user-name">ИВАНОВ Иван Иванович</div>
+                                <div class="title job">Менеджер по продажам</div>
+                            </div>
+                        </div>
+                        <div class="block">
+                            <div class="flex-col inner-person-act">
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
+                                <div class="progress-bar one">
+                                    <div class="grayback one"></div>
+                                    <div class="strips"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="block">
+                            <div class="flex-col inner-person-act">
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
+                                <div class="progress-bar two">
+                                    <div class="grayback two"></div>
+                                    <div class="strips"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="block">
+                            <div class="flex-col inner-person-act">
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="progress-bar four">
                                     <div class="grayback four"></div>
                                     <div class="strips"></div>
@@ -926,7 +926,7 @@ import {Chart} from 'chart.js'
                 <div class="activity-head">
                     <div class="flex-col">
                         <div class="block-title">ЮРИДИЧЕСКИЙ ОТДЕЛ</div>
-                        <div class="block-title-p">20 Мая,2019 - 03 Июня,2019</div>
+                        <div class="block-title-p">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                     </div>
                     <div class="num block-title percents">35%</div>
                 </div>
@@ -973,7 +973,7 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="ur-block">
                             <div class="flex-col inner-ur-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="progress-bar one">
                                     <div class="grayback one"></div>
                                     <div class="strips"></div>
@@ -991,7 +991,7 @@ import {Chart} from 'chart.js'
                         </div>
                         <div class="ur-block">
                             <div class="flex-col inner-ur-act">
-                                <div class="title">20 Мая,2019 - 03 Июня,2019</div>
+                                <div class="title">{{dateGraphStart}} - {{dateGraphEnd}}</div>
                                 <div class="ur progress-bar one">
                                     <div class="grayback one"></div>
                                     <div class="strips"></div>
