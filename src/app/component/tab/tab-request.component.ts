@@ -599,7 +599,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                         <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
                         <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка</div>
                         <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История</div>
-                        <div class="delete red" (click)="$event">Удалить заявку</div>
+                        <div class="delete" (click)="$event">Удалить заявку</div>
                     </div>
                 </div>
             </ui-tabs-menu>
@@ -899,7 +899,7 @@ export class TabRequestComponent implements OnInit{
                             tab_sys.addTab('offer', {offer: o, canEditable});
                         });
                     }},
-                {class: "entry", disabled:  Utils.canImpact(this.selectedOffers, this._sessionService.getUser().accountId) ? false : true, icon: "", label: 'Удалить',
+                {class: "entry", disabled:  !Utils.canImpact(this.selectedOffers, this._sessionService.getUser().accountId), icon: "", label: 'Удалить',
                     callback: () => {
                         this.clickMenu({event: "del_obj"});
                     }
@@ -917,7 +917,7 @@ export class TabRequestComponent implements OnInit{
                             }
                         },
                     ]},
-                {class: "submenu", disabled: Utils.canImpact(this.selectedOffers, this._sessionService.getUser().accountId) ? false : true, icon: "", label: "Назначить", items: [
+                {class: "submenu", disabled: !Utils.canImpact(this.selectedOffers, this._sessionService.getUser().accountId), icon: "", label: "Назначить", items: [
                         {class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
                                 this.clickMenu({event: "del_agent", agent: null});

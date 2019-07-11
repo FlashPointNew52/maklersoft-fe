@@ -11,7 +11,7 @@ import {Output, EventEmitter} from '@angular/core';
         </div>
         <div [hidden]="hidden" class="hidden_menu">
             <div *ngFor="let code of selects_arr; let i = index" class="option">
-                <div class="remove" (click)="remove(code,i)"></div>
+                <div class="red-circle" (click)="remove(code,i)"><div class="line-in-circle"></div></div> 
                 <selects [options] = "getOptions(code)"
                          [value]= "code"
                          (newValue) = "changeType(code, i, $event)"

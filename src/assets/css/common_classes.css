@@ -163,6 +163,7 @@ main{
     width: 100%;
     height: 122px;
     display: flex;
+    background-color: white;
 }
 
 .head > span{
@@ -312,6 +313,7 @@ ui-tabs-menu > ui-tab:not(:empty):after {
 .more{
     width: 100%;
     text-align: end;
+    cursor: pointer;
 }
 
 .more > div{
@@ -324,7 +326,7 @@ ui-tabs-menu > ui-tab:not(:empty):after {
     line-height: 25px;
     z-index: 10;
     text-align: left;
-    padding: 8px 0;
+    padding-top: 8px;
     right: -65px;
 }
 
@@ -342,9 +344,15 @@ ui-tabs-menu > ui-tab:not(:empty):after {
 }
 
 .more:hover > div > div.delete{
-    border-top: 1px solid silver;
-    margin-top: 8px;
+    margin-top: 16px;
     line-height: 30px;
+    background-color: #BD0000;
+    color: white;
+    padding: 0;
+    text-align: center;
+}
+div.delete:hover{
+    background-color: #8b0000 !important;
 }
 
 sliding-menu, multiselect-menu, sliding-tag{

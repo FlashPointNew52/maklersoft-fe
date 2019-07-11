@@ -34,8 +34,8 @@ import {RatingService} from "./service/rating.service";
       SessionService, UploadService, NotebookService]
 })
 export class AppComponent {
-    constructor(private _hubService: HubService) {
-        this._hubService.shared_var['cm'] = new Object();
+    constructor(protected _hubService: HubService) {
+        this._hubService.shared_var['cm'] = {};
         this._hubService.shared_var['cm_hidden'] = true;
     }
 }
