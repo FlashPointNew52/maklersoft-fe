@@ -23,11 +23,10 @@ import {Person} from "../../entity/person";
             display: flex;
             flex-direction: column;
             justify-content: start;
-            color: #252F32;
         }
 
         .billet:hover {
-            background-color: #f6f6f6;
+            background-color: var(--billet-hover);
             cursor: pointer;
         }
 

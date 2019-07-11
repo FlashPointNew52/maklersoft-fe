@@ -3,9 +3,9 @@ import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 
 import {Person} from '../entity/person';
-import {AsyncSubject} from "rxjs/AsyncSubject";
+import {AsyncSubject} from "rxjs";
 import {HttpClient} from '@angular/common/http';
-import 'rxjs/add/operator/map';
+
 import {SessionService} from "./session.service";
 import {PhoneBlock} from "../class/phoneBlock";
 

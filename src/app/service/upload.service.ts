@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import {AsyncSubject} from "rxjs/AsyncSubject";
+import {AsyncSubject} from "rxjs";
 import {SessionService} from "./session.service";
 import {HttpClient} from '@angular/common/http';
 import {ConfigService} from './config.service';
 import {map} from 'rxjs/operators';
-import 'rxjs/add/operator/map';
+
 
 
 @Injectable()

@@ -13,7 +13,7 @@ export class Utils{
                 nextNextDay: '[Послезавтра в] LT',
                 nextWeek: 'DD.MM.YYYY',
                 lastDay: '[Вчера в] LT',
-                lastWeek:  function (now) {
+                lastWeek:  function(now) {
                     if (moment(this).startOf('day').diff(moment(now).startOf('day'), 'day', true) == -2) {
                       return '[Позавчера в] LT';
                     } else {
@@ -39,6 +39,7 @@ export class Utils{
         return moment(number).get('hour') + '.' + moment(number).get('minute');
     }
     public static getNumWithWhitespace(str){
+        if(!str) return "";
         return str.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
     }
 
@@ -74,5 +75,14 @@ export class Utils{
             if(ret != "") return ret;
         }
         return null;
+    }
+
+    //Функция проверки отнесения аккаунта
+    public static canImpact(arr: any[], accountId){
+        for (let elem of arr) {
+           if(elem.accountId != accountId)
+              return false;
+        }
+        return true;
     }
 }

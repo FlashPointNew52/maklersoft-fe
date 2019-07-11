@@ -10,4 +10,19 @@ body {
     width: 500px;
     height: 500px;
 }
-
+.red-circle{
+    background-color: #BD0000;
+    height: 18px;
+    width: 18px;
+    border-radius: 9px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.line-in-circle{
+    display: block;
+    height: 2px;
+    width: 10px;
+    background-color: white;
+}

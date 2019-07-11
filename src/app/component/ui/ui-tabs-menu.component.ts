@@ -21,7 +21,7 @@ import {UITab} from './ui-tab.component';
     styles: [`
         .tabs{
             width: 100%;
-            height: 43px;
+            /*height: 43px;*/
             display: inline-flex;
             font-size: 12px;
             justify-content: left;
@@ -34,6 +34,7 @@ import {UITab} from './ui-tab.component';
         .tab-header{
             cursor: pointer;
             margin-right: 15px;
+            padding-bottom: 7px;
         }
         
         .tabs_header > .tabs{
@@ -51,7 +52,7 @@ import {UITab} from './ui-tab.component';
         }
 
         .active, .tab-header:hover{
-            border-bottom: 3px solid #3b5998;
+            border-bottom: 5px solid #3b5998;
             font-weight: bold;
         }
   `]

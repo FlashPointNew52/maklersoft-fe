@@ -161,13 +161,10 @@ import {Task} from "../../class/task";
             justify-content: center;
         }
         .line-in-circle{
-            display: none;
+            display: block;
             height: 2px;
             width: 10px;
             background-color: white;
-        }
-        .red-circle:hover .line-in-circle{
-            display: block;
         }
         .col2, .col3, .col4, .col5{
             flex: 0 0 calc(70%/4);
@@ -311,7 +308,7 @@ import {Task} from "../../class/task";
                     </div>
                 </div>
                 
-                <div class="flexcol">
+                <div class="flexcol"> 
                     <div class="kpi-title">
                         <div class="col1">КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ</div>
                         <div class="col2">ВЕС KPI</div>

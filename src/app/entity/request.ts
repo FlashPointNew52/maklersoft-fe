@@ -16,8 +16,8 @@ export class ValueRange {
     }
 
     static getHuman(obj: ValueRange, factor: number = 1): string{
-        if(obj.fixVal) return ""+obj.fixVal*factor;
-        else {
+        if(obj && obj.fixVal) return ""+obj.fixVal*factor;
+        else if(obj){
             let val = "";
             if(obj.lowerVal)
                 val += "от "+ (obj.lowerVal*factor);
@@ -46,7 +46,6 @@ export class Request {
 
     stageCode: string;
     offerTypeCode: string;
-    sourceCode: string;
     request: string;
 
     newBuilding: boolean;
@@ -93,7 +92,6 @@ export class Request {
     public static offerTypeCodeOptions = {
         sale: {label: 'Покупка', items: []},
         alternative: {label: 'Альтернатива', items: []},
-        exchange: {label: 'Мена', items: []},
         rent: {label: 'Аренда', items: []}
     };
 
@@ -107,5 +105,9 @@ export class Request {
         archive: {label: 'Архив'}
     };
 
-
+    public static paymentMethodOptions = {
+        cash: {label: 'Наличные'},
+        cashless: {label: 'Безналичные'},
+        combine: {label: 'Наличные/Безналичные'}
+    };
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {AsyncSubject} from "rxjs/AsyncSubject";
+import {AsyncSubject} from "rxjs";
 import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 import {SessionService} from "./session.service";

@@ -178,7 +178,9 @@ export class YamapView implements AfterViewInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-       if(changes.drawMap && changes.drawMap.currentValue != changes.drawMap.previousValue){
+        if(!this.map)
+            return;
+        if(changes.drawMap && changes.drawMap.currentValue != changes.drawMap.previousValue){
            this.paths = [];
            this.canMove = false;
            this.map.geoObjects.removeAll();
@@ -186,7 +188,7 @@ export class YamapView implements AfterViewInit, OnChanges {
            if(changes.drawMap.currentValue == false && this.map) {
                this.drawFinished.emit({coords: []});
            }
-       } else if(changes.selected_offers && changes.selected_offers.currentValue != changes.selected_offers.previousValue){
+        } else if(changes.selected_offers && changes.selected_offers.currentValue != changes.selected_offers.previousValue){
            if(this.selected_offers.length > 0 ){
                this.show_menu = false;
                if(changes.selected_offers.currentValue[0].location)
@@ -204,6 +206,7 @@ export class YamapView implements AfterViewInit, OnChanges {
                    });*/
                    this.selectedObject.add(baloon);
                }
+
                this.map.geoObjects.add(this.selectedObject);
                /*let size = ymaps.util.bounds.getCenterAndZoom(this.selectedObject.getBounds(), this.map.container.getSize(),  this.map.options.get('projection'));
                this.map.panTo(size.center);
@@ -212,7 +215,7 @@ export class YamapView implements AfterViewInit, OnChanges {
                }*/
 
            }
-       } else if(changes.offers && changes.offers.currentValue != changes.offers.previousValue){
+        } else if(changes.offers && changes.offers.currentValue != changes.offers.previousValue){
            if(this.offers.length > 0 && this.coordinates.length > 0){
                this.map.geoObjects.remove(this.circledObjects);
                this.circledObjects.removeAll();
@@ -229,6 +232,16 @@ export class YamapView implements AfterViewInit, OnChanges {
                 this.lon = changes.selected_offers.currentValue[0].locationLon;*/
                //this.updateMarkers();
 
+           } else if(changes.searchArea && changes.searchArea.currentValue != changes.searchArea.previousValue){
+               /*let style = {
+                   strokeColor: '#252f32',
+                   strokeOpacity: 0.7,
+                   strokeWidth: 3,
+                   fillColor: '#252f32',
+                   fillOpacity: 0.4
+               };
+               this.drawPath = new ymaps.Polygon([this.searchArea], {}, style);
+               this.map.geoObjects.add(this.drawPath);*/
            }
            /*this.searchArea = this.toUnnormalPoints(this.searchArea);*/
 
@@ -275,9 +288,29 @@ export class YamapView implements AfterViewInit, OnChanges {
                     this.map.behaviors.enable('drag');
                     this.drawFinished.emit({coords: GeoPoint.fromArray(this.coordinates)});
                 }
-
             }
         });
+
+        if(this.searchArea && this.searchArea.length > 0){
+            let style = {
+                strokeColor: '#252f32',
+                strokeOpacity: 0.7,
+                strokeWidth: 3,
+                fillColor: '#252f32',
+                fillOpacity: 0.4
+            };
+            this.coordinates = [];
+            for(let geoc of this.searchArea){
+                this.coordinates.push([geoc.lat, geoc.lon]);
+            }
+            this.drawPath = new ymaps.Polygon([this.coordinates], {}, style);
+            /*this.drawPath.events.add('click', eq => {
+                if (!this.drawMap) {
+                    this.map.geoObjects.remove(this.drawPath);
+                }
+            });*/
+            this.map.geoObjects.add(this.drawPath);
+        }
 
         this.selectedObject = new ymaps.GeoObjectCollection(null, {
           preset: 'islands#yellowIcon',
@@ -345,25 +378,25 @@ export class YamapView implements AfterViewInit, OnChanges {
             ctx2d.stroke();
         }.bind(this);
 
-      let paintingProcess = {
-        finishPaintingAt: positionOrEvent1 => {
+        let paintingProcess = {
+            finishPaintingAt: positionOrEvent1 => {
 
-          this.map.panes.remove(pane);
+              this.map.panes.remove(pane);
 
-          let calc = Math.floor(coordinates.length / 30);
-          let coords: any[] = [];
-          for (let i = 0; i < coordinates.length; i++) {
-            if ( i % calc == 0 ) {
-              let lon = bounds[0][1] + (coordinates[i][0] / canvas.width) * lonDiff;
-              let lat = bounds[0][0] + (1 - coordinates[i][1] / canvas.height) * latDiff;
-              coords.push([lat, lon]);
+              let calc = Math.floor(coordinates.length / 30);
+              let coords: any[] = [];
+              for (let i = 0; i < coordinates.length; i++) {
+                if ( i % calc == 0 ) {
+                  let lon = bounds[0][1] + (coordinates[i][0] / canvas.width) * lonDiff;
+                  let lat = bounds[0][0] + (1 - coordinates[i][1] / canvas.height) * latDiff;
+                  coords.push([lat, lon]);
+                }
+              }
+
+              return coords;
             }
-          }
-
-          return coords;
-        }
-      };
-      return paintingProcess;
+        };
+        return paintingProcess;
     }
 
     updateMarkers(){

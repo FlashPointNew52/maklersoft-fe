@@ -31,7 +31,7 @@ import {User} from "./entity/user";
             <div class="button" style="background-image: url(/assets/notebook_icon/task.png)" (click)="openNotebook('task', $event)"><span></span></div>
             <div class="button" style="background-image: url(/assets/notebook_icon/note.png);width: 28px; height: 28px" (click)="openNotebook('note', $event)"><span></span></div>
             <div class="user_menu">
-                <div class="user_photo" [style.background-image]="'url('+( user | async)?.photoMini+')'"></div>
+                <div class="user_photo" [style.background-image]="'url('+( user | async)?.photoMini+')'" (click)="logout()"></div>
             </div>
         </div>
         <div class="tab-list">
@@ -140,5 +140,9 @@ export class MainComponent {
 
     click() {
         this._hubService.shared_var['cm_hidden'] = true;
+    }
+
+    logout(){
+        this._sessionService.logout();
     }
 }

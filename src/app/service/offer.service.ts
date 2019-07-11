@@ -3,7 +3,7 @@ import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 import {HttpClient} from '@angular/common/http';
 import {Offer} from '../entity/offer';
-import {AsyncSubject} from "rxjs/AsyncSubject";
+import {AsyncSubject} from "rxjs";
 import {GeoPoint} from "../class/geoPoint";
 import {User} from "../entity/user";
 import {SessionService} from "./session.service";
