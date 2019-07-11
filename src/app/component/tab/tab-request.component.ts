@@ -83,7 +83,7 @@ import {ObjectBlock} from "../../class/objectBlock";
             <div class="tool-box" *ngIf="mode == 1">
                 <filter-select *ngIf="request.offerTypeCode == 'sale'"
                     [name]="'Тип сделки'"
-                    [options]="[   
+                    [options]="[
                                   {value: 'sale', label: 'Продажа'},
                                   {value: 'alternative', label: 'Альтернатива'}
                     ]"
@@ -181,7 +181,7 @@ import {ObjectBlock} from "../../class/objectBlock";
         <div class="pane" [style.left.px]="paneHidden ? -339 : null">
             <div class = "source_menu">
                 <div [class.active]="mode == 0" (click)="mode = 0">Заявка</div>
-                <div [class.active]="mode == 1" (click)="mode = 1">Предложения</div>
+                <div [class.active]="mode == 1" (click)="mode = 1; filter.offerTypeCode = request.offerTypeCode;">Предложения</div>
                 <div class="edit_ready" *ngIf="mode == 0">
                     <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
                     <span class="link" *ngIf="editEnabled && canEditable" (click)="save()">Готово</span>
@@ -276,7 +276,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                         <div class="show_block">
                             <span>Источник</span>
-                            <span class="view-value">{{ conClass.sourceCodeOptions[contact?.sourceCode]?.label}}</span>
+                            <span class="view-value">{{ canEditable ? conClass.sourceCodeOptions[contact?.sourceCode]?.label : "Общая база"}}</span>
                         </div>
                         <div class="show_block">
                             <span>Статус</span>
@@ -603,18 +603,25 @@ import {ObjectBlock} from "../../class/objectBlock";
                     </div>
                 </div>
             </ui-tabs-menu>
-            <div class="digest-list" *ngIf="mode == 1" (contextmenu)="showContextMenu($event)">
+            <div class="digest-list" (contextmenu)="showContextMenu($event)" *ngIf="mode == 1">
+            <!--TODO: Нужно потом переделать в нормальном виде-->
                 <ui-tabs-menu>
                     <ui-tab [title]="'ОБЩАЯ БАЗА'" (tabSelect)="source = 0 ; getOffers();">
+                        <digest-offer *ngFor="let offer of offers; let i = index" [offer]="offer"
+                                      [class.selected]="selectedOffers.indexOf(offer) > -1"
+                                      (click)="select($event, offer, i)"
+                                      (contextmenu)="select($event, offer, i)"
+                                      (dblclick)="openOffer(offer)"
+                        ></digest-offer>
                     </ui-tab>
                     <ui-tab [title]="'БАЗА КОМПАНИИ'" (tabSelect)="source = 1; getOffers();">
+                        <digest-offer *ngFor="let offer of offers; let i = index" [offer]="offer"
+                                      [class.selected]="selectedOffers.indexOf(offer) > -1"
+                                      (click)="select($event, offer, i)"
+                                      (contextmenu)="select($event, offer, i)"
+                                      (dblclick)="openOffer(offer)"
+                        ></digest-offer>
                     </ui-tab>
-                    <digest-offer *ngFor="let offer of offers; let i = index" [offer]="offer"
-                                  [class.selected]="selectedOffers.indexOf(offer) > -1"
-                                  (click)="select($event, offer, i)"
-                                  (contextmenu)="select($event, offer, i)"
-                                  (dblclick)="dblClick(offer)"
-                    ></digest-offer>
                 </ui-tabs-menu>
             </div>
         </div>
@@ -801,8 +808,8 @@ export class TabRequestComponent implements OnInit{
 
     getOffers() {
         this.offers = [];
-        this._offerService.list(0, 100, this.source, Object.assign({offerTypeCode: this.request.offerTypeCode}, this.filter),
-            null, this.request.request, this.request.searchArea).subscribe(
+        this.selectedOffers = [];
+        this._offerService.list(0, 100, this.source, this.filter,null, this.request.request, this.request.searchArea).subscribe(
             offers => {
                 this.offers = offers.list;
             },
@@ -904,7 +911,7 @@ export class TabRequestComponent implements OnInit{
                                 this.clickMenu({event: "add_to_person"});
                             }
                         },
-                        {class: "entry", disabled: false, label: "Как Контрагент",
+                        {class: "entry", disabled: false, label: "Как Организацию",
                             callback: () => {
                                 this.clickMenu({event: "add_to_company"});
                             }
@@ -1046,5 +1053,11 @@ export class TabRequestComponent implements OnInit{
 
     searchParamChanged() {
         this.getOffers();
+    }
+
+    openOffer(offer: Offer){
+        let tab_sys = this._hubService.getProperty('tab_sys');
+        let canEditable = this.source == OfferSource.IMPORT ? false : (this._sessionService.getUser().accountId == offer.accountId);
+        tab_sys.addTab('offer', {offer, canEditable });
     }
 }

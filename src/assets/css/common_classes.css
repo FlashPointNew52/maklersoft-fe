@@ -293,7 +293,7 @@ main{
 
 ui-tabs-menu{
     width: 100%;
-    height: calc(100% - 74px);
+    height: 100%;
     display: block;
 }
 

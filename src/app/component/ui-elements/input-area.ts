@@ -76,16 +76,14 @@ export class InputAreaComponent implements OnChanges{
         this.newValue.emit(this.textarea.nativeElement.value);
     }
 
-    resize () {
-        console.log("tratata");
+    resize() {
         let textarea = <HTMLAreaElement>this.textarea.nativeElement;
         let borderHeight = textarea.offsetHeight - textarea.clientHeight;
-        console.log(textarea.offsetHeight, textarea.clientHeight);
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + borderHeight + "px";
     }
 
-    delayedResize () {
+    delayedResize() {
         setTimeout(() => this.resize(), 0);
     }
 
