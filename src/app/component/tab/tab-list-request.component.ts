@@ -232,7 +232,7 @@ export class TabListRequestComponent implements OnInit {
 
     addRequest() {
         let tab_sys = this._hubService.getProperty('tab_sys');
-        tab_sys.addTab('request', {request: new Request()});
+        tab_sys.addTab('request', {request: new Request(), canEditable: true});
     }
 
     searchParamChanged() {
@@ -326,7 +326,7 @@ export class TabListRequestComponent implements OnInit {
                                 this.clickMenu({event: "add_to_person"});
                             }
                         },
-                        {class: "entry", disabled: false, label: "Как Контрагент",
+                        {class: "entry", disabled: false, label: "Как Организацию",
                             callback: () => {
                                 this.clickMenu({event: "add_to_company"});
                             }
@@ -445,12 +445,14 @@ export class TabListRequestComponent implements OnInit {
                 }*/
             } else if(evt.event == "set_agent"){
                 o.agentId = evt.agentId;
+                let temp_ag = o.agent;
                 o.agent = null;
                 this._requestService.save(o).subscribe(data => {
 
                     this.requests[this.requests.indexOf(o)] = data;
                     o = data;
                 });
+                o.agent = temp_ag;
 
             } else if(evt.event == "del_agent"){
                 o.agentId = null;
