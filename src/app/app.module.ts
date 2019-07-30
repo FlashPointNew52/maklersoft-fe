@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import {NgxMaskModule} from 'ngx-mask'
+import {NgxMaskModule} from 'ngx-mask';
 import { ChartsModule } from 'ng2-charts';
 import {FormsModule} from '@angular/forms';
 import {RouterModule, Routes} from '@angular/router';
@@ -50,10 +50,8 @@ import {UIInputLine} from "./component/ui/ui-input-line.component";
 import {UIViewLine} from "./component/ui/ui-view-line.component";
 import {UIViewTextComponent} from "./component/ui/ui-view-text.component";
 import {UISlidingMenuComponent} from "./component/ui/ui-slidingMenu.component";
-import {OfferTableComponent} from "./component/offer-table.component";
 import {DigestOfferComponent} from "./component/digest/digest-offer.component";
 import {DigestOfferMapComponent} from "./component/digest/digest-offer-map.component";
-import {DigestOfferRowComponent} from "./component/digest/digest-offer-row.component";
 import {DigestOfferLineComponent} from "./component/digest/digest-offer-line.component";
 import {DigestOfferTableComponent} from "./component/digest/digest-offer-table.component";
 import {DigestOfferTable2Component} from "./component/digest/digest-offer-table2.component";
@@ -114,9 +112,11 @@ import {InputAreaComponent} from "./component/ui-elements/input-area";
 import {FilterSelectComponent} from "./component/ui-elements/filter-select";
 import {FilterSelectTagComponent} from "./component/ui-elements/filter-select-tag";
 import {TabSystemComponent} from "./component/tab-system.component";
+import {ModalWindowComponent} from "./component/modal-window.component";
+import {AddressInputComponent} from "./component/ui-elements/address-input";
 
 const appRoutes: Routes = [
-    { path: 'admin', loadChildren: 'src/app/admin.module#AdminModule' },
+    { path: 'admin', loadChildren: 'app/admin.module#AdminModule' },
     { path: 'main', component: MainComponent },
     { path: '',
         redirectTo: '/main',
@@ -159,10 +159,8 @@ const appRoutes: Routes = [
         TabListActivityComponent,
         TabActivityComponent,
         TabDailyComponent,
-        OfferTableComponent,
         DigestOfferComponent,
         DigestOfferMapComponent,
-        DigestOfferRowComponent,
         DigestOfferLineComponent,
         DigestOfferTableComponent,
         DigestOfferTable2Component,
@@ -228,10 +226,11 @@ const appRoutes: Routes = [
         SlidingTagComponent,
         InputAreaComponent,
         FilterSelectComponent,
-        FilterSelectTagComponent
+        FilterSelectTagComponent,
+        ModalWindowComponent,
+        AddressInputComponent
     ],
   imports: [
-      TextareaAutosizeModule,
       MatDatepickerModule, MatNativeDateModule, MatMomentDateModule,
       BrowserAnimationsModule,
     BrowserModule,
