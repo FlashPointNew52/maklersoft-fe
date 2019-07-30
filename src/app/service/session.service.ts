@@ -5,6 +5,7 @@ import {ConfigService} from './config.service';
 import {map} from 'rxjs/operators';
 import {Account} from "../entity/account";
 import {User} from "../entity/user";
+import {HubService} from "./hub.service";
 
 
 @Injectable()
@@ -29,7 +30,9 @@ export class SessionService {
         account: null
     };
 
-    constructor(private _configService: ConfigService, private _http: HttpClient
+    constructor(private _configService: ConfigService,
+                private _http: HttpClient,
+                private _hubService: HubService
     ) {
         this.RS = this._configService.getConfig().RESTServer + '/session/';
 
@@ -278,10 +281,47 @@ export class SessionService {
     }
 
     handle_errors(err){
+        let needSupport = false;
+        let errMsg = "Ошибка " + err.status + ": " + err.statusText + "\n";
         if(err.status == 401 && err.statusText == "Unauthorized"){
             this.dataStore.authorized = false;
             this._authorized.next(this.dataStore.authorized);
             this.dataStore.msg = "logged out";
+            errMsg = err.error;
+        } else{
+            try {
+                let data = JSON.parse(err.error);
+                errMsg += data.message;
+                err.message = data.message;
+                err.error = data.error;
+                needSupport = data.type == 0;
+            }catch (e) {
+                errMsg += err.error;
+                err.message = err.error;
+                err.error = "";
+                needSupport = true;
+            }
         }
+        this._hubService.getProperty("modal-window").showMessage( errMsg, needSupport? err : null);
+    }
+
+    sendMsg(err){
+        let data_str = JSON.stringify(err);
+
+        let ret_subj = <AsyncSubject<any>>new AsyncSubject();
+
+        this._http.post( this._configService.getConfig().RESTServer + '/service/v1/report/err', data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                ret_subj.next(data.result);
+                ret_subj.complete();
+            },
+            error => {
+                this.handle_errors(error);
+            }
+        );
+
+        return ret_subj;
     }
 }

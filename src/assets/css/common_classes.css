@@ -355,12 +355,12 @@ div.delete:hover{
     background-color: #8b0000 !important;
 }
 
-sliding-menu, multiselect-menu, sliding-tag{
+sliding-menu, multiselect-menu, sliding-tag, address-input{
     width: 100%;
     line-height: 27px;
 }
 
-sliding-menu:hover > div:first-child, multiselect-menu:hover > div:first-child{
+sliding-menu:hover > div:first-child, multiselect-menu:hover > div:first-child, address-input:hover > div:first-child, sliding-tag:hover > div:first-child{
     background-color: #D3D5D6;
 }
 

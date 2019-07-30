@@ -100,7 +100,7 @@ export class PersonService {
         return ret_subj;
     }
 
-    findByPhone(phones: PhoneBlock) {
+    public findByPhone(phones: PhoneBlock) {
         let ret_subj = <AsyncSubject<Person>>new AsyncSubject();
         let _resourceUrl = this.RS + 'findByPhone';
 

@@ -1,8 +1,19 @@
 import * as moment from 'moment/moment';
 import 'moment/locale/ru.js';
+import {SessionService} from "../service/session.service";
+import {Contact} from "../entity/contact";
+import {PhoneBlock} from "./phoneBlock";
+import {PersonService} from "../service/person.service";
+import {Organisation} from "../entity/organisation";
+import {OrganisationService} from "../service/organisation.service";
+import {AsyncSubject} from "rxjs";
+import {Person} from "../entity/person";
 
 export class Utils{
-    constructor(){
+    private  static _sessionService: SessionService;
+    constructor(private  _personService: PersonService,
+                private  _organisationService: OrganisationService
+    ){
         moment.locale("ru");
     }
 
@@ -78,11 +89,50 @@ export class Utils{
     }
 
     //Функция проверки отнесения аккаунта
-    public static canImpact(arr: any[], accountId){
+    public static canImpact(arr: any[]){
         for (let elem of arr) {
-           if(elem.accountId != accountId)
+           if(elem.accountId != this._sessionService.getUser().accountId)
               return false;
         }
         return true;
+    }
+
+    public findContact(structure: any, contact: any){
+        let ret_subj = <AsyncSubject<Contact>>new AsyncSubject();
+        if(Object.keys(structure).length == 0 && contact.id){
+            let type = contact.type;
+            contact = new Contact();
+            contact.type = type;
+            ret_subj.next(contact);
+            ret_subj.complete();
+        } else if (!contact.id) {
+            let phones = PhoneBlock.removeSymb(structure);
+            if(PhoneBlock.check(phones)) {
+                if(contact.type == "person") {
+                    this._personService.findByPhone(phones).subscribe((data) => {
+                        if (data != null) {
+                            contact = data;
+                            contact.type = 'person';
+                        } else {
+                            contact.phoneBlock = structure;
+                        }
+                        ret_subj.next(contact);
+                        ret_subj.complete();
+                    });
+                } else{
+                    this._organisationService.findByPhone(phones).subscribe((data)=>{
+                        if(data != null){
+                            contact = data;
+                            contact.type = 'organisation';
+                        } else{
+                            contact.phoneBlock = structure;
+                        }
+                        ret_subj.next(contact);
+                        ret_subj.complete();
+                    });
+                }
+            }
+        }
+        return ret_subj;
     }
 }

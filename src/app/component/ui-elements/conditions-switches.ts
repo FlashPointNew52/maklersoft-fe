@@ -7,7 +7,7 @@ import {ConditionsBlock} from "../../class/conditionsBlock";
     template: `
         <div class="{{class}}">
             <span>Укомплектована полностью</span>
-            <switch-button [value]="block.complete" [disabled]="disabled" (newValue)="block.complete = $event"></switch-button>
+            <switch-button [value]="block.complete" [disabled]="disabled" (newValue)="block.complete = $event; setAll()"></switch-button>
         </div>
         <div class="{{class}}">
             <span>Гостинная мебель</span>
@@ -70,4 +70,20 @@ export class ConditionsSwitchesComponent{
     public block: ConditionsBlock;
     public disabled: boolean;
     public class: string = 'show_block';
+
+    public setAll() {
+        if(this.block.complete){
+            this.block.living_room_furniture = true;
+            this.block.kitchen_furniture = true;
+            this.block.couchette = true;
+            this.block.bedding = true;
+            this.block.dishes = true;
+            this.block.refrigerator = true;
+            this.block.washer = true;
+            this.block.microwave_oven = true;
+            this.block.air_conditioning = true;
+            this.block.dishwasher = true;
+            this.block.tv = true;
+        }
+    }
 }

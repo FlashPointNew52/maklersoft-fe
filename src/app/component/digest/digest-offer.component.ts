@@ -185,15 +185,7 @@ import {Person} from "../../entity/person";
                 </div>
             </div>
             <div class="row5" *ngIf="offer.offerTypeCode == 'rent'">
-                <div>
-                    <span>Мебель</span>
-                    <span>{{getFurniture()}}</span>
-                </div>
-                <div>
-                    <span>Бытовая техника</span>
-                    <span>{{getAppliances()}}</span>
-                </div>
-                <div>
+                <div class="price">
                     <span>Депозит</span>
                     <span>{{offer.prepayment ? "ДА" : "НЕТ"}}</span>
                 </div>
@@ -292,41 +284,4 @@ export class DigestOfferComponent implements OnInit{
         }
     }
 
-    getDop(){
-        let ret: string = "";
-
-        if(this.offer.living_room_furniture) ret += "Гостинная мебель, ";
-        if(this.offer.kitchen_furniture) ret += "Кухонная мебель, ";
-        if(this.offer.couchette) ret += "Спальное место, ";
-        if(this.offer.bedding) ret += "Постель, ";
-        if(this.offer.dishes) ret += "Посуда, ";
-        if(this.offer.refrigerator) ret += "Холодильник, ";
-        if(this.offer.washer) ret += "Стиральная машина, ";
-        if(this.offer.microwave_oven) ret += "СВЧ, ";
-        if(this.offer.air_conditioning) ret += "СВЧ печь, ";
-        if(this.offer.dishwasher) ret += "Посудомойка, ";
-        if(this.offer.tv) ret += "ТВ, ";
-
-        return ret;
-    }
-
-    getFurniture() {
-        if(this.offer.complete || (this.offer.living_room_furniture && this.offer.kitchen_furniture
-          && this.offer.couchette && this.offer.bedding))
-            return "ПОЛНОСТЬЮ";
-        else if(this.offer.living_room_furniture || this.offer.kitchen_furniture || this.offer.couchette || this.offer.bedding)
-            return "ЧАСТИЧНО";
-        else return "НЕТ";
-    }
-
-    getAppliances() {
-      if(this.offer.refrigerator && this.offer.washer && this.offer.microwave_oven && this.offer.air_conditioning
-          && this.offer.dishwasher && this.offer.tv)
-          return "ПОЛНОСТЬЮ";
-      else if(this.offer.refrigerator || this.offer.washer || this.offer.microwave_oven || this.offer.air_conditioning
-          || this.offer.dishwasher || this.offer.tv)
-          return "ЧАСТИЧНО";
-      else
-        return "НЕТ";
-    }
 }

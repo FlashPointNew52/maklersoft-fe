@@ -60,6 +60,7 @@ import {Output, EventEmitter} from '@angular/core';
 
         input{
             width: calc(100% - 85px);
+            padding-left: 10px;
         }
 
         .remove{

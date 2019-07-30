@@ -6,11 +6,10 @@ export class AddressBlock extends ObjectBlock{
     admArea: string;
     area: string;
     street: string;
-    house: string;
-    housing: string;
+    building: string;
     apartment: string;
-    metro: string;
-    bus_stop: string;
+    station: string;
+    busStop: string;
 
     public static check(block: AddressBlock){
         let ret = true;
@@ -33,8 +32,8 @@ export class AddressBlock extends ObjectBlock{
         if(block.street){
           address += block.street + ", ";
         }
-        if(block.house){
-          address += block.house;
+        if(block.building){
+          address += block.building;
         }
         if(block.apartment){
           address += ", " + block.apartment;

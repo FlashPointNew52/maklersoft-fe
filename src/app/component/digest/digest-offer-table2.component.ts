@@ -243,8 +243,8 @@ export class DigestOfferTable2Component {
         states.forEach(s => {
             stateOpt.push(
                 {class: "entry", disabled: false, label: s.label, callback: function() {
-                    c.offer.stateCode = s.value;
-                    c._offerService.save(c.offer);
+                    //c.offer.stateCode = s.value;
+                    //c._offerService.save(c.offer);
                 }}
             )
         });

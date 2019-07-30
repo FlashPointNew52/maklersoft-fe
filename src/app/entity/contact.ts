@@ -73,7 +73,8 @@ export class Contact {
         'social': {label: 'Социальные сети'},
         'messengers': {label: 'Мессенджеры'},
         'email': {label: 'E-mail-рассылка'},
-        'recommendations': {label: 'Рекомендации'}
+        'recommendations': {label: 'Рекомендации'},
+        'other': {label: 'Другое'}
     };
 
     public static loyaltyOptions = {

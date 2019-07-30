@@ -4,6 +4,7 @@ import {map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 
 import {AsyncSubject} from "rxjs";
+import {SessionService} from "./session.service";
 
 
 //import {Pattern} from "@angular/cli/plugins/glob-copy-webpack-plugin";
@@ -15,7 +16,9 @@ export class SuggestionService {
     RS: String = "";
 
 
-    constructor(private _configService: ConfigService, private _http: HttpClient) {
+    constructor(private _configService: ConfigService,
+                private _http: HttpClient,
+                private _sessionService: SessionService) {
         this.RS = this._configService.getConfig().RESTServer + '/api/v1/offer/';
     };
 
@@ -198,9 +201,9 @@ export class SuggestionService {
             map((res: Response) => res)).subscribe(
             raw => {
               let data = JSON.parse(JSON.stringify(raw));
-                let sgs: string[] = [];
+              let sgs: string[] = [];
 
-                data.results.forEach(e => {
+              data.results.forEach(e => {
 
                     let short_addr = [];
 
@@ -219,23 +222,65 @@ export class SuggestionService {
                     if (ts) {
                         sgs.push(ts);
                     }
-                });
+              });
 
-                let arr = [];
-                for(let i = 0; i < sgs.length; i++) {
-                    if(arr.indexOf(sgs[i]) == -1) {
+              let arr = [];
+              for(let i = 0; i < sgs.length; i++) {
+                  if(arr.indexOf(sgs[i]) == -1) {
                         arr.push(sgs[i]);
-                    }
-                }
+                  }
+              }
 
-                ret_subj.next(arr);
-                ret_subj.complete();
+              ret_subj.next(arr);
+              ret_subj.complete();
 
             },
             err => console.log(err)
         );
 
 
+        return ret_subj;
+    }
+
+    kladr_list(query, contentType, parent){
+        let ret_subj = <AsyncSubject<string[]>>new AsyncSubject();
+
+        let sgs: any[] = [];
+        let withParent = contentType == 'city' ? 1 : 1;
+        let _resourceUrl = this._configService.getConfig().RESTServer + '/api/v1/geo/fias?' +
+            "query=" + query +
+            "&contentType=" + contentType +
+            "&withParent=" + withParent +
+            "&parent=" + parent;
+
+        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                ret_subj.next(data.result.result.slice(1));
+                ret_subj.complete();
+            },err => {
+                this._sessionService.handle_errors(err);
+            });
+        return ret_subj;
+    }
+
+    latLonWithArea(addressBlock){
+        let ret_subj = <AsyncSubject<any>>new AsyncSubject();
+
+
+        let _resourceUrl = this._configService.getConfig().RESTServer + '/api/v1/geo/latLonWithArea?';
+        let data_str = JSON.stringify(addressBlock);
+
+        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                ret_subj.next(data);
+                ret_subj.complete();
+            },err => {
+                this._sessionService.handle_errors(err);
+            });
         return ret_subj;
     }
 
