@@ -16,9 +16,9 @@ import {Person} from "../../entity/person";
         .billet {
             background-color: white;
             font-size: 12px;
-            height: 130px;
+            height: 122px;
             position: relative;
-            padding: 18px 20px 15px 30px;
+            padding: 16px 20px 13px 30px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -31,7 +31,7 @@ import {Person} from "../../entity/person";
         }
 
         .timestamp {
-            width: 90px;
+                flex-grow: 1;
             font-size: 12px;
             color: #677578;
             text-align: left;
@@ -53,7 +53,8 @@ import {Person} from "../../entity/person";
             overflow: hidden;
             white-space: nowrap;
             height: 13px;
-            line-height: 12px;
+            line-height: 13px;
+            min-height: 13px;
         }
 
         .row2, .row3, .row4 {
@@ -62,12 +63,14 @@ import {Person} from "../../entity/person";
 
         .row1{
             color: #0E3E9B;
-            margin-bottom: 7px;
+                padding-bottom: 10px;
+                min-height: 25px;
         }
 
         .row1 > span{
             color: #0E3E9B;
             width: 114px;
+            text-align: end;
         }
 
         .row1 > a{
@@ -87,16 +90,19 @@ import {Person} from "../../entity/person";
 
         .row2{
             font-weight: bold;
-            margin-bottom: 5px;
+                padding-bottom: 3px;
+            min-height: 16px;
             text-transform: uppercase;
         }
 
         .row3{
-            margin-bottom: 3px;
+           color:#72727D;
         }
 
         .row4{
-            margin-bottom: 5px;
+            color:#72727D;
+            padding-bottom: 8px;
+            min-height: 21px;
         }
 
         .row5{
@@ -108,26 +114,19 @@ import {Person} from "../../entity/person";
         }
 
         .row5 > div{
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: space-between;
+                display: flex;
+                width: 100%;
+                justify-content: flex-end;
         }
 
         .row5 > .price{
             font-size: 8px;
-            margin-top: 4px;
+                padding-top: 3px;
         }
 
         .row5 > .price > span:first-child{
             font-size: 14px;
-            font-weight: bold;
         }
-
-        /*.row4 > a, .row5 > a{
-            color: #5D75B3;
-            cursor: pointer;
-        }*/
 
     `],
     template: `
@@ -135,8 +134,6 @@ import {Person} from "../../entity/person";
             <ui-tag [value]="offer.tag"> </ui-tag>
             <div class="row1">
                 <div class="timestamp"> {{ utils.getDateInCalendar(offer[dateType] || offer.changeDate || offer.addDate) }} </div>
-                <span class="type">{{(offer.person?.isMiddleman || offer.company?.isMiddleman ||
-                (!offer.person && !offer.company && offer.mediatorCompany)) ? 'Посредник' : 'Собственник'}}</span>
                 <a *ngIf="offer.agentId || offer.personId || offer.companyId" (click)="openContact()">
                     {{offer.agent?.name || offer.person?.name || offer.company?.name ||
                     ((pb.getNotNullData(offer.phoneBlock) | mask: '+0 (000) 000-00-00') || "") }}
@@ -167,31 +164,13 @@ import {Person} from "../../entity/person";
                     {{ offer.addressBlock?.bus_stop === undefined ? "" : ", " + offer.addressBlock.bus_stop }}
             </div>
             <div class="row5" *ngIf="offer.offerTypeCode == 'sale'">
-                <div>
-                    <span>Ипотека</span>
-                    <span>{{ offer.mortgages ? "ДА" : "НЕТ"}}</span>
-                </div>
-                <div>
-                    <span>MLS</span>
-                    <span>{{ (offer.mlsPrice || 0) + " руб "}}</span>
-                </div>
-                <div>
-                    <span>Просмотры</span>
-                    <span>{{"0"}}</span>
-                </div>
                 <div class="price">
-                    <span>{{utils.getNumWithDellimet((offer.ownerPrice || 0) * 1000)}}</span>
-                    <span>{{offer.ownerPrice > 999999 ? "ТЫСЯЧ РУБЛЕЙ" : "РУБЛЕЙ"}}</span>
+                    <span>{{utils.getNumWithDellimet((offer.ownerPrice || 0) * 1000)}} P</span>
                 </div>
             </div>
             <div class="row5" *ngIf="offer.offerTypeCode == 'rent'">
                 <div class="price">
-                    <span>Депозит</span>
-                    <span>{{offer.prepayment ? "ДА" : "НЕТ"}}</span>
-                </div>
-                <div class="price">
-                    <span>{{utils.getNumWithDellimet((offer.ownerPrice || 0) * 1000)}}</span>
-                    <span>{{offer.rentType == "short" ? "РУБЛЕЙ / СУТКИ" : "РУБЛЕЙ / МЕСЯЦ"}}</span>
+                    <span>{{utils.getNumWithDellimet((offer.ownerPrice || 0) * 1000)}} P</span>
                 </div>
             </div>
         </div>

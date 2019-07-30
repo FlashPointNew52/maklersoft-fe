@@ -16,13 +16,12 @@ import {User} from '../entity/user';
         top: 0px;
         right: 0px;
         height: 100%;
-        overflow-y: auto;
         background-color: white;
         z-index: 1000;
         box-shadow: #677578 0px 2px 10px 0px;
     }
 
-      .head {
+      .head-notebook {
         width: 100%;
         height: 50px;
         display: flex;
@@ -82,7 +81,7 @@ import {User} from '../entity/user';
           color: #32323D;
           font-size: 12px;
           position: relative;
-          right: calc(-100% + 150px);
+          right: calc(-100% + 205px);
         top: 10px;
       }
 
@@ -112,21 +111,32 @@ import {User} from '../entity/user';
     }
         .curr_date{
             position: relative;
-            right: -165px;
+            right: -135px;
             top: 15px;
             color: #32323D;
             font-size: 12px;
             width: fit-content;
         }
+         .chat-word{
+            position: absolute;
+            top: 14px;
+            margin-left: 25px;
+            font-size: 14px;   
+            width: 105px;
+        }
     `],
     template: `
         <div class="notebook" [hidden]="this.hidden" [style.width.px]="this.hidden == true ? 0 : 400">
             
-            <div class="head">
-                <div class="curr_date">{{curr_date}}</div>
+            <div class="head-notebook">
+                <div class="chat-word" *ngIf="mode == 'chat'">ЧАТ</div>
+                <div class="chat-word" *ngIf="mode == 'phone'">IP-ТЕЛЕФОНИЯ</div>
+                <div class="chat-word" *ngIf="mode == 'diary'">ЕЖЕДНЕВНИК</div>
+                <div class="chat-word" *ngIf="mode == 'notes'">ЗАМЕТКИ</div>
+                <div class="curr_date" *ngIf="mode == 'chat' || mode == 'notes'">Сегодня, {{curr_date}}</div>
                 <div class="tab-button" (click)="toggleNotebook()">Закрыть</div>
             </div>
-            <chat-view (closeEvent)="toggleNotebook()" *ngIf="mode == 'chat'"></chat-view>
+            <chat-view *ngIf="mode == 'chat'"></chat-view>
             <!--<div class="event-tab" *ngIf="show==1 || show==2">-->
                 <!--<div class="head"></div>-->
                 <!--<notebook-task-describe [task] = "data" [mode]="state" (update) = "update_tab_daily($event)"></notebook-task-describe>-->
@@ -182,12 +192,10 @@ export class NotebookComponent implements OnInit{
     setMode(name, event) {
         console.log('setmode');
         this.mode = name;
-        event.stopPropagation();
     }
     setShow( value: boolean, event) {
         console.log('setshow');
         this.hidden = !value;
-        event.stopPropagation();
     }
     toggleNotebook() {
         this.hidden = !this.hidden;

@@ -1,5 +1,4 @@
 import {Component, OnInit} from "@angular/core";
-
 import {Tab} from '../../class/tab';
 import {Offer} from '../../entity/offer';
 import {Person} from '../../entity/person';
@@ -25,12 +24,21 @@ import {ObjectBlock} from "../../class/objectBlock";
     selector: 'tab-request',
     inputs: ['tab'],
     styles: [`
-        .property_face > span{
-            display: block;
-            height: 12px;
-            line-height: 12px;
-            margin-bottom: 6px;
-            font-style: italic;
+        .property_face > span:last-child{
+           /* display: block;*/
+           /* height: 12px;  */
+           /* line-height: 12px;*/
+           /* margin-bottom: 6px;*/
+            font-size: 12px;
+            color: var(--color-inactive);
+            font-style: normal;
+            text-transform: uppercase;
+        }
+        .property-face .type_title {
+            font-size: 12px; 
+            color: var(--color-inactive);
+            font-style: normal;
+            text-transform: uppercase;
         }
         .property_face .main_title{
             font-size: 20px;
@@ -70,9 +78,10 @@ import {ObjectBlock} from "../../class/objectBlock";
         .selected {
             background-color: var(--selected-digest) !important;
         }
+         
     `],
-    template: `
-        <div class="search-form">
+    template: `        
+        <div class="search-form" *ngIf="workAreaMode != 'photo' && workAreaMode != 'advert'">
             <input type="text" class="input_line" placeholder="Введите текст запроса" [style.width]="'calc(100% - 108px)'"
                 [(ngModel)]="request.request" (keyup)="$event" [disabled]="!editEnabled"
             ><span class="find_icon"></span>
@@ -165,22 +174,15 @@ import {ObjectBlock} from "../../class/objectBlock";
         <div class = "property_face">
             <ui-tag [value]="request?.tag"></ui-tag>
             <span class="main_title">{{request.id ? 'ЗАЯВКА' : 'НОВАЯ ЗАЯВКА'}}</span>
-            <span class="title">Тип объекта</span>
-            <span class="value">
-                <ng-container *ngFor="let val of request.typeCodes; let i = index">
-                    {{offClass.typeCodeOptionsHash[val]}}{{i < request.typeCodes.length-1 ? ", " : ""}}
-                </ng-container>
-            </span>
-            <span class="title">Тип сделки</span><span class="value">{{reqClass.offerTypeCodeOptions[request.offerTypeCode]?.label}}</span>
-            <span class="title">Бюджет</span><span class="value">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}} руб.</span>
+            <span class="type_title">{{reqClass.offerTypeCodeOptions[request.offerTypeCode]?.label}}</span>
         </div>
 
         <hr class='underline'>
 
         <div class="pane" [style.left.px]="paneHidden ? -339 : null">
             <div class = "source_menu">
-                <div [class.active]="mode == 0" (click)="mode = 0">Заявка</div>
-                <div [class.active]="mode == 1" (click)="mode = 1; filter.offerTypeCode = request.offerTypeCode;">Предложения</div>
+                <div class="button" [class.active]="mode == 0" (click)="mode = 0">ЗАЯВКА</div>
+                <div class="button" [class.active]="mode == 1" (click)="mode = 1; filter.offerTypeCode = request.offerTypeCode;workAreaMode = 'map'" style="border-right: solid rgba(59, 89, 152, 1) 1px">ПРЕДЛОЖЕНИЯ</div>
                 <div class="edit_ready" *ngIf="mode == 0">
                     <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
                     <span class="link" *ngIf="editEnabled && canEditable" (click)="save()">Готово</span>
@@ -595,9 +597,19 @@ import {ObjectBlock} from "../../class/objectBlock";
                 <div more class="more">ЕЩЁ...
                     <div>
                         <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Карта</div>
+                        <div (click)="workAreaMode = 'photo'" [class.selected]="workAreaMode == 'photo'">Фото</div>
+                        <div (click)="workAreaMode = 'advert'" [class.selected]="workAreaMode == 'advert'">Реклама</div>
+                        <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на ипотеку</div>
                         <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
+                        <div (click)="workAreaMode = 'egrn'" [class.selected]="workAreaMode == 'egrn'">Выписка из ЕГРН</div>
+                        <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">Заметки</div>
+                        <div (click)="openNotebook('diary', $event)" [class.selected]="workAreaMode == 'diary'">Ежедневник</div>
+                        <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
+                        <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">IP-телефония</div>
                         <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка</div>
+                        <div (click)="workAreaMode = 'report'" [class.selected]="workAreaMode == 'report'">Отчет</div>
                         <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История</div>
+                        
                         <div class="delete" (click)="$event">Удалить заявку</div>
                     </div>
                 </div>
@@ -623,7 +635,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                     </ui-tab>
                 </ui-tabs-menu>
             </div>
-        </div>
+        </div> 
 
         <div class="work-area">
             <ng-container [ngSwitch]="workAreaMode">
@@ -632,6 +644,8 @@ import {ObjectBlock} from "../../class/objectBlock";
                     [searchArea] = "request.searchArea" [offers] = "offers"
                 >
                 </yamap-view>
+                <adv-view *ngSwitchCase="'advert'"></adv-view>
+                <files-view [full]="paneHidden" [type]="'image'" [object_id]="request.id" [editMode]="editEnabled" *ngSwitchCase="'photo'"></files-view>
             </ng-container>
         </div>
     `
@@ -728,7 +742,12 @@ export class TabRequestComponent implements OnInit{
             });
         }
     }
+    openNotebook(name, event) {
+        let block = this._hubService.getProperty('notebook');
 
+        block.setMode(name, event);
+        block.setShow(true, event);
+    }
     toggleLeftPane() {
         this.paneHidden = !this.paneHidden;
     }

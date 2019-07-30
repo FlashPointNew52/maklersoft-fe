@@ -16,8 +16,8 @@ import {ObjectBlock} from "../../class/objectBlock";
     inputs: ['request'],
     styles: [`
         .billet{
-            overflow: hidden;
-            padding: 20px;
+            overflow: hidden; 
+            padding: 16px 20px 13px 20px;
             height: 100%;
             position: relative;
         }
@@ -42,6 +42,10 @@ import {ObjectBlock} from "../../class/objectBlock";
 
         .main_row > span:first-child{
             width: 115px;
+            flex-grow: 1;
+        }
+        .main_row >span:last-child{
+            text-align: end;
         }
 
         .main_row > span:nth-child(2){
@@ -49,7 +53,7 @@ import {ObjectBlock} from "../../class/objectBlock";
         }
 
         .row{
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .row > span:first-child{
@@ -59,6 +63,7 @@ import {ObjectBlock} from "../../class/objectBlock";
 
         .bold{
             font-weight: bold;
+            text-transform: uppercase;
         }
 
         ui-tag{
@@ -68,6 +73,9 @@ import {ObjectBlock} from "../../class/objectBlock";
             top: 0;
             left: 0;
         }
+        .row > .gray-font {
+           color: #72727D;
+        }
 
     `],
     template: `
@@ -76,7 +84,7 @@ import {ObjectBlock} from "../../class/objectBlock";
             <ui-tag [value]="request?.tag"></ui-tag>
             <div class="main_row">
                 <span>{{utils.getDateInCalendar(request?.addDate)}}</span>
-                <span>{{request?.person?.isMiddleman || request?.company?.isMiddleman ? 'Посредник' : 'Принципал'}}</span>
+<!--                <span>{{request?.person?.isMiddleman || request?.company?.isMiddleman ? 'Посредник' : 'Принципал'}}</span>-->
                 <span class="link">{{utils.trancateFio(request?.agent?.name || request?.person?.name || request?.company?.name) }}</span>
             </div>
             <div class="row bold">
@@ -89,15 +97,15 @@ import {ObjectBlock} from "../../class/objectBlock";
                 </span>
             </div>
             <div class="row">
-                <span>Тип сделки</span>
-                <span>{{reqClass.offerTypeCodeOptions[request?.offerTypeCode]?.label}}</span>
+                <span class="gray-font">Тип сделки</span>
+                <span class="gray-font">{{reqClass.offerTypeCodeOptions[request?.offerTypeCode]?.label}}</span>
             </div>
             <div class="row">
-                <span>Договор</span>
-                <span>{{block.getAsArray(request?.contractBlock)?.length > 0 ? 'Да' : 'Нет'}}</span>
+                <span class="gray-font">Договор</span>
+                <span class="gray-font">{{block.getAsArray(request?.contractBlock)?.length > 0 ? 'Да' : 'Нет'}}</span>
             </div>
             <div class="row">
-                <span class="title">Бюджет</span><span class="value">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}} руб.</span>
+                <span class="title gray-font">Бюджет</span><span class="price">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}} Р.</span>
             </div>
         </div>
 

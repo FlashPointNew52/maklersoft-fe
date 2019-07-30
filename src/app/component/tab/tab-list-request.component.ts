@@ -28,18 +28,18 @@ import {Organisation} from "../../entity/organisation";
         }
 
         digest-request{
-            border-bottom: 1px solid var(--selected-digest);
+            border-bottom: 1px solid var(--bottom-border);
             width: 100%;
-            height: 130px;
-            display: block;
+            height: 122px;
+            display: block; 
         }
 
         digest-list digest-request:last-of-type{
-            border-bottom: 1px solid var(--selected-digest);
+            border-bottom: 1px solid var(--bottom-border);
         }
 
-        .selected {
-            background-color: var(--selected-digest) !important;
+        .selected { 
+          background-color: var(--selected-digest) !important;
         }
     `],
     template: `
@@ -128,15 +128,15 @@ import {Organisation} from "../../entity/organisation";
                 </filter-select>
                 <div class="found">Найдено: {{hitsCount+" "}}/{{" "+requests?.length }}</div>
             </div>
-        </div>
+        </div> 
 
         <hr class='underline'>
         <div class="head"><span>{{tab.header}}</span></div>
         <div class="pane" [style.width.px]="paneHidden ? 0 : 370">
                <div class = "source_menu">
-                   <div (click)="addRequest()">Добавить</div>
-                   <div (click)="toggleSource(0, 'all')" [class.active]="this.source != 1">Общая</div>
-                   <div (click)="toggleSource(1, 'our')"  [class.active]="this.source == 1">Компания</div>
+                   <div (click)="addRequest()">ДОБАВИТЬ</div>
+                   <div (click)="toggleSource(0, 'all')" [class.active]="this.source != 1">ОБЩАЯ</div>
+                   <div (click)="toggleSource(1, 'our')"  [class.active]="this.source == 1">КОМПАНИЯ</div>
                </div>
 
                 <div class="fixed-button" (click)="toggleLeftPane()">
@@ -338,9 +338,11 @@ export class TabListRequestComponent implements OnInit {
                 {class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: [
 
                     ]},
-                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: [
-
-                    ]},
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('notes', event);
+                        block.setShow(true, event);
+                    }},
                 {class: "delimiter"},
                 {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
                         {class: "entry", disabled: false, label: "Email1"},
@@ -357,9 +359,11 @@ export class TabListRequestComponent implements OnInit {
                         {class: "entry", disabled: false, label: "Номер2"},
                         {class: "entry", disabled: false, label: "Номер3"},
                     ]},
-                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: [
-
-                    ]},
+                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('chat', event);
+                        block.setShow(true, event);
+                    }},
                 {class: "delimiter"},
                 {class: "submenu", disabled:  !Utils.canImpact(this.selectedRequests), icon: "", label: "Назначить тег", items: [
                         {class: "tag", icon: "", label: "", offer: this.selectedRequests.length == 1 ? this.selectedRequests[0] : null, tag,

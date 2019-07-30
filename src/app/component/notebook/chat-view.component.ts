@@ -1,6 +1,7 @@
-import {Component, ElementRef, EventEmitter, Output, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, ElementRef, EventEmitter, Output, ViewChild} from "@angular/core";
 import {HubService} from "../../service/hub.service";
 import {Utils} from "../../class/utils";
+import * as moment from 'moment/moment';
 
 @Component({
     selector: 'chat-view',
@@ -62,22 +63,29 @@ import {Utils} from "../../class/utils";
         }
 
         .flex-col.chat {
-            height: calc(100vh - 230px);
-            overflow-y: scroll;
-            background-color: #f2f3f4;
-            padding: 0 20px 15px;
+            height: calc(100vh - 244px);
+            overflow-y: scroll; 
+            padding: 0 20px;
         }
 
         .contact-block, .contact-info-block {
             min-height: 80px;
-            padding: 0 20px;
-            border-bottom: 1px solid #D3D5D6;
+            padding: 0 20px 0 25px;
+            border-bottom: 1px solid var(--bottom-border);
             display: flex;
+        }
+        .contact-block.list, .contact-info-block.list{
             align-items: center;
         }
 
         .contact-block {
             height: 80px;
+        }
+        .contact-block.inner{
+            min-height: 104px !important;
+            height: 104px !important;
+            border-bottom: 1px solid var(--selected-digest);
+            padding-top: 25px;
         }
         .contact-block.selected{
             background-color: #d3d5d6 !important;
@@ -115,7 +123,9 @@ import {Utils} from "../../class/utils";
             display: flex;
             justify-content: center;
         }
-
+        .flex-col.person.inner{
+            justify-content: normal;
+        }
         .contact-info-block img {
             width: 90px;
             height: 90px;
@@ -139,8 +149,11 @@ import {Utils} from "../../class/utils";
             right: -20px;
         }
 
-        .contact-block:hover .more-button {
+        .contact-block:hover .more-button, .msg-container:hover .more-button {
             display: flex;
+        }
+        .msg-container:hover .msg-block{
+            padding-bottom: 0;
         }
 
         .point {
@@ -187,8 +200,13 @@ import {Utils} from "../../class/utils";
 
         .back {
             position: absolute;
-            top: 15px;
-            margin-left: 25px;
+            top: -2px;
+            align-items: center;
+            display: flex;
+            padding-left: 25px;
+            height: 50px;
+            width: 90px;
+            background-color: white;
         }
 
         .chat .msg-container {
@@ -198,43 +216,53 @@ import {Utils} from "../../class/utils";
         .chat .msg-container.me-msg {
             align-items: flex-end;
         }
-
+        .msg-container:last-child{
+            margin-bottom: 20px;
+         }
+        .me div, .somebody div{
+                word-break: break-word;
+         }
         .chat .somebody, .chat .me {
-            padding: 10px 20px 10px 10px;
+            padding: 10px 20px;
             display: flex;
             width: fit-content;
+            color: #32323D;
         }
 
         .chat .somebody {
-            background-color: white;
+            background-color: #F5F3EB;
+            border-radius: 0 15px 15px 15px;
+            border: 1px solid #EEEBDD;
         }
 
         .chat .me {
-            background-color: #3B5998;
-        }
-
-        .me div {
-            color: white;
+            background-color: #E0E4E4;
+            border-radius: 15px 0 15px 15px;
+            border: 1px solid #D9DEDE;
         }
 
         .chat-time {
-            margin-top: 8px;
-            color: #32323d;
+            margin-top: 27px;
+            color: var(--color-inactive);
             margin-bottom: 2px;
         }
-
+        .chat-time:first-child{
+            margin-top: 10px;
+        }
         .send {
             background-color: #D3D5D6;
-            min-height: 100px;
+            min-height: 90px;
             height: auto;
-            padding: 13px 20px;
             position: fixed;
             width: 400px;
             bottom: 0;
+            border-top: 1px solid var(--selected-digest);
         }
 
         .textarea {
-            margin-bottom: 10px;
+                margin-bottom: 10px;
+            padding: 10px 64px 5px 20px;
+                min-height: 40px !important;
         }
 
         .send-button-block {
@@ -243,16 +271,6 @@ import {Utils} from "../../class/utils";
 
         .attachment {
             flex-grow: 1;
-        }
-
-        .send-button {
-            background-color: #E96508;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100px;
-            height: 30px;
-            color: white;
         }
         .info{
             padding: 10px 20px 25px;
@@ -297,6 +315,9 @@ import {Utils} from "../../class/utils";
             border-top: 1px solid #D3D5D6;
             border-bottom: 1px solid #D3D5D6;
         }
+        .buttons .two{
+          border-left: 1px solid white;
+        }
         .buttons .one.clicked, .buttons .two.clicked, .buttons .one:hover, .buttons .two:hover{
             background-color: #252F32;
             color: white;
@@ -340,29 +361,14 @@ import {Utils} from "../../class/utils";
         .close.open{
             display: flex !important;
         }
-        .triangle{
-            background-color: unset !important;
-            padding: 0 !important;
-        }
-        .triangle::after {
-            content: '';
-            border: 10px solid transparent; /* Прозрачные границы */
-        }
-        .triangle.me::after{
-            border-top: 0 solid #3B5998;
-            border-right: 12px solid #3b5998;
-            
-        }
-        .triangle.somebody::after{
-            border-top: 0 solid white; /* Добавляем треугольник */
-            border-left: 10px solid white; /* Добавляем треугольник */
-        }
+       
         textarea{
             max-height: 126px !important;
             overflow-y: auto !important;
-            min-height: 26px !important;
+            min-height: 30px !important;
             border: none !important;
             resize: none !important;
+            padding: 0;
         }
         .msg-count{
             position: relative;
@@ -377,11 +383,49 @@ import {Utils} from "../../class/utils";
             right: 5px;
             top: 10px;
         }
+        .send-button{
+                width: 60px;
+                height: 25px;
+                position: absolute;
+                right: 70px;
+                top: 16px;
+                background-color: #f5f3eb;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #32323D;
+        }
+        .name-icon{
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            border-radius: 20px;
+            border: 1px solid #98968F;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #98968F;
+            font-size: 18px;
+        }
+        .name-icon.me-icon{
+            margin-left: 15px;
+        }
+        .name-icon.somebody-icon{
+            margin-right: 15px;
+        }
+        .right-chat{
+            justify-content: flex-end;
+        }
     `],
     template: `
+        <div class="flex-col">
+        
         <div class="back" (click)="this.mode_block = 'contacts-list'" *ngIf="mode_block == 'chat'">Назад</div>
         <div class="back" (click)="this.mode_block = 'chat'" *ngIf="mode_block == 'contact-info'">Назад</div>
-        <div (offClick)="closeChat()" class="flex-col close" [class.open]="this.mode_block != 'chat' && this.mode_block != 'contact-info'" (scroll)="_hubService.shared_var['cm_hidden'] = true" (wheel)="_hubService.shared_var['cm_hidden'] = true">
+        <div class="flex-col close" [class.open]="this.mode_block != 'chat' && this.mode_block != 'contact-info'" (scroll)="_hubService.shared_var['cm_hidden'] = true"
+             (wheel)="_hubService.shared_var['cm_hidden'] = true">
             <div class="flex-col chat-header">
                 <div class="search-block">
                     <input class="search">
@@ -400,15 +444,15 @@ import {Utils} from "../../class/utils";
                 </div>
 
             </div>
-            <div class="flex-col contacts">
-                <div *ngFor="let contact of contacts, let i = index" class="contact-block"
-                     (dblclick)="this.mode_block = 'chat'; curUser = i;" (offClick)="removeSel()" (click)="selectItem(i)">
+            <div class="flex-col contacts" (offClick)="consel = 999999">
+                <div *ngFor="let contact of contacts, let i = index" class="contact-block list" [class.selected]="consel == i"
+                     (dblclick)="this.mode_block = 'chat'; curUser = i;" (click)="consel = i; openChat()">
                     <img [src]="contact.pic" alt="изображение контакта">
                     <div class="flex-col person" >
-                        <div class="name">{{contact.name}}</div>
+                        <div class="name">{{contact.surname}} {{contact.name}} {{contact.father}}</div>
                         <div class="job">{{contact.job}}</div>
                     </div>
-                    <div class="more-button" (offClick)="_hubService.shared_var['cm_hidden'] = true" (click)="tableContextMenu($event)">
+                    <div class="more-button" (offClick)="_hubService.shared_var['cm_hidden'] = true" (click)="consel = i;tableContextMenu($event)">
                         <div class="point"></div> 
                         <div class="point"></div>
                         <div class="point"></div>
@@ -417,37 +461,49 @@ import {Utils} from "../../class/utils";
                 </div>
             </div>
         </div>
-        <div  class="flex-col close" [class.open]="this.mode_block == 'chat'" (offClick)="this.mode_block = 'contacts-list'; closeChat()">
-            <div class="contact-block" (dblclick)="this.mode_block = 'contact-info'; openChat()">
+        <div  class="flex-col close" [class.open]="this.mode_block == 'chat'" >
+            <div class="contact-block inner"  (dblclick)="this.mode_block = 'contact-info'">
                 <img [src]="contacts[curUser].pic" alt="изображение контакта">
-                <div class="flex-col person">
-                    <div class="name">{{contacts[curUser].name}}</div>
+                <div class="flex-col person inner">
+                    <div class="name">{{contacts[curUser].surname}}</div>
+                    <div class="name">{{contacts[curUser].name}} {{contacts[curUser].father}}</div>
                     <div class="job marg">{{contacts[curUser].job}}</div>
-                    <div class="job">{{contacts[curUser].organisation}}</div>
                 </div>
                 <div class="rating">3.8</div>
 
             </div>
-            <div class="flex-col chat" id="chat" #showChat (load)=" openChat()">
-                <div *ngFor="let msg of messages" class="flex-col msg-container" [class.me-msg]="msg.user == 'me'">
-                    <div class="chat-time" [style.align-items.flex-end]="msg.user == 'me'">{{msg.time}}</div>
-                    <div [class.somebody]="msg.user == 'somebody'" [class.me]="msg.user == 'me'">
-                        <div>{{msg.message}}</div>
+            <div class="flex-col chat" id="chat" #showChat >
+                <div *ngFor="let msg of messages" class="flex-col msg-container" [class.me-msg]="msg.user == cur_user">
+                    <div class="chat-time" [style.align-items.flex-end]="msg.user == cur_user">{{msg.time}}</div>
+                    <div style="display: flex;" [class.left-chat]="msg.user != cur_user" [class.right-chat]="msg.user == cur_user">
+                        <div class="name-icon somebody-icon" *ngIf="msg.user != cur_user">{{msg.user[0]}}</div>
+                        <div class="msg-block" [class.somebody]="msg.user != cur_user" [class.me]="msg.user == cur_user">
+                            <div>{{msg.message}}</div>
+                            <div class="more-button" (offClick)="_hubService.shared_var['cm_hidden'] = true" (click)="msgContextMenu($event)">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="name-icon me-icon" *ngIf="msg.user == cur_user">{{msg.user[0]}}</div>
                     </div>
-                    <div class="triangle" [class.somebody]="msg.user == 'somebody'" [class.me]="msg.user == 'me'"></div>
+                    
                 </div>
             </div>
-            <div class="flex-col send">
+            <div class="flex-col send"> 
                 <textarea class="textarea" autosize 
-                         [(ngModel)]="message"></textarea>
+                         [(ngModel)]="message" (keydown)="checkKeyPress($event)">
+                       
+                </textarea>
+                <div class="send-button" (click)="sendMsg()" >В ЧАТ</div>
                 <div class="send-button-block">
                     <div class="attachment">Прикрепить</div>
-                    <div class="send-button" (click)="sendMsg()">Отправить</div>
                 </div>
             </div>
         </div>
-        <div class="flex-col close" [class.open]="this.mode_block == 'contact-info'" (offClick)="closeChat()">
-            <div class="contact-info-block">
+        <div class="flex-col close" [class.open]="this.mode_block == 'contact-info'">
+            <div class="contact-info-block list">
                 <img [src]="contacts[curUser].pic" alt="изображение контакта">
                 <div class="flex-col person">
                     <div class="name open">{{contacts[curUser].name}}</div>
@@ -499,77 +555,153 @@ import {Utils} from "../../class/utils";
                 <div class="two">Удалить чат</div> 
             </div>
         </div>
+        </div>
     `
 })
 
-export class ChatViewComponent{
+export class ChatViewComponent implements AfterViewInit{
     @Output() closeEvent: EventEmitter<any> = new EventEmitter();
-    menu_mode: string;
+    menu_mode = 'contacts';
     message: any;
     button = 'docs';
+    cur_user = 'ПИРОЖКОВ';
     consel = 999999;
     messages = [
-      {user: 'somebody', message: 'hello!', time: '10.22'},
-      {user: 'me', message: 'hello!', time: '10.25'},
-      {user: 'somebody', message: 'how are you?', time: '10.27'},
-      {user: 'me', message: 'Great, you?', time: '10.28'},
-      {user: 'somebody', message: 'same! :)', time: '10.30'},
-        {user: 'somebody', message: '5G в России обязательно будет. Когда операторы договорятся с военными по поводу частот, используемых ', time: '10.32'},
-        {user: 'me', message: 'Звучит очень здорово! А ты знаешь, что Netflix представил первые фотографии, постеры и логотип «Ведьмака»?', time: '10.35'},
-        {user: 'somebody', message: 'Надеюсь, что сериал получится таким же удачным, как и книга(и) с серией игр.', time: '10.40'},
-        {user: 'me', message: 'Я готов простить им каст актёров, если при этом все остальное в частности сюжет будет на высоте! Ведь согласитесь не кто же не плакал что некоторые персонажи ИП не похожи на своих книжных аналогов.', time: '10.42'},
-        {user: 'somebody', message: 'В игре престолов северянок не изображали мулатки. Происхождение Йеннифер в книге не описано, но и обратного не говорилось - если бы она была "смугленькой", то это упомянулось бы в тексте.', time: '10.47'},
-        {user: 'me', message: 'Судя по медальону это не Геральт из Ривии, а Геральт из дома Старков!', time: '10.54'},
+      {user: 'ИВАНОВ Иван Иванович', message: 'hello!', time: Utils.getCurrentTime(1562933592000)},
+      {user: 'ПИРОЖКОВ', message: 'hello!', time: Utils.getCurrentTime(1562949912000)},
+      {user: 'ИВАНОВ Иван Иванович', message: 'how are you?', time: Utils.getCurrentTime(1563004572000)},
+      {user: 'ПИРОЖКОВ', message: 'Great, you?', time: Utils.getCurrentTime(1563020052000)},
+      {user: 'ИВАНОВ Иван Иванович', message: 'same! :)', time: Utils.getCurrentTime(1563029412000)},
+        {user: 'ИВАНОВ Иван Иванович', message: '5G в России обязательно будет. Когда операторы договорятся с военными по поводу частот, используемых ', time: Utils.getCurrentTime(1563047832000)},
+        {user: 'ПИРОЖКОВ', message: 'Звучит очень здорово! А ты знаешь, что Netflix представил первые фотографии, постеры и логотип «Ведьмака»?', time: Utils.getCurrentTime(1563106332000)},
+        {user: 'ИВАНОВ Иван Иванович', message: 'Надеюсь, что сериал получится таким же удачным, как и книга(и) с серией игр.', time: Utils.getCurrentTime(1563129432000)},
+        {user: 'ПИРОЖКОВ', message: 'Я готов простить им каст актёров, если при этом все остальное в частности сюжет будет на высоте! Ведь согласитесь не кто же не плакал что некоторые персонажи ИП не похожи на своих книжных аналогов.', time: Utils.getCurrentTime(1563185712000)},
+        {user: 'ИВАНОВ Иван Иванович', message: 'В игре престолов северянок не изображали мулатки. Происхождение Йеннифер в книге не описано, но и обратного не говорилось - если бы она была "смугленькой", то это упомянулось бы в тексте.', time: Utils.getCurrentTime(1563188412000)},
+        {user: 'ПИРОЖКОВ', message: 'Судя по медальону это не Геральт из Ривии, а Геральт из дома Старков!', time: Utils.getCurrentTime(1563188832000)},
     ];
     mode_block = 'contacts_list';
     curUser: any;
     contacts = [
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
-        {name: 'ИВАНОВ Иван Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']}
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']},
+        {name: 'Иван', surname: 'ИВАНОВ', father: 'Иванович', job: 'Менеджер по продажам', pic: '../../../assets/photo%20(2).PNG', organisation: 'Центр оценки и продажи недвижимости', city: 'Хабаровский край, г.Хабаровск', phone: '+7 (914) 544-81-00', email: 'centrdv@mail.ru', pics: ['https://cdn6.roomble.com/wp-content/uploads/2018/02/Gostinaya-final_001-1200x800.jpg','https://media.decorateme.com/images/da/3a/9f/loft-kitchen.jpg','http://mydesigngroup.ru/wp-content/uploads/2017/01/dizayn-interera-v-stile-loft-4.jpg', 'https://polygonphoto.ru/wp-content/uploads/2016/12/FU7A4567.jpg', 'https://www.chado.pro/uploads/gallery_item/photo/556/1.jpg', 'https://www.ivd.ru/uploads/5992b88d5388a.jpg']}
     ];
     constructor(private _hubService: HubService) {
         this.mode_block = 'contacts_list';
         this.curUser = 0;
+        // document.documentElement.addEventListener('click', () => {
+        //     this.closeChat();
+        // })
+    }
+    ngAfterViewInit() {
+        this.menu_mode = 'contacts';
     }
     @ViewChild('showChat', {static: true}) div: ElementRef;
-    closeChat() {
-        this.closeEvent.emit();
+
+    closeChat(event) {
+        console.log(event.target.classList);
+        if (!event.target.classList.contains('button') && !event.target.classList.contains('back') && !event.target.classList.contains('tab-button') && !event.target.classList.contains('head-notebook') && !event.target.classList.contains('curr_date')) {
+            this.closeEvent.emit();
+        }
     }
     openChat() {
-        let elem  = document.documentElement.getElementsByClassName('msg-container') as HTMLCollectionOf<HTMLElement>;;
-        console.log('chat', elem);
+        setTimeout( event => {
+          // let div = document.getElementById('chat');
+          // div.scrollTop = 99999999;
+          // console.log('timeout!');
+
+          let elems = document.documentElement.getElementsByClassName('triangle') as HTMLCollectionOf<HTMLElement>;
+          elems.item(elems.length - 1).scrollIntoView({block: "end"});
+        }, 50);
     }
-    removeSel(){
-        let elems = document.documentElement.getElementsByClassName('contact-block') as HTMLCollectionOf<HTMLElement>;
-        for (let i = 0; i < elems.length; i++) {
-            elems.item(i).classList.remove('selected');
-        }
+    // removeSel(){
+    //     let elems = document.documentElement.getElementsByClassName('contact-block') as HTMLCollectionOf<HTMLElement>;
+    //     for (let i = 0; i < elems.length; i++) {
+    //         elems.item(i).classList.remove('selected');
+    //     }
+    // }
+    // selectItem(index) {
+    //     console.log('click! ', index, this.consel);
+    //     let elems = document.documentElement.getElementsByClassName('contact-block') as HTMLCollectionOf<HTMLElement>;
+    //     for (let i = 0; i < elems.length; i++) {
+    //         elems.item(i).classList.remove('selected');
+    //     }
+    //     elems.item(index).classList.add('selected');
+    // }
+  checkKeyPress(event) {
+    let date: any;
+    date = new Date();
+    let key = event.keyCode;
+    console.log(event.keyCode);
+    if (key === 13) {
+      event.preventDefault();
+      this.messages.push({user: 'me', message: this.message, time: moment(new Date().getTime()).format('HH:mm')});
+      this.message = '';
+      setTimeout(() => {
+        let elems = document.documentElement.getElementsByClassName('triangle') as HTMLCollectionOf<HTMLElement>;
+        elems.item(elems.length - 1).scrollIntoView({block: "end"});
+      }, 50);
+      return false;
     }
-    selectItem(index) {
-        console.log('click! ', index, this.consel);
-        let elems = document.documentElement.getElementsByClassName('contact-block') as HTMLCollectionOf<HTMLElement>;
-        for (let i = 0; i < elems.length; i++) {
-            elems.item(i).classList.remove('selected');
-        }
-        elems.item(index).classList.add('selected');
+    else {
+      return true;
     }
+  }
     sendMsg() {
         let date: any;
         date = new Date();
-        this.messages.push({user: 'me', message: this.message, time: Utils.getCurrentTime(date)});
-        // let elem  = document.documentElement.getElementsByClassName('msg-container') as HTMLCollectionOf<HTMLElement>;
-        // elem.item(elem.length - 1).scrollIntoView({block: "end"});
+        this.messages.push({user: 'me', message: this.message, time: moment(new Date().getTime()).format('HH:mm')});
         this.message = '';
+        setTimeout(() => {
+          let elems = document.documentElement.getElementsByClassName('msg-container') as HTMLCollectionOf<HTMLElement>;
+          elems.item(elems.length - 1).scrollIntoView({block: "end", behavior: "smooth"});
+        }, 100);
+
+    }
+    msgContextMenu(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this._hubService.shared_var['cm'] = {
+            pX: event.pageX,
+            pY: event.pageY,
+            scrollable: false,
+            items: [
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Инфо', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Избранное', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Ответить', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Ответить лично', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Скопировать', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Удалить', callback: () => {
+                    }
+                },
+            ]
+        };
+        this._hubService.shared_var['cm_hidden'] = false;
     }
     tableContextMenu(event) {
         event.preventDefault();
