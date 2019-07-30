@@ -7,231 +7,235 @@ import {Observable} from "rxjs";
 
 @Component({
     selector: 'login-screen',
-    styles: [`
-      .log_screen { 
-          width: 100vw;
-          height: 100vh;
-          z-index: 9999;
-          position: fixed; 
-          background-color: #f7f7f7;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-      }
-
-      .log_screen[hidden] {
-          display: none;
-      }
-
-      .message_window{
-          position: absolute;
-          width: 100vw;
-          height: 100vh;
-          z-index: 9999;
-      }
-
-      .message_window > div{
-          width: 475px;
-          min-height: 154px;
-          background-color: white;
-          margin: calc(50vh - 77px) auto 0;
-          box-shadow: 0 1px 50px 2px rgba(206,208,209,0.6);
-          display: flex;
-          flex-direction: column;
-          position: relative;
-      }
-
-      .message_window > div > .label{
-          color: #252F32;
-          font-size: 16px;
-          font-weight: bold;
-          margin: 20px 25px 7px;
-          font-family: SFNS;
-      }
-
-      .message_window > div > .cross{
-          position: absolute;
-          right: 11px;
-          top: 11px;
-          width: 13px;
-          height: 13px;
-          background-image: url(../assets/cross.png);
-          background-size: contain;
-      }
-
-      .message_window > div > hr{
-          margin: 0;
-          border-top: 1px solid #6a0316;
-      }
-
-      .message_window > div > .message{
-          margin: 30px 75px;
-          color: #252F32;
-          font-size: 12px;
-          line-height: 11px;
-      }
-
-      .log_screen > .label {
-          color: #252F32;
-          font-size: 28px;
-          position: absolute;
-          top: 50px;
-          left: 60px;
-          font-family: SFNS;
-          font-weight: bold;
-      }
-
-      .log_screen > hr {
-          margin: 0;
-          padding: 0;
-          top: 100px;
-          left: 60px;
-          width: calc(100% - 120px);
-          position: absolute;
-          border-top: 1px solid #bdc0c1;
-      }
-
-      .main_form {
-          width: 400px;
-          max-height: 500px;
-          min-height: 410px;
-          background-color: #fff;
-          border: 1px solid rgba(211, 213, 214, 1);
-          border-radius: 0;
-          box-shadow: 0 1px 50px 2px rgba(211, 213, 214, 0.6);
-      }
-
-      .motto {
-          display: flex;
-          flex-direction: column;
-          width: 190px;
-          height: 35px;
-          margin: 28px 0 0 31px;
-      }
-
-      .motto span:first-child {
-          color: #252F32;
-          font-size: 12px;
-      }
-
-      .motto span:last-child {
-          font-size: 10px;
-          color: #677578;
-          text-align: end;
-          font-style: italic;
-      }
-
-      .motto span:last-child:before {
-          content: "";
-          border-bottom: 1px solid;
-          width: 35px;
-          display: inline-block;
-          margin: 0 6px 2px 0;
-      }
-
-      .select_type {
-          margin-top: 39px;
-          text-align: center;
-          color: #ced0d1;
-          font-size: 16px;
-      }
-
-      .select_type span {
-          cursor: pointer;
-      }
-
-      .select_type .selected, .select_type span:hover {
+    styles: [`   
+        :host{
+            position: absolute;
+            z-index: 9998;
+        }
+        
+        .log_screen { 
+              width: 100vw;
+              height: 100vh;
+              z-index: 9999;
+              position: fixed; 
+              background-color: #f7f7f7;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+        }
+        
+        .log_screen[hidden] {
+            display: none;
+        }
+        
+        .message_window{
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+        }
+        
+        .message_window > div{
+            width: 475px;
+            min-height: 154px;
+            background-color: white;
+            margin: calc(50vh - 77px) auto 0;
+            box-shadow: 0 1px 50px 2px rgba(206,208,209,0.6);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .message_window > div > .label{
             color: #252F32;
-      }
-
-      .main_form .fields {
-          width: 100%;
-          padding: 20px 50px 0;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          justify-content: center;
-      }
-
-      .main_form .fields input {
-          border: 1px solid #ced0d1;
-          color: #252F32;
-          font-size: 12px;
-          height: 26px;
-          padding-left: 17px;
-          margin-bottom: 17px;
-          width: 100%;
-      }
-
-      .main_form .fields > div {
-          width: 100%;
-          height: 30px;
-          display: inline-flex;
-      }
-
-      .main_form .fields > span {
-          width: 50%;
-          height: 30px;
-          line-height: 30px;
-          color: #252F32;
-          font-size: 10px;
-          display: inline-flex;
-          align-items: center;
-          margin-bottom: 20px;
-          justify-content: center;
-      }
-
-      .main_form .fields > span input{
-          margin: 0 0 0 15px;
-          width: 20px;
-      }
-
-      .main_form .fields > .link_button{
-          margin-top: -10px;
-          height: 16px;
-          color: #677578;
-          font-size: 12px;
-          display: inline-flex;
-          justify-content: flex-end;
-          margin-bottom: 15px;
-          cursor: pointer;
-      }
-
-      .main_form .fields > div input {
-          margin: 0 30px 0 0;
-          width: 15px;
-          height: 15px;
-          background-color: #fff;
-          border-radius: 0;
-          flex: 0 0 15px;
-      }
-
-      .main_form .fields > div span {
-          color: #677578;
-          font-size: 12px;
-          line-height: 14px;
-      }
-
-      .main_form .fields > div div {
-          color: #677578;
-          font-size: 12px;
-          line-height: 14px;
-      }
-
-      .main_form .fields .submit {
-          width: 290px;
-          height: 35px;
-          margin: 22px auto 34px;
-          background-color: #11131f;
-          cursor: pointer;
-          font-size: 12px;
-          color: #fff;
-      }
-
-      .main_form .fields .submit:hover {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 20px 25px 7px;
+            font-family: SFNS;
+        }
+        
+        .message_window > div > .cross{
+            position: absolute;
+            right: 11px;
+            top: 11px;
+            width: 13px;
+            height: 13px;
+            background-image: url(../assets/cross.png);
+        background-size: contain;
+        }
+        
+        .message_window > div > hr{
+            margin: 0;
+            border-top: 1px solid #6a0316;
+        }
+        
+        .message_window > div > .message{
+            margin: 30px 75px;
+            color: #252F32;
+            font-size: 12px;
+            line-height: 11px;
+        }
+        
+        .log_screen > .label {
+            color: #252F32;
+            font-size: 28px;
+            position: absolute;
+            top: 50px;
+            left: 60px;
+            font-family: SFNS;
+            font-weight: bold;
+        }
+        
+        .log_screen > hr {
+            margin: 0;
+            padding: 0;
+            top: 100px;
+            left: 60px;
+            width: calc(100% - 120px);
+            position: absolute;
+            border-top: 1px solid #bdc0c1;
+        }
+        
+        .main_form {
+            width: 400px;
+            max-height: 500px;
+            min-height: 410px;
+            background-color: #fff;
+            border: 1px solid rgba(211, 213, 214, 1);
+            border-radius: 0;
+            box-shadow: 0 1px 50px 2px rgba(211, 213, 214, 0.6);
+        }
+        
+        .motto {
+            display: flex;
+            flex-direction: column;
+            width: 190px;
+            height: 35px;
+            margin: 28px 0 0 31px;
+        }
+        
+        .motto span:first-child {
+            color: #252F32;
+            font-size: 12px;
+        }
+        
+        .motto span:last-child {
+            font-size: 10px;
+            color: #677578;
+            text-align: end;
+            font-style: italic;
+        }
+        
+        .motto span:last-child:before {
+            content: "";
+            border-bottom: 1px solid;
+            width: 35px;
+            display: inline-block;
+            margin: 0 6px 2px 0;
+        }
+        
+        .select_type {
+            margin-top: 39px;
+            text-align: center;
+            color: #ced0d1;
+            font-size: 16px;
+        }
+        
+        .select_type span {
+            cursor: pointer;
+        }
+        
+        .select_type .selected, .select_type span:hover {
+            color: #252F32;
+        }
+        
+        .main_form .fields {
+            width: 100%;
+            padding: 20px 50px 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .main_form .fields input {
+            border: 1px solid #ced0d1;
+            color: #252F32;
+            font-size: 12px;
+            height: 26px;
+            padding-left: 17px;
+            margin-bottom: 17px;
+            width: 100%;
+        }
+        
+        .main_form .fields > div {
+            width: 100%;
+            height: 30px;
+            display: inline-flex;
+        }
+        
+        .main_form .fields > span {
+            width: 50%;
+            height: 30px;
+            line-height: 30px;
+            color: #252F32;
+            font-size: 10px;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .main_form .fields > span input{
+            margin: 0 0 0 15px;
+            width: 20px;
+        }
+        
+        .main_form .fields > .link_button{
+            margin-top: -10px;
+            height: 16px;
+            color: #677578;
+            font-size: 12px;
+            display: inline-flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        
+        .main_form .fields > div input {
+            margin: 0 30px 0 0;
+            width: 15px;
+            height: 15px;
+            background-color: #fff;
+            border-radius: 0;
+            flex: 0 0 15px;
+        }
+        
+        .main_form .fields > div span {
+            color: #677578;
+            font-size: 12px;
+            line-height: 14px;
+        }
+        
+        .main_form .fields > div div {
+            color: #677578;
+            font-size: 12px;
+            line-height: 14px;
+        }
+        
+        .main_form .fields .submit {
+            width: 290px;
+            height: 35px;
+            margin: 22px auto 34px;
+            background-color: #11131f;
+            cursor: pointer;
+            font-size: 12px;
+            color: #fff;
+        }  
+        .main_form .fields .submit:hover {
             background-color: #2b2d44;
-      }
+        }
 
     `],
     template: `

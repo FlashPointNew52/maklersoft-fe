@@ -53,7 +53,6 @@ import {Organisation} from "../../entity/organisation";
                      [options]="[
                                   {value: 'sale', label: 'Покупка'},
                                   {value: 'alternative', label: 'Альтернатива'},
-                                  {value: 'exchange', label: 'Мена'},
                                   {value: 'rent', label: 'Аренда'}
                      ]"
                      [value]="{'option' : filter.offerTypeCode}"
@@ -184,8 +183,6 @@ export class TabListRequestComponent implements OnInit {
 
     };
 
-    stateCodeOptions = [{value: 'all', label: 'Все'}];
-
     sort: any = {};
 
     lastClckIdx: number = 0;
@@ -202,7 +199,6 @@ export class TabListRequestComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.stateCodeOptions = this.stateCodeOptions.concat(Offer.stateCodeOptions);
         this.tab.refreshRq.subscribe(
             sender => {
                 this.listRequests();
@@ -311,10 +307,10 @@ export class TabListRequestComponent implements OnInit {
                         let tab_sys = this._hubService.getProperty('tab_sys');
                         this.selectedRequests.forEach(o => {
                             let canEditable =  this._sessionService.getAccount().id == o.accountId;
-                            tab_sys.addTab('offer', {offer: o, canEditable: canEditable});
+                            tab_sys.addTab('offer', {offer: o, canEditable});
                         });
                     }},
-                {class: "entry", disabled:  Utils.canImpact(this.selectedRequests, this._sessionService.getUser().accountId) ? false : true, icon: "", label: 'Удалить',
+                {class: "entry", disabled:  !Utils.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
                     callback: () => {
                         this.clickMenu({event: "del_obj"});
                     }
@@ -332,7 +328,7 @@ export class TabListRequestComponent implements OnInit {
                             }
                         },
                     ]},
-                {class: "submenu", disabled: Utils.canImpact(this.selectedRequests, this._sessionService.getUser().accountId) ? false : true, icon: "", label: "Назначить", items: [
+                {class: "submenu", disabled: !Utils.canImpact(this.selectedRequests), icon: "", label: "Назначить", items: [
                         {class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
                                 this.clickMenu({event: "del_agent", agent: null});
@@ -369,8 +365,8 @@ export class TabListRequestComponent implements OnInit {
                         block.setShow(true, event);
                     }},
                 {class: "delimiter"},
-                {class: "submenu", disabled:  Utils.canImpact(this.selectedRequests, this._sessionService.getUser().accountId) ? false : true, icon: "", label: "Назначить тег", items: [
-                        {class: "tag", icon: "", label: "", offer: this.selectedRequests.length == 1 ? this.selectedRequests[0] : null, tag: tag,
+                {class: "submenu", disabled:  !Utils.canImpact(this.selectedRequests), icon: "", label: "Назначить тег", items: [
+                        {class: "tag", icon: "", label: "", offer: this.selectedRequests.length == 1 ? this.selectedRequests[0] : null, tag,
                             callback: (new_tag) => {
                                 this.clickMenu({event: "set_tag", tag: new_tag});
                             }}

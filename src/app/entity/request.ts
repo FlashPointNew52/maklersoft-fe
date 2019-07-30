@@ -79,7 +79,7 @@ export class Request {
     description: string;
 
 
-    constructor () {
+    constructor() {
         this.offerTypeCode = "sale";
         this.stageCode = "raw";
         this.searchArea = [];

@@ -14,7 +14,7 @@ declare var ymaps: any;
 @Component({
     selector: 'yamap-view',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['offers', 'drawMap', 'selected_offers', 'with_menu', 'same_offers', 'searchArea', 'lat', 'lon', 'drawBound'],
+    inputs: ['offers', 'drawMap', 'selected_offers', 'with_menu', 'same_offers', 'searchArea', 'lat', 'lon', 'drawBound', 'update'],
     styles: [`
 
         .map_params{
@@ -135,6 +135,7 @@ export class YamapView implements AfterViewInit, OnChanges {
     public lat: number;
     public lon: number;
     public drawBound: boolean = false;
+    public update: any;
     @Output() drawFinished: EventEmitter<any> = new EventEmitter();
     @Output() scrollToOffer: EventEmitter<any> = new EventEmitter();
     @Output() showSameOffers: EventEmitter<any> = new EventEmitter();
@@ -196,10 +197,9 @@ export class YamapView implements AfterViewInit, OnChanges {
                //this.map.setCenter(new GeoPoint(changes.selected_offers.currentValue[0].location).toArray());
                /*this.lat = changes.selected_offers.currentValue[0].locationLat;
                this.lon = changes.selected_offers.currentValue[0].locationLon;*/
-               this.updateMarkers();
                this.map.geoObjects.remove(this.selectedObject);
                this.selectedObject.removeAll();
-               for (let i = 0; i < this.selected_offers.length ; i++) {
+               for(let i = 0; i < this.selected_offers.length ; i++) {
                    let baloon = new ymaps.Placemark([this.selected_offers[i].location.lat, this.selected_offers[i].location.lon]);
                    /*baloon.events.add("mouseup", event => {
                        this.scrollToOffer.emit(i);
@@ -245,7 +245,20 @@ export class YamapView implements AfterViewInit, OnChanges {
            }
            /*this.searchArea = this.toUnnormalPoints(this.searchArea);*/
 
-       }
+        } else if(changes.update && changes.update.currentValue != changes.update.previousValue){
+            if(this.offers[0].location){
+                this.map.panTo(new GeoPoint(this.offers[0].location).toArray(), {useMapMargin: true});
+            }
+
+            this.map.geoObjects.remove(this.selectedObject);
+            this.selectedObject.removeAll();
+            for(let offr of this.offers) {
+                let baloon = new ymaps.Placemark([offr.location.lat, offr.location.lon]);
+                this.selectedObject.add(baloon);
+            }
+
+            this.map.geoObjects.add(this.selectedObject);
+        }
     }
 
     initMap() {
@@ -397,10 +410,6 @@ export class YamapView implements AfterViewInit, OnChanges {
             }
         };
         return paintingProcess;
-    }
-
-    updateMarkers(){
-
     }
 
     /*activate_param(index?: number){

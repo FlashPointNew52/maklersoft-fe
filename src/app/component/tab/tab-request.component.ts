@@ -20,7 +20,6 @@ import {Organisation} from "../../entity/organisation";
 import {Utils} from "../../class/utils";
 import {ObjectBlock} from "../../class/objectBlock";
 
-
 @Component({
     selector: 'tab-request',
     inputs: ['tab'],
@@ -670,9 +669,10 @@ export class TabRequestComponent implements OnInit{
     offClass = Offer;
     conClass = Contact;
     reqClass  = Request;
-    valRange = ValueRange;
     block = ObjectBlock;
     utils = Utils;
+    utilsObj = null;
+    valRange = ValueRange;
 
     agentOpts: any = {
         null: {label: "Не назначено"}
@@ -703,6 +703,7 @@ export class TabRequestComponent implements OnInit{
                 private _sessionService: SessionService,
                 private _organisationService: OrganisationService
     ) {
+        this.utilsObj = new Utils(_personService,_organisationService);
         this.agentOpts[this._sessionService.getUser().id] = {label: this._sessionService.getUser().name};
         for(let user of _userService.cacheUsers){
             this.agentOpts[user.value] = {label: user.label};
@@ -836,35 +837,7 @@ export class TabRequestComponent implements OnInit{
         );
     }
 
-    findContact(structure: any){
-        if(Object.keys(structure).length == 0 && this.contact.id){
-            let type = this.contact.type;
-            this.contact = new Contact();
-            this.contact.type = type;
-        } else if (!this.contact.id) {
-            let phones = PhoneBlock.removeSymb(structure);
-            if(PhoneBlock.check(phones)) {
-                if(this.contact.type == "person")
-                    this._personService.findByPhone(phones).subscribe((data)=>{
-                        if(data != null){
-                            this.contact = data;
-                            this.contact.type = 'person';
-                        } else{
-                            this.contact.phoneBlock = structure;
-                        }
-                    });
-                else
-                    this._organisationService.findByPhone(phones).subscribe((data)=>{
-                        if(data != null){
-                            this.contact = data;
-                            this.contact.type = 'organisation';
-                        } else{
-                            this.contact.phoneBlock = structure;
-                        }
-                    });
-            }
-        }
-    }
+
 
     showContextMenu(e) {
         e.preventDefault();
@@ -918,7 +891,7 @@ export class TabRequestComponent implements OnInit{
                             tab_sys.addTab('offer', {offer: o, canEditable});
                         });
                     }},
-                {class: "entry", disabled:  !Utils.canImpact(this.selectedOffers, this._sessionService.getUser().accountId), icon: "", label: 'Удалить',
+                {class: "entry", disabled:  !Utils.canImpact(this.selectedOffers), icon: "", label: 'Удалить',
                     callback: () => {
                         this.clickMenu({event: "del_obj"});
                     }
@@ -936,7 +909,7 @@ export class TabRequestComponent implements OnInit{
                             }
                         },
                     ]},
-                {class: "submenu", disabled: !Utils.canImpact(this.selectedOffers, this._sessionService.getUser().accountId), icon: "", label: "Назначить", items: [
+                {class: "submenu", disabled: !Utils.canImpact(this.selectedOffers), icon: "", label: "Назначить", items: [
                         {class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
                                 this.clickMenu({event: "del_agent", agent: null});
@@ -969,7 +942,7 @@ export class TabRequestComponent implements OnInit{
 
                     ]},
                 {class: "delimiter"},
-                {class: "submenu", disabled:  !Utils.canImpact(this.selectedOffers, this._sessionService.getUser().accountId), icon: "", label: "Назначить тег", items: [
+                {class: "submenu", disabled:  !Utils.canImpact(this.selectedOffers), icon: "", label: "Назначить тег", items: [
                         {class: "tag", icon: "", label: "", offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null, tag,
                             callback: (new_tag) => {
                                 this.clickMenu({event: "set_tag", tag: new_tag});
@@ -1078,5 +1051,9 @@ export class TabRequestComponent implements OnInit{
         let tab_sys = this._hubService.getProperty('tab_sys');
         let canEditable = this.source == OfferSource.IMPORT ? false : (this._sessionService.getUser().accountId == offer.accountId);
         tab_sys.addTab('offer', {offer, canEditable });
+    }
+
+    public findContact(event) {
+        this.utilsObj.findContact(event, this.contact).subscribe(data => this.contact = data);
     }
 }

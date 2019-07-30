@@ -20,6 +20,7 @@ import {RatingService} from "./service/rating.service";
 @Component({
   selector: 'app-root',
   template: `
+      <modal-window></modal-window>
       <login-screen></login-screen>
       <context-menu
           [menu]="_hubService.shared_var['cm']"
