@@ -427,12 +427,35 @@ import {Chart} from 'chart.js'
             height: auto;
             max-height: 400px;
         }
+        .search-block{
+    position: absolute;
+    width: calc(100% - 430px - 93px - 345px);
+    margin-left: 430px;
+    margin-top: 47px;
+}
+.search{
+    width: 100%;
+    height: 30px;
+    background-color: #FAFAFA;
+    border: 1px solid #EBEBEB;
+}
+.magnifier{
+    position: absolute;
+    right: 10px;
+    height: 18px;
+    width: 18px;
+    top: 6px;
+}
     `],
     template: `
         <div class="head main-head">
           <span class="logo-title">
             maklersoft
           </span>
+           <div class="search-block">
+            <input class="search">
+            <img alt="поиск" class="magnifier" src="../assets/лупа.png">
+        </div>
         </div>
         <div class="tile-board" style="">
 
@@ -448,7 +471,7 @@ import {Chart} from 'chart.js'
                     </div>
                     <div class="num white-font">17</div>
                 </div>
-                <div class="tile-top main" (click)="turnTo('daily', {})">
+                <div class="tile-top main" (click)="turnTo('list_activity', {})">
                     <div class="flex-col tile-left">
                         <div class="tile-title white-font">ЕЖЕДНЕВНИК</div>
                         <div class="tile-description white-font">Задачи, Выполненые, Просроченые...</div>
@@ -565,7 +588,7 @@ import {Chart} from 'chart.js'
             </div>
 
             <div class="flex-col activity-block">
-                <div class="activity-head" (click)="turnTo('list_activity', {})">
+                <div class="activity-head" >
                     <div class="flex-col">
                         <div class="block-title">АКТИВНОСТЬ ПОЛЬЗОВАТЕЛЯ</div>
                         <div class="block-title-p">{{dateGraphStart}} - {{dateGraphEnd}}</div>

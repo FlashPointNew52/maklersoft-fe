@@ -83,7 +83,6 @@ import {PhoneBlock} from "../../class/phoneBlock";
 
       .digest-list {
         overflow-x: scroll;
-        border-right: 1px solid #ccc;
         background-color: var(--box-backgroung);
         height: calc(100% - 115px);
       }
@@ -91,8 +90,8 @@ import {PhoneBlock} from "../../class/phoneBlock";
       digest-offer:after {
           content: "";
           background-color: #f5f4f4;
-          width: 100%;
-          height: 3px;
+          width: 100%; 
+          height: 1px;
           display: block;
       }
 
@@ -392,17 +391,20 @@ import {PhoneBlock} from "../../class/phoneBlock";
                 >
 
                 </gmap-view>-->
-                <yamap-view [drawMap] = "mapDrawAllowed"
-                         style="width: 100%;height: 100%; display: block; position: relative;"
-                        [offers] = "offers"
-                        [selected_offers] = "selectedOffers"
-                        [same_offers] = "similarOffers"
-                        [with_menu] = "true"
-                        (drawFinished)="finishDraw($event)"
-                        (scrollToOffer) = "scrollToOffer($event)"
-                        (showSameOffers) = "showSameOffers($event)"
-                >
-                </yamap-view>
+                <ng-container [ngSwitch]="workAreaMode">
+                    <yamap-view *ngSwitchCase="'map'" [drawMap] = "mapDrawAllowed"
+                             style="width: 100%;height: 100%; display: block; position: relative;"
+                            [offers] = "offers"
+                            [selected_offers] = "selectedOffers"
+                            [same_offers] = "similarOffers"
+                            [with_menu] = "true"
+                            (drawFinished)="finishDraw($event)"
+                            (scrollToOffer) = "scrollToOffer($event)"
+                            (showSameOffers) = "showSameOffers($event)"
+                    >
+                    </yamap-view>
+                    <adv-view *ngSwitchCase="'advert'"></adv-view>
+                </ng-container>
             </div>
         </div>
     `
@@ -414,7 +416,7 @@ export class TabListOfferComponent {
     source: OfferSource = OfferSource.LOCAL;
     searchQuery: string = "";
     searchArea: GeoPoint[] = [];
-
+    workAreaMode: string = 'map';
     sgList: string[] = [];
     filter: any = {
         isMiddleman: 'all',
@@ -723,6 +725,10 @@ export class TabListOfferComponent {
                 {class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: [
 
                 ]},
+                {class: "entry", disabled: false, icon: "", label: "Добавить в рекламу", callback: () => {
+                    this.workAreaMode = 'advert';
+                    }
+                },
                 {class: "delimiter"},
                 {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
                     {class: "entry", disabled: false, label: "Email1"},

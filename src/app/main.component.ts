@@ -21,15 +21,12 @@ import {User} from "./entity/user";
     selector: 'main',
     styleUrls: ['./main.component.css'],
     template: `
-        <div class="search-block">
-            <input class="search">
-            <img alt="поиск" class="magnifier" src="../assets/лупа.png">
-        </div>
+       
         <div class='const_menu'> 
-            <div class="button" style="background-image: url(/assets/notebook_icon/call.png)" (click)="openNotebook('call', $event)"><span></span></div>
+            <div class="button" style="background-image: url(/assets/notebook_icon/call.png)" (click)="openNotebook('phone', $event)"><span></span></div>
             <div class="button" style="background-image: url(/assets/notebook_icon/chat.png)" (click)="openNotebook('chat', $event)"><span></span></div> 
-            <div class="button" style="background-image: url(/assets/notebook_icon/task.png)" (click)="openNotebook('task', $event)"><span></span></div>
-            <div class="button" style="background-image: url(/assets/notebook_icon/note.png);width: 28px; height: 28px" (click)="openNotebook('note', $event)"><span></span></div>
+            <div class="button" style="background-image: url(/assets/notebook_icon/task.png)" (click)="openNotebook('diary', $event)"><span></span></div>
+            <div class="button" style="background-image: url(/assets/notebook_icon/note.png);width: 28px; height: 28px" (click)="openNotebook('notes', $event)"><span></span></div>
             <div class="user_menu">
                 <div class="user_photo" [style.background-image]="'url('+( user | async)?.photoMini+')'" (click)="logout()"></div>
             </div>

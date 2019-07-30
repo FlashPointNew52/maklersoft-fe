@@ -36,7 +36,7 @@ export class Utils{
         return n.replace(/([0-9U]{3})/g, "$1 ").replace(/U/g, "");
     }
     public static getCurrentTime(number: number) {
-        return moment(number).get('hour') + '.' + moment(number).get('minute');
+        return moment(number).get('hour') + ':' + moment(number).get('minute');
     }
     public static getNumWithWhitespace(str){
         if(!str) return "";

@@ -25,16 +25,17 @@ import {UITab} from './ui-tab.component';
             display: inline-flex;
             font-size: 12px;
             justify-content: left;
-            padding: 18px 25px 0 25px;
+            padding: 23px 25px 0 25px;
             box-sizing: border-box;
             border-bottom: 1px solid #3b5998;
-            margin-bottom: 8px;
-        }
+            margin-bottom: 15px;
+        } 
         
         .tab-header{
+            color: #2B3C63;
             cursor: pointer;
             margin-right: 15px;
-            padding-bottom: 7px;
+            padding-bottom: 4px;
         }
         
         .tabs_header > .tabs{

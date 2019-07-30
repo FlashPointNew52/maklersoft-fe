@@ -46,20 +46,25 @@ import {Output, EventEmitter} from '@angular/core';
             cursor: pointer;
             padding: 0 40px 0 25px;
         }
-
+ 
         .option{
-            width: calc(100% - 30px);
-            border-bottom: 1px solid #d3d5d6;
+            width: 100%;
             display: inline-flex;
-            justify-content: space-between;
             height: 22px;
             line-height: 22px;
-            margin: 6px 0 0 35px;
-            position: relative;
+            margin-top: 6px;
+            position: relative; 
         }
-
+        selects{
+            padding-right: 10px;
+            min-width: 85px;
+        }
+        selects, input{
+            height: 23px;
+            border-bottom: 1px solid var(--bottom-border);
+        }
         input{
-            width: calc(100% - 85px);
+            width: inherit;
         }
 
         .remove{
@@ -129,6 +134,7 @@ export class MultiSelectComponent implements OnInit, OnChanges{
                 }
             }
             this.adds_arr = this.keys_arr.filter(val => this.selects_arr.indexOf(val) == -1);
+
         }
     }
 

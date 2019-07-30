@@ -28,14 +28,14 @@ import {Component, OnInit, OnChanges, Input, Output, EventEmitter} from '@angula
             position: relative;
             transform: translate(10%, 0);
             transition: all 0.5s;
-        }
+        } 
 
         .switch > .reverse{
             position: relative;
             transform: translate(133%, 0);
         }
         .on{
-            background-color: #3d9be9;
+            background-color: var(--color-blue);
             transition: all 0.5s;
         }
     `]

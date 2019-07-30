@@ -14,8 +14,10 @@ body {
     background-color: #BD0000;
     height: 18px;
     width: 18px;
+    min-width: 18px;
+    min-height: 18px;
     border-radius: 9px;
-    margin-right: 20px;
+    margin-right: 17px;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -10,22 +10,26 @@ import {HubService} from '../../service/hub.service';
     selector: 'ui-upload-file',
     inputs:['activeColor','baseColor','overlayColor', 'type', 'obj_id', 'obj_type'],
     template: `
-        <label class="ui-upload-file" ondragover="return false;"
+        <label class="ui-upload-file add-block"  ondragover="return false;"
             [class.loaded]="loaded"
             (dragenter)="handleDragEnter()"
             (dragleave)="handleDragLeave()"
             (drop)="handleDrop($event)"
         >
 
-            <span></span>
-            <!--<div class="image_contain" *ngIf="type=='image'">
-                <div class='image' *ngFor="let image of fileSrc" (click)="remove(image.index)">
-                    <img  [src]="image.src" (load)="handleImageLoad()" [class.loaded]="imageLoaded"/>
-                    <div style="height: 4px; background-color: #54b947; border-radius: 10px; position: absolute; bottom: 0; left: 0;"
-                        [style.width]="image.load_pers"
-                    ></div>
-                </div>
-            </div>-->
+            <div class="plus">
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+            <div class="add-text">Добавить фотографию</div>
+<!--            <div class="image_contain" *ngIf="type=='image'">-->
+<!--                <div class='image' *ngFor="let image of fileSrc" (click)="remove(image.index)">-->
+<!--                    <img  [src]="image.src" (load)="handleImageLoad()" [class.loaded]="imageLoaded"/>-->
+<!--                    <div style="height: 4px; background-color: #54b947; border-radius: 10px; position: absolute; bottom: 0; left: 0;"-->
+<!--                        [style.width]="image.load_pers"-->
+<!--                    ></div>-->
+<!--                </div>-->
+<!--            </div>-->
             <!--<div class="doc_contain" *ngIf="type=='document'">
                 <div class='document' *ngFor="let image of fileSrc">
                     <span style="position: relative;display: block;width: 100%;text-align: center;margin: 5px;"
@@ -41,46 +45,51 @@ import {HubService} from '../../service/hub.service';
         </label>
     `,
     styles: [`
-        .ui-upload-file input {
-            display: none;
-        }
-
-        .ui-upload-file {
-            align-items: center;
-            cursor: pointer;
+        .add-block{
+            width: 358px !important;
+            height: 173px !important;
             display: flex;
             flex-direction: column;
-            height: 100%;
-            justify-content: flex-start;
-            width: 100%;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid #D3D5d6;
         }
-
-        .ui-upload-file img {
+        .add-block:hover .plus .line{
+            background-color: var(--color-blue);
+        }
+        .add-block:hover .add-text{
+            color: var(--color-blue);
+        }
+        .plus{
+            width: 120px;
+            height: 100px;
+        }
+        .plus .line:first-child{
+            width: 40px;
+            height: 1px;
+            background-color: #252F32;
+            position: relative;
+            top: 50%;
+            left: calc(50% - 20px);
+        }
+        .plus .line:last-child{
+            width: 40px;
+            height: 1px;
+            background-color: #252F32;
+            position: relative;
+            left: 40px;
+            transform: rotate(90deg);
+            top: 50%;
+        } 
+        .add-block input {
+            display: none;
+        }
+        .add-block img {
             pointer-events: none;
         }
 
-        .ui-upload-file span {
-            color: #757575;
-            font-size: 12px;
-            position: relative;
-            width: 25px;
-            height: 100%;
-            display: block;
-            margin: auto;
-        }
-
-        .ui-upload-file span:before {
-            content: "";
-            background: url(assets/cross.png) center no-repeat;
-            background-size: cover;
-            height: 25px;
-            width: 25px;
-            transform: rotate(45deg);
-            position: absolute;
-            top: calc(50% - 13px);
-        }
-
-        .ui-upload-file img {
+        .add-block img {
             opacity: 0;
             max-height: 100%;
             max-width: 100%;
@@ -88,7 +97,7 @@ import {HubService} from '../../service/hub.service';
             z-index: -1;
         }
 
-        .ui-upload-file img.loaded {
+        .add-block img.loaded {
             opacity: 1;
         }
 
