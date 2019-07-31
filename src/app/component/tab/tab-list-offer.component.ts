@@ -22,209 +22,30 @@ import {Utils} from "../../class/utils";
     selector: 'tab-list-offer',
     inputs: ['tab'],
     styles: [`
-      .search-form {
-        position: absolute;
-        width: calc(75% - 685px);
-        margin-left: 570px;
-        margin-top: 27px;
-        z-index: 1;
-      }
+        .work-area {
+            float: left;
+            width: calc(100% - 1px);
+            height: calc(100% - 122px);
+            position: relative;
+        }
 
-      .search-form.table-mode {
-        border: 1px solid var(--box-backgroung);
-      }
+        digest-request{
+            border-bottom: 1px solid var(--selected-digest);
+            width: 100%;
+            height: 130px;
+            display: block;
+        }
 
-      .tool-box {
-        height: 21px;
-        margin: 2px 12px;
-        padding-top: 1px;
-      }
+        digest-list digest-request:last-of-type{
+            border-bottom: 1px solid var(--selected-digest);
+        }
 
-      .search-box {
-        display: flex;
-        position: relative;
-        height: 30px;
-        margin: 15px 12px 0px 12px;
-      }
-
-      .search-box > .deactivate_draw {
-        font-size: 10pt;
-        color: #fbfbfb;
-        background-color: #BDBDBD;
-        height: 27px;
-        line-height: 27px;
-        width: 87px;
-        cursor: pointer;
-        text-align: center;
-      }
-
-      .search-box > .deactivate_draw:hover {
-        background-color: #0a145b;
-      }
-
-      .search-box > .activate_draw {
-        background-color: #0a145b;
-      }
-
-      .offer-list {
-
-      }
-
-      .pane {
-        height: 100vh;
-      }
-
-      .digest-list {
-        overflow-x: scroll;
-        background-color: var(--box-backgroung);
-        height: calc(100% - 115px);
-      }
-
-      digest-offer:after {
-          content: "";
-          background-color: #f5f4f4;
-          width: 100%; 
-          height: 1px;
-          display: block;
-      }
-
-      .work-area {
-        float: left;
-        height: calc(100vh - 115px);
-        margin-top: 115px;
-        width: calc(100vw - 30px);
-      }
-
-      .inline-select {
-        display: inline-block;
-        height: 20px;
-        padding: 0 15px 0 0;
-        font-size: 14px;
-        color: #424242;
-      }
-
-      .button {
-        height: 44px;
-        width: 44px;
-        border-radius: 40px;
-        cursor: pointer;
-        font-size: 11px;
-        line-height: 110px;
-        background-size: 39px;
-        background-position: center;
-        background-color: #9e9e9e;
-        color: #9e9e9e;
-        border: 1px solid #42424200;
-        text-indent: -3px;
-      }
-
-      .button_active, .button:hover {
-        background-color: #424242;
-        color: #424242;
-        border: 1px solid #424242;
-      }
-
-      .input_line {
-        height: 23px;
-        background-color: rgb(247, 247, 247);
-        border: 1px solid rgba(204, 204, 204, 0.47);
-      }
-
-      .alreadyAdd:hover {
-         background-color: #f6f6f6 !important;
-      }
-
-      .selected {
-        background-color: var(--selected-digest) !important;
-      }
-
-      .src-sel {
-        background-color: #3366cc !important;
-      }
-
-      .suggestions {
-        left: 0px;
-        min-width: 160px;
-        margin-top: 27px;
-        padding: 5px 0;
-        background-color: #f7f7f7;
-        border: 1px solid #e3e3e3;
-        width: 88%;
-        position: absolute;
-        z-index: 2;
-        font-size: 11pt;
-      }
-
-      .suggestions > ul {
-        margin: 0 0;
-        list-style: none;
-        padding: 3px 20px;
-      }
-
-      .suggestions > ul:hover {
-        background-color: #f3f3f3;
-        cursor: default;
-      }
-
-      .suggestions > ul a {
-        color: #252f32;
-        text-decoration: none;
-      }
-
-      .suggestions > ul a:hover {
-        color: #252f32;
-        text-decoration: none;
-      }
-
-      .no-mouse-events {
-        pointer-events: none;
-      }
-
-      .map_params {
-        position: absolute;
-        top: 150px;
-        right: 50px;
-        width: 45px;
-      }
-
-      .map_params div {
-        width: 40px;
-        height: 40px;
-        margin-top: 10px;
-        background-color: #ffffff;
-        border-radius: 5px;
-      }
-
-      .active_param {
-        background-color: #80808080 !important;
-      }
-
-      .pull-left {
-        float: left;
-        width: 530px;
-      }
-
-      .pull-left > span {
-        float: right;
-      }
-
-      .pull-right {
-        float: left;
-        width: 76px;
-        text-align: right;
-      }
-
-      .pull-right > a {
-        color: #424242;
-        text-decoration: none;
-      }
-
-      .nonactive {
-        color: #9E9E9E !important;
-      }
+        .selected {
+            background-color: var(--selected-digest) !important;
+        }
     `],
     template: `
-        
+
         <div class="search-form">
             <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'calc(100% - 108px)'"
                    [(ngModel)]="searchQuery" (keyup)="searchStringChanged($event)"
@@ -240,7 +61,7 @@ import {Utils} from "../../class/utils";
             <div class="tool-box">
                 <filter-select
                     [name]="'Тип предложения'"
-                    [options]="this.source == 1 ? 
+                    [options]="this.source == 1 ?
                         [
                             {value: 'sale', label: 'Продажа'},
                             {value: 'alternative', label: 'Альтернатива'},
@@ -351,10 +172,12 @@ import {Utils} from "../../class/utils";
                                 (click)="select($event, offer, i)"
                                 (contextmenu)="select($event, offer, i)"
                                 (dblclick)="dblClick(offer)"
-                >
-                <ng-container [ngSwitch]="workAreaMode">
-                    <yamap-view *ngSwitchCase="'map'" [drawMap] = "mapDrawAllowed"
-                             style="width: 100%;height: 100%; display: block; position: relative;"
+                ></digest-offer>
+            </div>
+        </div>
+        <div class="work-area">
+            <ng-container [ngSwitch]="workAreaMode">
+                <yamap-view *ngSwitchCase="'map'" [drawMap] = "mapDrawAllowed"
                             [offers] = "offers"
                             [selected_offers] = "selectedOffers"
                             [same_offers] = "similarOffers"
@@ -362,12 +185,10 @@ import {Utils} from "../../class/utils";
                             (drawFinished)="finishDraw($event)"
                             (scrollToOffer) = "scrollToOffer($event)"
                             (showSameOffers) = "showSameOffers($event)"
-                    >
-                    </yamap-view>
-                    <adv-view *ngSwitchCase="'advert'"></adv-view>
-                </ng-container>
-            </div>
-
+                >
+                </yamap-view>
+                <adv-view *ngSwitchCase="'advert'"></adv-view>
+            </ng-container>
         </div>
     `
 })
