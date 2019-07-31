@@ -37,7 +37,7 @@ import {Output, EventEmitter} from '@angular/core';
         }
 
         .active {
-            background-color: #D3D5D6;
+            background-color: var(--selected-digest);
         }
 
         .hidden_menu{
@@ -65,28 +65,6 @@ import {Output, EventEmitter} from '@angular/core';
         }
         input{
             width: inherit;
-        }
-
-        .remove{
-            width: 14px;
-            height: 14px;
-            border-radius: 14px;
-            background-color: #D00020;
-            margin-right: 15px;
-            position: absolute;
-            left: -35px;
-            top: 3px;
-        }
-
-        .remove:after {
-            content: "";
-            width: 8px;
-            height: 3px;
-            background-color: #fff;
-            display: block;
-            position: relative;
-            left: 3px;
-            top: 5px;
         }
 
         .add_button{

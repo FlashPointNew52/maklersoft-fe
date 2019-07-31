@@ -26,7 +26,7 @@ import {Output, EventEmitter} from '@angular/core';
         }
 
         .active {
-            background-color: #D3D5D6;
+            background-color: var(--selected-digest);
         }
 
         .hidden_menu{
@@ -41,7 +41,7 @@ import {Output, EventEmitter} from '@angular/core';
         }
 
         .hidden_menu .selected, .hidden_menu div:hover{
-            background-color: #f7f7f8;
+            background-color: var(--hover-menu);
         }
 
     `]

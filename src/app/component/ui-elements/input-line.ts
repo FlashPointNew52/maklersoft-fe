@@ -52,7 +52,7 @@ import {PhoneBlock} from "../../class/phoneBlock";
         .suggestions{
             position: absolute;
             z-index: 999;
-            background-color: white;
+            background-color: var(--box-backgroung);
             left: -47px;
             margin-top: 34px;
             font-size: 12px;
@@ -75,7 +75,7 @@ import {PhoneBlock} from "../../class/phoneBlock";
             cursor: default;
         }
         .suggestions  ul:hover {
-            background: #f7f7f7;
+            background: var(--hover-menu);
             cursor: default;
         }
 
@@ -84,14 +84,14 @@ import {PhoneBlock} from "../../class/phoneBlock";
         }
 
         .suggestions a div{
-            color: #3B5998;
+            color: var(--color-blue);
             font-weight: bold;
             font-size: 12px;
             line-height: 14px;
         }
 
         .suggestions a div span{
-            color: #677578;
+            color: var(--color-inactive);
             font-size: 12px;
             font-weight: initial;
         }

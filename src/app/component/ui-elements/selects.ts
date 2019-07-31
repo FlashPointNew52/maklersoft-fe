@@ -20,10 +20,10 @@ import {Output, EventEmitter} from '@angular/core';
             left: -21px;
             z-index: 10;
             padding: 10px 0;
-            background-color: #ffffff;
+            background-color: var(--box-backgroung);
             border-radius: 0;
             line-height: 25px;
-            box-shadow: 0 1px 6px 0 #bdc0c1;
+            box-shadow: var(--box-shadow);
             background-clip: padding-box;
         }
 
@@ -32,7 +32,7 @@ import {Output, EventEmitter} from '@angular/core';
         }
 
         .selected, .hidden_menu div:hover{
-            background-color: #f7f7f8
+            background-color: var(--hover-menu);
         }
     `]
 })

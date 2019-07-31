@@ -14,7 +14,7 @@ import {Component, OnInit, OnChanges, Input, Output, EventEmitter} from '@angula
         .switch{
             width: 33px;
             height: 14px;
-            background-color: silver;
+            background-color: var(--color-grey);
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.5s;
