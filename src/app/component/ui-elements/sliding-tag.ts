@@ -29,7 +29,7 @@ import {Tags} from "../../class/tags";
         }
 
         .active {
-            background-color: #D3D5D6;
+            background-color: var(--selected-digest);
         }
 
         .hidden_menu{
@@ -44,7 +44,7 @@ import {Tags} from "../../class/tags";
         }
 
         .hidden_menu .selected, .hidden_menu > div:hover{
-            background-color: #f7f7f8;
+            background-color: var(--hover-menu);
         }
         
         .tag{

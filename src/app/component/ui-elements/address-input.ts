@@ -65,7 +65,7 @@ import {SuggestionService} from "../../service/suggestion.service";
         }
 
         .active {
-            background-color: #D3D5D6;
+            background-color: var(--selected-digest);
         }
 
         .hidden_menu{
@@ -90,6 +90,10 @@ import {SuggestionService} from "../../service/suggestion.service";
             padding-left: 10px;
             border-bottom: 1px solid var(--bottom-border);
         }
+
+        .option:hover,  .option:hover > input{
+            background-color: var(--hover-menu);
+        }
         
         .suggestion{
             position: absolute;
@@ -97,7 +101,7 @@ import {SuggestionService} from "../../service/suggestion.service";
             background-color: var(--box-backgroung);
             width: 100%;
             left: 0;
-            box-shadow: 0 1px 6px 0 #bdc0c1;
+            box-shadow: 0 1px 6px 0 var(--box-shadow);
             z-index: 99;
         }
 
