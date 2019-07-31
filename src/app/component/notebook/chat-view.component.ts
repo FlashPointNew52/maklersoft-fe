@@ -63,7 +63,7 @@ import * as moment from 'moment/moment';
         }
 
         .flex-col.chat {
-            height: calc(100vh - 244px);
+            height: calc(100vh - 251px);
             overflow-y: scroll; 
             padding: 0 20px;
         }
@@ -85,8 +85,8 @@ import * as moment from 'moment/moment';
             min-height: 104px !important;
             height: 104px !important;
             border-bottom: 1px solid var(--selected-digest);
-            padding-top: 25px;
-        }
+            padding: 25px 30px 0 30px;
+        }  
         .contact-block.selected{
             background-color: #d3d5d6 !important;
             border: none;
@@ -139,21 +139,19 @@ import * as moment from 'moment/moment';
         }
 
         .more-button {
-            display: none;
+            display: flex;
             width: 30px;
             justify-content: center;
             align-items: center;
             height: 30px;
             position: relative;
-            top: -20px;
-            right: -20px;
+            top: -13px;
+            right: -13px;
+            opacity: 0;
         }
 
         .contact-block:hover .more-button, .msg-container:hover .more-button {
-            display: flex;
-        }
-        .msg-container:hover .msg-block{
-            padding-bottom: 0;
+            opacity: 1;
         }
 
         .point {
@@ -195,7 +193,9 @@ import * as moment from 'moment/moment';
         }
 
         .rating {
-            font-size: 28px;
+            font-size: 24px;
+            position: relative;
+            top: -5px;
         }
 
         .back {
@@ -217,7 +217,7 @@ import * as moment from 'moment/moment';
             align-items: flex-end;
         }
         .msg-container:last-child{
-            margin-bottom: 20px;
+            padding-bottom: 20px;
          }
         .me div, .somebody div{
                 word-break: break-word;
@@ -260,17 +260,36 @@ import * as moment from 'moment/moment';
         }
 
         .textarea {
-                margin-bottom: 10px;
-            padding: 10px 64px 5px 20px;
-                min-height: 40px !important;
+            padding: 10px 90px 2px 20px;
+            line-height: normal;
         }
 
         .send-button-block {
             display: flex;
+            padding: 5px 0 5px 30px;
         }
 
         .attachment {
-            flex-grow: 1;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+        }
+        .attachment:first-child{
+            margin-right: 10px;
+        }
+        .attachment:hover{
+            background-color: #F5F3EB;
+        }
+        .attachment img:first-child{
+            width: 24px;
+            height: 24px;
+        }
+        .attachment img:last-child{ 
+            width: 25px;
+            height: 25px;
         }
         .info{
             padding: 10px 20px 25px;
@@ -387,8 +406,8 @@ import * as moment from 'moment/moment';
                 width: 60px;
                 height: 25px;
                 position: absolute;
-                right: 70px;
-                top: 16px;
+            right: 20px;
+            top: 10px;
                 background-color: #f5f3eb;
             border-radius: 5px;
             display: flex;
@@ -471,7 +490,7 @@ import * as moment from 'moment/moment';
                 </div>
                 <div class="rating">3.8</div>
 
-            </div>
+            </div> 
             <div class="flex-col chat" id="chat" #showChat >
                 <div *ngFor="let msg of messages" class="flex-col msg-container" [class.me-msg]="msg.user == cur_user">
                     <div class="chat-time" [style.align-items.flex-end]="msg.user == cur_user">{{msg.time}}</div>
@@ -498,7 +517,8 @@ import * as moment from 'moment/moment';
                 </textarea>
                 <div class="send-button" (click)="sendMsg()" >В ЧАТ</div>
                 <div class="send-button-block">
-                    <div class="attachment">Прикрепить</div>
+                    <div class="attachment"><img src="../../../assets/ph.png"/></div>
+                    <div class="attachment"><img src="../../../assets/skr.png"/></div>
                 </div>
             </div>
         </div>
@@ -619,7 +639,7 @@ export class ChatViewComponent implements AfterViewInit{
           // div.scrollTop = 99999999;
           // console.log('timeout!');
 
-          let elems = document.documentElement.getElementsByClassName('triangle') as HTMLCollectionOf<HTMLElement>;
+          let elems = document.documentElement.getElementsByClassName('msg-container') as HTMLCollectionOf<HTMLElement>;
           elems.item(elems.length - 1).scrollIntoView({block: "end"});
         }, 50);
     }
@@ -644,10 +664,10 @@ export class ChatViewComponent implements AfterViewInit{
     console.log(event.keyCode);
     if (key === 13) {
       event.preventDefault();
-      this.messages.push({user: 'me', message: this.message, time: moment(new Date().getTime()).format('HH:mm')});
+      this.messages.push({user: this.cur_user, message: this.message, time: moment(new Date().getTime()).format('HH:mm')});
       this.message = '';
       setTimeout(() => {
-        let elems = document.documentElement.getElementsByClassName('triangle') as HTMLCollectionOf<HTMLElement>;
+        let elems = document.documentElement.getElementsByClassName('msg-container') as HTMLCollectionOf<HTMLElement>;
         elems.item(elems.length - 1).scrollIntoView({block: "end"});
       }, 50);
       return false;
@@ -659,7 +679,7 @@ export class ChatViewComponent implements AfterViewInit{
     sendMsg() {
         let date: any;
         date = new Date();
-        this.messages.push({user: 'me', message: this.message, time: moment(new Date().getTime()).format('HH:mm')});
+        this.messages.push({user: this.cur_user, message: this.message, time: moment(new Date().getTime()).format('HH:mm')});
         this.message = '';
         setTimeout(() => {
           let elems = document.documentElement.getElementsByClassName('msg-container') as HTMLCollectionOf<HTMLElement>;

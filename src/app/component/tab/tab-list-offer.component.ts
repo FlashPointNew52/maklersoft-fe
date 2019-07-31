@@ -351,9 +351,9 @@ import {Utils} from "../../class/utils";
                                 (click)="select($event, offer, i)"
                                 (contextmenu)="select($event, offer, i)"
                                 (dblclick)="dblClick(offer)"
-                >
+                ></digest-offer>
                 <ng-container [ngSwitch]="workAreaMode">
-                    <yamap-view *ngSwitchCase="'map'" [drawMap] = "mapDrawAllowed"
+                    <yamap-view *ngSwitchCase="'map'" [drawMap] = "mapDrawAllowed" 
                              style="width: 100%;height: 100%; display: block; position: relative;"
                             [offers] = "offers"
                             [selected_offers] = "selectedOffers"
