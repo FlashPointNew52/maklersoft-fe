@@ -1441,6 +1441,7 @@ export class TabOfferComponent implements OnInit {
         }
 
         if(!AddressBlock.check(this.offer.addressBlock)){
+            console.log(this.offer.addressBlock);
             this._hubService.getProperty("modal-window").showMessage("Адрес не заполнен. Сохранение невозможно!");
             return false;
         }

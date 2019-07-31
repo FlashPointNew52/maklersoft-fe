@@ -171,6 +171,8 @@ export class AddressInputComponent implements OnInit, OnChanges{
             this.addressStructure.region.id = sg.parents[0].id;
         }
         if(this.typeAddress == 'building'){
+            this.addressStructure.area.value = "";
+            this.addressStructure.admArea.value = "";
             let fields = Object.keys(this.addressStructure);
             for (let key of fields) {
                 if(this.addressStructure[key].value && this.addressStructure[key].value.length > 0)

@@ -12,7 +12,7 @@ export class AddressBlock extends ObjectBlock{
     busStop: string;
 
     public static check(block: AddressBlock){
-        let ret = true;
+        /*let ret = true;
         for (let key in block) {
           if (block[key] != null && key != "constructor"){
             let temp = block[key].toString().replace("\s", "");
@@ -21,7 +21,11 @@ export class AddressBlock extends ObjectBlock{
           }
         }
 
-        return ret;
+        return ret;*/
+        if(AddressBlock.getAsString(block).replace("\s", "").length == 0){
+            return false;
+        } else
+            return true;
     }
 
     public static getAsString(block: AddressBlock){
@@ -38,9 +42,7 @@ export class AddressBlock extends ObjectBlock{
         if(block.apartment){
           address += ", " + block.apartment;
         }
-        if(address.length > 0)
-            return address;
-        else
-            return "Адрес не указан";
+
+        return address;
     }
 }
