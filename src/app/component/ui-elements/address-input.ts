@@ -6,10 +6,10 @@ import {SuggestionService} from "../../service/suggestion.service";
 @Component({
     selector: 'address-input',
     //changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['params', 'block', 'addressType'],
+    inputs: ['name' ,'params', 'block', 'addressType'],
     template: `
         <div (click)="hidden=!hidden" class="menu_header" [class.active]="!hidden">
-            <span>Адрес</span>
+            <span>{{name}}</span>
         </div>
         <div [hidden]="hidden" class="hidden_menu">
             <div class="option">
@@ -120,6 +120,7 @@ import {SuggestionService} from "../../service/suggestion.service";
 })
 
 export class AddressInputComponent implements OnInit, OnChanges{
+    public name: string = "Адрес";
     public block: AddressBlock;
     public addressType: string;
 
@@ -151,16 +152,25 @@ export class AddressInputComponent implements OnInit, OnChanges{
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-
+        if(changes.block && changes.block.currentValue !== changes.block.previousValue){
+            let fields = Object.keys(changes.block.currentValue);
+            for (let key of fields) {
+                if(changes.block.currentValue[key].value && changes.block.currentValue.length > 0)
+                    this.addressStructure[key].value = this.block[key];
+            }
+        }
     }
 
 
     find(type, query, parent) {
         this.typeAddress = type;
         this.sgList = [];
-        this._suggestionService.kladr_list(query, type, parent).subscribe(data => {
-            this.sgList = data;
-        });
+        if(query && query.length > 0){
+            this._suggestionService.kladr_list(query, type, parent).subscribe(data => {
+                this.sgList = data;
+            });
+        }
+
     }
 
     public setKladr(sg: any) {
