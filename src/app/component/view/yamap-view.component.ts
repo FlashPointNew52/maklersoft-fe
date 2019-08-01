@@ -14,7 +14,7 @@ declare var ymaps: any;
 @Component({
     selector: 'yamap-view',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['offers', 'drawMap', 'selected_offers', 'with_menu', 'same_offers', 'searchArea', 'lat', 'lon', 'drawBound', 'update'],
+    inputs: ['offers', 'drawMap', 'selected_offers', 'with_menu', 'same_offers', 'searchArea', 'lat', 'lon', 'drawBound'],
     styles: [`
 
         .map_params{
@@ -245,19 +245,6 @@ export class YamapView implements AfterViewInit, OnChanges {
            }
            /*this.searchArea = this.toUnnormalPoints(this.searchArea);*/
 
-        } else if(changes.update && changes.update.currentValue != changes.update.previousValue){
-            if(this.offers[0].location){
-                this.map.panTo(new GeoPoint(this.offers[0].location).toArray(), {useMapMargin: true});
-            }
-
-            this.map.geoObjects.remove(this.selectedObject);
-            this.selectedObject.removeAll();
-            for(let offr of this.offers) {
-                let baloon = new ymaps.Placemark([offr.location.lat, offr.location.lon]);
-                this.selectedObject.add(baloon);
-            }
-
-            this.map.geoObjects.add(this.selectedObject);
         }
     }
 

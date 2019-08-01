@@ -100,8 +100,7 @@ export class MultiSelectComponent implements OnInit, OnChanges{
         if(changes.params && changes.block.currentValue){
             this.keys_arr = Object.keys(this.params);
         }
-        if(changes.block && this.block && this.keys_arr && changes.block.currentValue && changes.block.currentValue !== changes.block.previousValue
-        ){
+        if(changes.block && this.block && this.keys_arr && changes.block.currentValue && changes.block.currentValue !== changes.block.previousValue){
             let block_keys = Object.keys(this.block);
             this.selects_arr = [];
             this.vals_arr = [];
