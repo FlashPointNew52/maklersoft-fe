@@ -16,9 +16,8 @@ import {Person} from "../../entity/person";
         .billet {
             background-color: white;
             font-size: 12px;
-            height: 122px;
             position: relative;
-            padding: 16px 20px 13px 30px;
+            padding: 16px 20px 13px 30px; 
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -155,13 +154,13 @@ import {Person} from "../../entity/person";
             </div>
             <div class="row3">
                     {{ offer.addressBlock.street === undefined ? "" : offer.addressBlock.street }}
-                    {{ offer.addressBlock.house === undefined ? "" : (" " + offer.addressBlock.house) }}
+                    {{ offer.addressBlock.building === undefined ? "" : (" " + offer.addressBlock.building) }}
                     {{ offer.addressBlock.city === undefined ? " " : ", " + offer.addressBlock.city }}
-            </div>
+            </div> 
             <div class="row4">
                     {{ offer.addressBlock.admArea === undefined ? "" : offer.addressBlock.admArea }}
                     {{ offer.addressBlock.area === undefined ? "" : ", " + offer.addressBlock.area }}
-                    {{ offer.addressBlock?.bus_stop === undefined ? "" : ", " + offer.addressBlock.bus_stop }}
+                    {{ offer.addressBlock?.busStop === undefined ? "" : ", " + offer.addressBlock.busStop }}
             </div>
             <div class="row5" *ngIf="offer.offerTypeCode == 'sale'">
                 <div class="price">

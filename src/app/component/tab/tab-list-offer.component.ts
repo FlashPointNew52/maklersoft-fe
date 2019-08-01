@@ -29,14 +29,14 @@ import {Utils} from "../../class/utils";
             position: relative;
         }
 
-        digest-request{
+        digest-offer{
             border-bottom: 1px solid var(--selected-digest);
             width: 100%;
             height: 130px;
             display: block;
         }
 
-        digest-list digest-request:last-of-type{
+        .digest-list digest-offer:last-of-type{
             border-bottom: 1px solid var(--selected-digest);
         }
 
@@ -60,7 +60,7 @@ import {Utils} from "../../class/utils";
             <div (click)="toggleDraw()" class="deactivate_draw" [class.activate_draw]="mapDrawAllowed">ОБВЕСТИ</div>
             <div class="tool-box">
                 <filter-select
-                    [name]="'Тип предложения'"
+                    [name]="'Тип сделки'"
                     [options]="this.source == 1 ?
                         [
                             {value: 'sale', label: 'Продажа'},
@@ -157,8 +157,8 @@ import {Utils} from "../../class/utils";
 
         <div class="pane" [style.width.px]="paneHidden ? 0 : 370">
             <div class = "source_menu">
-                <div (click)="addOffer()">Добавить</div>
-                <div (click)="toggleSource('import')" [class.active]="this.source != 1">Импорт</div>
+                <div (click)="addOffer()">ДОБАВИТЬ</div>
+                <div (click)="toggleSource('import')" class="average" [class.active]="this.source != 1">ИМПОРТ</div>
                 <div (click)="toggleSource('local')"  [class.active]="this.source == 1">ОБЩАЯ БАЗА</div>
             </div>
             <div class="fixed-button" (click)="toggleLeftPane()">

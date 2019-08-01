@@ -34,23 +34,11 @@ import {ObjectBlock} from "../../class/objectBlock";
             font-style: normal;
             text-transform: uppercase;
         }
-        .property-face .type_title {
-            font-size: 12px; 
-            color: var(--color-inactive);
-            font-style: normal;
-            text-transform: uppercase;
-        }
-        .property_face .main_title{
-            font-size: 20px;
-            height: 20px;
-            line-height: 20px;
-            font-style: normal;
-        }
+             
 
         .property_face .title{
             float: left;
             width: 95px;
-
         }
 
         .work-area {
@@ -180,9 +168,9 @@ import {ObjectBlock} from "../../class/objectBlock";
         <hr class='underline'>
 
         <div class="pane" [style.left.px]="paneHidden ? -339 : null">
-            <div class = "source_menu">
+            <div class = "source_menu"> 
                 <div class="button" [class.active]="mode == 0" (click)="mode = 0">ЗАЯВКА</div>
-                <div class="button" [class.active]="mode == 1" (click)="mode = 1; filter.offerTypeCode = request.offerTypeCode;workAreaMode = 'map'" style="border-right: solid rgba(59, 89, 152, 1) 1px">ПРЕДЛОЖЕНИЯ</div>
+                <div class="button last" [class.active]="mode == 1" (click)="mode = 1; filter.offerTypeCode = request.offerTypeCode;workAreaMode = 'map'" style="border-right: solid rgba(59, 89, 152, 1) 1px">ПРЕДЛОЖЕНИЯ</div>
                 <div class="edit_ready" *ngIf="mode == 0">
                     <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
                     <span class="link" *ngIf="editEnabled && canEditable" (click)="save()">Готово</span>
