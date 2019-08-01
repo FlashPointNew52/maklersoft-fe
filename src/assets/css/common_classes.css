@@ -248,22 +248,34 @@ main{
 .source_menu > div:hover{
   background-color: #3b5998;
   color: #fff;
-    border-right: 1px solid white !important;
 }
-.source_menu > div:nth-child(2n) {
+.source_menu > .average {
     border-left: none;
+    border-right: solid rgba(59, 89, 152, 1) 1px;
+}
+.source_menu > .average:hover{
+    border-right: solid white 1px;
 }
 .source_menu > div:first-child{
     border-right: solid rgba(59, 89, 152, 1) 1px;
 }
-.source_menu > div:last-child{
+.source_menu > div:first-child:hover{
+    border-right: solid white 1px;
+}
+.source_menu > div:last-child, .source_menu > .last{
      border-left: none;
      border-right: solid rgba(59, 89, 152, 1) 1px;
  }
+.source_menu > .last:hover{
+    border-left: solid white 1px;
+}
 .source_menu .active {
     background-color: #3b5998;
     color: #fff;
-    border-right: 1px solid white !important;
+    border-right: 1px solid white;
+}
+.source_menu .active:hover{
+    border-left: solid rgba(59, 89, 152, 1) 1px;
 }
 
 .source_menu .edit_ready {
@@ -305,7 +317,7 @@ ui-tabs-menu{
 }
 
 ui-tabs-menu ui-tab{
-    max-height: calc(100% - 51px);
+    max-height: calc(100% - 140px);
     width: 100%;
     display: block;
     overflow: auto;
@@ -367,12 +379,12 @@ div.delete:active{
     background-color: #8b0000 !important;
     color: white;
 }
-sliding-menu, multiselect-menu, sliding-tag{
+sliding-menu, multiselect-menu, sliding-tag, address-input{
     width: 100%;
     line-height: 27px;
 }
 
-sliding-menu:hover > div:first-child, multiselect-menu:hover > div:first-child{
+sliding-menu:hover > div:first-child, multiselect-menu:hover > div:first-child, sliding-tag:hover > div:first-child, address-input:hover > div:first-child{
     background-color: #D3D5D6;
 }
 
@@ -406,6 +418,18 @@ input-line, input-area{
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+.property_face > .main_title{
+    font-size: 20px;
+    height: 20px;
+    line-height: 20px;
+    font-style: normal;
+}
+.property-face > .type_title {
+    font-size: 12px;
+    color: var(--color-inactive);
+    font-style: normal;
+    text-transform: uppercase;
 }
 .property_body{
     height: calc(100% - 51px);

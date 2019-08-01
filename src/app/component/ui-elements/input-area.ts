@@ -52,6 +52,7 @@ export class InputAreaComponent implements OnChanges{
     public name: string;
     public value: string = "";
     public disabled: boolean = false;
+    public update: any;
 
     @ViewChild("textarea", { static: true }) textarea: ElementRef;
     @Output() newValue: EventEmitter<any> = new EventEmitter();
@@ -77,7 +78,7 @@ export class InputAreaComponent implements OnChanges{
     }
 
     resize() {
-        let textarea = <HTMLAreaElement>this.textarea.nativeElement;
+        let textarea = this.textarea.nativeElement as HTMLAreaElement;
         let borderHeight = textarea.offsetHeight - textarea.clientHeight;
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + borderHeight + "px";

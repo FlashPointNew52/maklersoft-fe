@@ -37,7 +37,7 @@ import {Contact} from "../../entity/contact";
             height: 12px;
             line-height: 12px;
             margin-bottom: 6px;
-            font-style: italic;
+            text-transform: uppercase;
         }
         .property_face .main_title{
             font-size: 20px;
@@ -193,22 +193,8 @@ import {Contact} from "../../entity/contact";
     </div>
     <div class = "property_face">
         <ui-tag [value]="offer?.tag"></ui-tag>
-        <div class="type">
-            <ui-view-value
-              [options]="typeCodeOptions"
-              [value]="offer.typeCode"
-            >
-            </ui-view-value>
-            <span *ngIf="offer?.roomsCount">{{offer?.roomsCount}} комн.</span>
-        </div>
-        <div class="street">
-              {{ (offer.addressBlock?.street || " ") + (offer.addressBlock.building === undefined ? " " : (", " + offer.addressBlock.building))}}
-        </div>
-        <div class="district">
-              {{ (offer.addressBlock?.city || " ") + (offer.addressBlock.admArea === undefined ? " " : (", " + offer.addressBlock.admArea))
-            + (offer.addressBlock.area === undefined ? " " : (", " + offer.addressBlock.area))}}
-        </div>
-        <div class="price">{{utils.getNumWithDellimet((offer?.ownerPrice || 0) * 1000)}}</div>
+        <span class="main_title">ПРЕДЛОЖЕНИЕ</span>
+        <span class="type_title">{{ offClass.offerTypeCodeOptions[offer.offerTypeCode]?.label}}</span>
     </div>
 
     <hr class='underline'>
@@ -216,8 +202,8 @@ import {Contact} from "../../entity/contact";
 
     <div class="pane" [style.left.px]="paneHidden ? -339 : null">
         <div class = "source_menu">
-            <div [class.active]="mode == 0" (click)="mode = 0">Предложение</div>
-            <div [class.active]="mode == 1" (click)="mode = 1; filter.offerTypeCode = offer.offerTypeCode;">Заявки</div>
+            <div [class.active]="mode == 0" (click)="mode = 0">ПРЕДЛОЖЕНИЕ</div>
+            <div [class.active]="mode == 1"  class="last" (click)="mode = 1; filter.offerTypeCode = offer.offerTypeCode;">ЗАЯВКИ</div>
             <div class="edit_ready" *ngIf="mode == 0">
                 <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
                 <span class="link" *ngIf="editEnabled && canEditable" (click)="save()">Готово</span>
@@ -344,7 +330,7 @@ import {Contact} from "../../entity/contact";
                         <span class="view-value" *ngIf="offer.sourceMedia && offer.sourceUrl"><a href="{{offer.sourceUrl}}" target="_blank">{{offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</a></span>
                         <span class="view-value" *ngIf="offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</span>
                         <span class="view-value" *ngIf="!offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceOptions[offer?.sourceCode]?.label}}</span>
-                    </div>
+                    </div> 
                     <div class="show_block">
                         <span>Ответственный</span>
                         <span class="view-value link">{{ offer.agent?.name}}</span>
@@ -532,7 +518,7 @@ import {Contact} from "../../entity/contact";
                         <span class="view-value">{{offer.addressBlock?.admArea}}</span>
                     </div>
                     <div class="show_block" *ngIf="offer.addressBlock?.area">
-                        <span>Район</span>
+                        <span>Микрорайон</span>
                         <span class="view-value">{{offer.addressBlock?.area}}</span>
                     </div>
                     <div class="show_block" *ngIf="offer.addressBlock?.street">
@@ -828,8 +814,8 @@ import {Contact} from "../../entity/contact";
                                 (newValue)="offer.housingComplex = $event"
                     ></input-line>
                     <address-input [block]="offer?.addressBlock" [addressType]="offer.categoryCode == 'commersial' ? 'office': 'apartment'"
-                        (newData)="offer.addressBlock = $event.address; offer.location = $event.location"
-                    ></address-input>
+                        (newData)="offer.addressBlock = $event.address; offer.location = $event.location; selectedOffers = [offer]"
+                    ></address-input> 
                     <div class="show_block" *ngIf="offer.categoryCode != 'land'">
                         <span>Новостройка</span>
                         <switch-button [value]="offer?.newBuilding" (newValue)="offer.newBuilding = $event"></switch-button>
@@ -1160,8 +1146,8 @@ import {Contact} from "../../entity/contact";
                         <switch-button [value]="offer?.utilityBills" (newValue)="offer.utilityBills = $event" [disabled]="!editEnabled"></switch-button>
                     </div>
                 </ng-container>
-                <input-area [name]="'Дополнительно'" [value]="offer?.costInfo" (newValue)="offer.costInfo = $event" [disabled]="!editEnabled"[update]="update"></input-area>
-            </ui-tab>
+                <input-area [name]="'Дополнительно'" [value]="offer?.costInfo" (newValue)="offer.costInfo = $event" [disabled]="!editEnabled" [update]="update"></input-area>
+            </ui-tab> 
             <div more class="more">ЕЩЁ...
                 <div>
                     <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Карта</div>
@@ -1198,8 +1184,7 @@ import {Contact} from "../../entity/contact";
     <div class="work-area">
         <ng-container [ngSwitch]="workAreaMode">
             <yamap-view *ngSwitchCase="'map'"
-                        [offers] = "[offer]"
-                        [update] = "offer.location"
+                        [selected_offers]="selectedOffers"
             >
             </yamap-view>
         </ng-container>
@@ -1224,6 +1209,7 @@ import {Contact} from "../../entity/contact";
 export class TabOfferComponent implements OnInit {
     public tab: Tab;
     public offer: Offer = new Offer();
+    selectedOffers: Offer[] = [];
     mode: number = 0;
     workAreaMode: string = 'map';
     canEditable: boolean = true;
@@ -1242,7 +1228,6 @@ export class TabOfferComponent implements OnInit {
     block = ObjectBlock;
     utils = Utils;
     utilsObj = null;
-    selected_offer: any[];
     openPopup: any = {visible: false};
 
     agentOpts: any[] = [{class:'entry', value: null, label: "Не назначено"}];
@@ -1346,8 +1331,8 @@ export class TabOfferComponent implements OnInit {
         this.editEnabled = !this.editEnabled;
     }
 
-    agentChanged(e) {
-        this.offer.agentId = e.selected.value;
+    agentChanged(event) {
+        this.offer.agentId = event;
         if (this.offer.agentId != null) {
             this.userSubscribe = this._userService.get(this.offer.agentId).subscribe(agent => {
                 this.offer.agent = agent;
@@ -1357,8 +1342,8 @@ export class TabOfferComponent implements OnInit {
 
     updateSelected(){
         setTimeout(()=>{
-            this.selected_offer=[this.offer];
-        },2000);
+            this.selectedOffers = [this.offer];
+        },200);
     }
 
     save() {
@@ -1433,10 +1418,6 @@ export class TabOfferComponent implements OnInit {
             let modalWindow = this._hubService.getProperty("modal-window");
             modalWindow.showMessage("Один из телефонов указан неверно");
             modalWindow.setHidden(false);
-            return false;
-        }
-        if(!this.contact.name || this.contact.name.length < 5){
-            this._hubService.getProperty("modal-window").showMessage("Не указано имя контакта или имя слишком короткое");
             return false;
         }
 

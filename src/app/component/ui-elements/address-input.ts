@@ -79,8 +79,8 @@ import {SuggestionService} from "../../service/suggestion.service";
             width: 100%;
             display: inline-flex;
             justify-content: space-between;
-            height: 22px;
-            line-height: 22px;
+            height: 30px;
+            line-height: 30px;
             position: relative;
             padding: 0 40px 0 50px;
         }

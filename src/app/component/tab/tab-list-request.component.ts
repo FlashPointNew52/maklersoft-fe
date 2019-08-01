@@ -34,7 +34,7 @@ import {Organisation} from "../../entity/organisation";
             display: block; 
         }
 
-        digest-list digest-request:last-of-type{
+        .digest-list digest-request:last-of-type{
             border-bottom: 1px solid var(--bottom-border);
         }
 
@@ -130,12 +130,12 @@ import {Organisation} from "../../entity/organisation";
             </div>
         </div> 
 
-        <hr class='underline'>
+        <hr class='underline'> 
         <div class="head"><span>{{tab.header}}</span></div>
         <div class="pane" [style.width.px]="paneHidden ? 0 : 370">
                <div class = "source_menu">
                    <div (click)="addRequest()">ДОБАВИТЬ</div>
-                   <div (click)="toggleSource(0, 'all')" [class.active]="this.source != 1">ОБЩАЯ</div>
+                   <div (click)="toggleSource(0, 'all')" class="average" [class.active]="this.source != 1">ОБЩАЯ</div>
                    <div (click)="toggleSource(1, 'our')"  [class.active]="this.source == 1">КОМПАНИЯ</div>
                </div>
 
