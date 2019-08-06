@@ -100,8 +100,8 @@ import {PhoneBlock} from "../../class/phoneBlock";
             </div>
             <div style= "width: 200px; margin-right: 15px;">
               <div class="phones" class="user">
-                  <span class="phone">{{phones[0] ? (phones[0].phone | mask: "+0 "+phones[0].mask) : ""}}</span>
-                  <span class="phone">{{phones[1] ? (phones[1].phone | mask: "+0 "+phones[1].mask) : ""}}</span>
+                  <span class="phone">{{phones[0] ? ("+7" + phones[0].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
+                  <span class="phone">{{phones[1] ? ("+7" + phones[1].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
               </div>
             </div>
             <div style="width: 255px;">

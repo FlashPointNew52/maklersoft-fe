@@ -39,7 +39,7 @@ export class Contact {
     isMiddleman: boolean;
     type: string;
 
-    constructor (name?) {
+    constructor(name?) {
         //this.agent = new User();
         this.type = "person";
         this.addressBlock = new AddressBlock();
@@ -68,13 +68,13 @@ export class Contact {
     };
 
     public static sourceCodeOptions = {
-        'internet': {label: 'Интернет площадки'},
-        'print': {label: 'Печатные издания'},
-        'social': {label: 'Социальные сети'},
-        'messengers': {label: 'Мессенджеры'},
-        'email': {label: 'E-mail-рассылка'},
-        'recommendations': {label: 'Рекомендации'},
-        'other': {label: 'Другое'}
+        internet: {label: 'Интернет площадки'},
+        print: {label: 'Печатные издания'},
+        social: {label: 'Социальные сети'},
+        messengers: {label: 'Мессенджеры'},
+        email: {label: 'E-mail-рассылка'},
+        recommendations: {label: 'Рекомендации'},
+        other: {label: 'Другое'}
     };
 
     public static loyaltyOptions = {

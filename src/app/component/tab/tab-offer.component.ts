@@ -77,7 +77,7 @@ import {Contact} from "../../entity/contact";
         .selected {
             background-color: var(--selected-digest) !important;
         }
-        
+
         .rating{
             flex-wrap: wrap;
         }
@@ -330,7 +330,7 @@ import {Contact} from "../../entity/contact";
                         <span class="view-value" *ngIf="offer.sourceMedia && offer.sourceUrl"><a href="{{offer.sourceUrl}}" target="_blank">{{offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</a></span>
                         <span class="view-value" *ngIf="offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</span>
                         <span class="view-value" *ngIf="!offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceOptions[offer?.sourceCode]?.label}}</span>
-                    </div> 
+                    </div>
                     <div class="show_block">
                         <span>Ответственный</span>
                         <span class="view-value link">{{ offer.agent?.name}}</span>
@@ -815,7 +815,7 @@ import {Contact} from "../../entity/contact";
                     ></input-line>
                     <address-input [block]="offer?.addressBlock" [addressType]="offer.categoryCode == 'commersial' ? 'office': 'apartment'"
                         (newData)="offer.addressBlock = $event.address; offer.location = $event.location; selectedOffers = [offer]"
-                    ></address-input> 
+                    ></address-input>
                     <div class="show_block" *ngIf="offer.categoryCode != 'land'">
                         <span>Новостройка</span>
                         <switch-button [value]="offer?.newBuilding" (newValue)="offer.newBuilding = $event"></switch-button>
@@ -1147,7 +1147,7 @@ import {Contact} from "../../entity/contact";
                     </div>
                 </ng-container>
                 <input-area [name]="'Дополнительно'" [value]="offer?.costInfo" (newValue)="offer.costInfo = $event" [disabled]="!editEnabled" [update]="update"></input-area>
-            </ui-tab> 
+            </ui-tab>
             <div more class="more">ЕЩЁ...
                 <div>
                     <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Карта</div>
@@ -1189,7 +1189,7 @@ import {Contact} from "../../entity/contact";
             </yamap-view>
         </ng-container>
     </div>
-    
+
 <!--        <div class="work-area">-->
 <!--          <yamap-view-->
 <!--            style="width: calc(100% - 370px); height: 100%;display: block;position: relative;"-->
@@ -1415,14 +1415,11 @@ export class TabOfferComponent implements OnInit {
             return false;
         }
         if(!PhoneBlock.check(PhoneBlock.removeSymb(this.contact.phoneBlock))){
-            let modalWindow = this._hubService.getProperty("modal-window");
-            modalWindow.showMessage("Один из телефонов указан неверно");
-            modalWindow.setHidden(false);
+            let modalWindow = this._hubService.getProperty("modal-window").showMessage("Один из телефонов указан неверно");
             return false;
         }
 
         if(!AddressBlock.check(this.offer.addressBlock)){
-            console.log(this.offer.addressBlock);
             this._hubService.getProperty("modal-window").showMessage("Адрес не заполнен. Сохранение невозможно!");
             return false;
         }

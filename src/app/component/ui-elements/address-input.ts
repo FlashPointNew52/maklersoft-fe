@@ -155,7 +155,7 @@ export class AddressInputComponent implements OnInit, OnChanges{
         if(changes.block && changes.block.currentValue !== changes.block.previousValue){
             let fields = Object.keys(changes.block.currentValue);
             for (let key of fields) {
-                if(changes.block.currentValue[key].value && changes.block.currentValue.length > 0)
+                if(changes.block.currentValue[key] && changes.block.currentValue[key].length > 0)
                     this.addressStructure[key].value = this.block[key];
             }
         }
