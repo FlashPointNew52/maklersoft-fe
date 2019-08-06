@@ -4,15 +4,14 @@ import {SessionService} from "../service/session.service";
 import {Contact} from "../entity/contact";
 import {PhoneBlock} from "./phoneBlock";
 import {PersonService} from "../service/person.service";
-import {Organisation} from "../entity/organisation";
 import {OrganisationService} from "../service/organisation.service";
 import {AsyncSubject} from "rxjs";
-import {Person} from "../entity/person";
 
 export class Utils{
-    private  static _sessionService: SessionService;
-    constructor(private  _personService: PersonService,
-                private  _organisationService: OrganisationService
+    // private  static _sessionService: SessionService;
+    constructor( private _sessionService: SessionService,
+                 private  _personService: PersonService,
+                 private  _organisationService: OrganisationService
     ){
         moment.locale("ru");
     }
@@ -63,8 +62,8 @@ export class Utils{
         if (!fio || fio.trim().length == 0) return null;
         let spArray = fio.split(" ");
         let ret = spArray[0];
-        for(let i = 1; i < spArray.length; ++i){
-            ret += " " + spArray[i].charAt(0) + ".";
+        if (spArray.length > 1) {
+            ret += " " + spArray[1];
         }
         return ret;
     }
@@ -89,7 +88,7 @@ export class Utils{
     }
 
     //Функция проверки отнесения аккаунта
-    public static canImpact(arr: any[]){
+    public canImpact(arr: any[]){
         for (let elem of arr) {
            if(elem.accountId != this._sessionService.getUser().accountId)
               return false;

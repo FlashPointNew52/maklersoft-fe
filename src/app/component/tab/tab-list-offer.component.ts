@@ -21,7 +21,10 @@ import {Utils} from "../../class/utils";
 @Component({
     selector: 'tab-list-offer',
     inputs: ['tab'],
-    styles: [`
+    styles: [` 
+        input::placeholder, .input_line::placeholder{
+            color: var(--dark-grey) !important;
+        }
         .work-area {
             float: left;
             width: calc(100% - 1px);
@@ -30,18 +33,18 @@ import {Utils} from "../../class/utils";
         }
 
         digest-offer{
-            border-bottom: 1px solid var(--selected-digest);
+            border-bottom: 1px solid var(--bottom-border);
             width: 100%;
-            height: 130px;
+            height: 122px;
             display: block;
         }
 
         .digest-list digest-offer:last-of-type{
-            border-bottom: 1px solid var(--selected-digest);
+            border-bottom: 1px solid var(--bottom-border);
         }
 
         .selected {
-            background-color: var(--selected-digest) !important;
+            background-color: var(--color-blue) !important;
         }
     `],
     template: `
@@ -157,15 +160,16 @@ import {Utils} from "../../class/utils";
 
         <div class="pane" [style.width.px]="paneHidden ? 0 : 370">
             <div class = "source_menu">
-                <div (click)="addOffer()">ДОБАВИТЬ</div>
+                <div class="add"  (click)="addOffer()">ДОБАВИТЬ</div>
                 <div (click)="toggleSource('import')" class="average" [class.active]="this.source != 1">ИМПОРТ</div>
                 <div (click)="toggleSource('local')"  [class.active]="this.source == 1">ОБЩАЯ БАЗА</div>
             </div>
             <div class="fixed-button" (click)="toggleLeftPane()">
                 <div class="arrow" [ngClass]="{'arrow-right': paneHidden, 'arrow-left': !paneHidden}"></div>
             </div>
-            <div class="digest-list" (contextmenu)="showContextMenu($event)">
+            <div class="digest-list border" (contextmenu)="showContextMenu($event)">
                 <digest-offer *ngFor="let offer of offers; let i = index" [offer]="offer"
+                                [active]="selectedOffers.indexOf(offer) > -1"
                                 [class.selected]="selectedOffers.indexOf(offer) > -1"
                                 [class.alreadyAdd]="offer.offerRef && source == 0"
                                 [dateType] = "sort.changeDate ? 'changeDate' : sort.assignDate ? 'assignDate' : 'addDate'"
@@ -235,7 +239,7 @@ export class TabListOfferComponent implements OnInit{
 
     openPopup: any = {visible: false};
     canLoad: number = 0;
-
+    utilsObj = null;
     constructor(private _elem: ElementRef,
                 private _hubService: HubService,
                 private _offerService: OfferService,
@@ -246,6 +250,7 @@ export class TabListOfferComponent implements OnInit{
                 private _personService: PersonService,
                 private _organisationService: OrganisationService
             ) {
+        this.utilsObj = new Utils(_sessionService, _personService, _organisationService);
         setTimeout(() => {
             this.tab.header = 'Предложения';
         });
@@ -421,7 +426,7 @@ export class TabListOfferComponent implements OnInit{
                         tab_sys.addTab('offer', {offer: o, canEditable});
                     });
                 }},
-                {class: "entry", disabled: !(this.source == OfferSource.LOCAL && Utils.canImpact(this.selectedOffers)), icon: "", label: 'Удалить',
+                {class: "entry", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: 'Удалить',
                     callback: () => {
                         this.clickMenu({event: "del_obj"});
                     }
@@ -458,7 +463,7 @@ export class TabListOfferComponent implements OnInit{
                         }
                     },
                 ]},
-                {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && Utils.canImpact(this.selectedOffers)), icon: "", label: "Назначить", items: [
+                {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить", items: [
                     {class: "entry", disabled: false, label: "Не назначено",
                       callback: () => {
                         this.clickMenu({event: "del_agent", agent: null});
@@ -495,7 +500,7 @@ export class TabListOfferComponent implements OnInit{
 
                 ]},
                 {class: "delimiter"},
-                {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && Utils.canImpact(this.selectedOffers)), icon: "", label: "Назначить тег", items: [
+                {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить тег", items: [
                     {class: "tag", icon: "", label: "", offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null, tag,
                         callback: (new_tag) => {
                           console.log(new_tag);
@@ -814,8 +819,8 @@ export class TabListOfferComponent implements OnInit{
 
     scrollToOffer(event){
         this.selectedOffers=[this.offers[event]];
-        let offer_tag: HTMLElement = <HTMLElement>document.getElementsByTagName('digest-offer').item(event);
-        let list: HTMLElement = <HTMLElement>document.getElementsByClassName('digest-list').item(0);
+        let offer_tag: HTMLElement = document.getElementsByTagName('digest-offer').item(event) as HTMLElement;
+        let list: HTMLElement = document.getElementsByClassName('digest-list').item(0) as HTMLElement;
         let to = offer_tag.offsetTop - list.offsetHeight/2 - 75;
         /*let finale_step = 10;
         let start_pos = list.scrollTop;
@@ -823,7 +828,7 @@ export class TabListOfferComponent implements OnInit{
         var timer = setInterval(()=>{
             if(list.scrollTop +20 <= start_pos || list.scrollTop - 20 >= start_pos){
                 start_pos += step;*/
-                list.scrollTo(0,to);
+        list.scrollTo(0,to);
         /*    }
     }, 10)*/
 

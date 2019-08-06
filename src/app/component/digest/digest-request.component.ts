@@ -13,7 +13,7 @@ import {ObjectBlock} from "../../class/objectBlock";
 
 @Component({
     selector: 'digest-request',
-    inputs: ['request'],
+    inputs: ['request', 'active'],
     styles: [`
         .billet{
             overflow: hidden; 
@@ -39,7 +39,9 @@ import {ObjectBlock} from "../../class/objectBlock";
             height: 12px;
             margin-bottom: 14px;
         }
-
+        .main_row.active > span, .row.active > span{
+            color: white !important;
+        }
         .main_row > span:first-child{
             width: 115px;
             flex-grow: 1;
@@ -82,12 +84,12 @@ import {ObjectBlock} from "../../class/objectBlock";
         <div class="billet"
         >
             <ui-tag [value]="request?.tag"></ui-tag>
-            <div class="main_row">
+            <div class="main_row" [class.active]="active">
                 <span>{{utils.getDateInCalendar(request?.addDate)}}</span>
 <!--                <span>{{request?.person?.isMiddleman || request?.company?.isMiddleman ? 'Посредник' : 'Принципал'}}</span>-->
                 <span class="link">{{utils.trancateFio(request?.agent?.name || request?.person?.name || request?.company?.name) }}</span>
             </div>
-            <div class="row bold">
+            <div class="row bold" [class.active]="active">
                 <span>Тип объекта</span>
                 <span>
                     <ng-container *ngFor="let val of request?.typeCodes; let i = index">
@@ -96,15 +98,15 @@ import {ObjectBlock} from "../../class/objectBlock";
                     <ng-container *ngIf="request?.newBuilding">(Новостройка)</ng-container>
                 </span>
             </div>
-            <div class="row">
+            <div class="row" [class.active]="active">
                 <span class="gray-font">Тип сделки</span>
                 <span class="gray-font">{{reqClass.offerTypeCodeOptions[request?.offerTypeCode]?.label}}</span>
             </div>
-            <div class="row">
-                <span class="gray-font">Договор</span>
+            <div class="row" [class.active]="active">
+                <span class="gray-font">Договор</span> 
                 <span class="gray-font">{{block.getAsArray(request?.contractBlock)?.length > 0 ? 'Да' : 'Нет'}}</span>
             </div>
-            <div class="row">
+            <div class="row" [class.active]="active">
                 <span class="title gray-font">Бюджет</span><span class="price">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}} Р.</span>
             </div>
         </div>
@@ -114,7 +116,7 @@ import {ObjectBlock} from "../../class/objectBlock";
 })
 
 export class DigestRequestComponent implements OnInit {
-
+    public active: boolean;
     public request: Request;
     utils = Utils;
     offClass = Offer;

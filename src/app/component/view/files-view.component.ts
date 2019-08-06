@@ -78,6 +78,7 @@ import {Utils} from "../../class/utils";
 
         .files_body ul li, .files_body_new ul li{
             width: 360px;
+            height: 175px;
             float: left;
             margin: 7px;
             cursor: pointer;
@@ -443,9 +444,10 @@ import {Utils} from "../../class/utils";
                     <ui-upload-file [type]="type"
                                     (addNewFile) = "addFile($event)" [obj_id]="object_id"
                                     (progressState) = "progressEvent($event)"
+                                    [parent]="'photo'"
                     ></ui-upload-file>
                 </li>
-                <div *ngIf="editMode">
+                <ng-container *ngIf="editMode">
                     <li *ngFor="let photo of photos, let i = index" class="photo-style">
                         <div class="photo" [style.background-image]="'url(' + photo.url + ')'"></div>
                         <div class="tools">
@@ -456,7 +458,7 @@ import {Utils} from "../../class/utils";
                             <div style= "background-image: url('assets/photo_icon/zoom.png');" (click) = "file_show(i)"></div>
                         </div> 
                     </li>
-                </div>
+                </ng-container>
                 <div *ngIf="!editMode">
                     <div *ngFor="let obj of new_struct, let i = index" class="edit-photos">
                         <div class="title-block">{{obj.convert}} <div class="add_author">{{obj.author}}</div></div>

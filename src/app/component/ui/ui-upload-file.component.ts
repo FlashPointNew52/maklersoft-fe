@@ -8,7 +8,7 @@ import {HubService} from '../../service/hub.service';
 
 @Component({
     selector: 'ui-upload-file',
-    inputs:['activeColor','baseColor','overlayColor', 'type', 'obj_id', 'obj_type'],
+    inputs:['activeColor','baseColor','overlayColor', 'type', 'obj_id', 'obj_type', 'parent'],
     template: `
         <label class="ui-upload-file add-block"  ondragover="return false;"
             [class.loaded]="loaded"
@@ -17,11 +17,11 @@ import {HubService} from '../../service/hub.service';
             (drop)="handleDrop($event)"
         >
 
-            <div class="plus">
+            <div class="plus" *ngIf="parent == 'photo' || parent == 'docs'">
                 <div class="line"></div>
                 <div class="line"></div>
             </div>
-            <div class="add-text">Добавить фотографию</div>
+            <div class="add-text" *ngIf="parent == 'photo' || parent == 'docs'">Добавить фотографию</div>
 <!--            <div class="image_contain" *ngIf="type=='image'">-->
 <!--                <div class='image' *ngFor="let image of fileSrc" (click)="remove(image.index)">-->
 <!--                    <img  [src]="image.src" (load)="handleImageLoad()" [class.loaded]="imageLoaded"/>-->
@@ -46,8 +46,8 @@ import {HubService} from '../../service/hub.service';
     `,
     styles: [`
         .add-block{
-            width: 358px !important;
-            height: 173px !important;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -197,6 +197,7 @@ export class UIUploadFile implements OnInit{
     activeColor: string = 'green';
     public obj_id: any;
     public obj_type: string = "offers";
+    public parent: any;
     baseColor: string = '#ccc';
     overlayColor: string = 'rgba(255,255,255,0.5)';
     type: string = 'image';
@@ -250,6 +251,7 @@ export class UIUploadFile implements OnInit{
     }
 
     handleInputChange(e) {
+        console.log(e);
         let files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
         let pattern = this.pattern;
         let reader = new FileReader();
@@ -287,13 +289,13 @@ export class UIUploadFile implements OnInit{
            reader.onload = (() =>{
                if(type == 'image'){
 
-                   _uploadService.uploadPhoto(null, file, obj_type, objId, file.name).subscribe(data => {
+                   _uploadService.uploadPhoto(null, [file], obj_type, objId, file.name).subscribe(data => {
                        progressState.emit(100);
                        addNewFile.emit(data);
                        readFile(index+1);
                    });
                } else if(type == 'document'){
-                   _uploadService.uploadDoc(null, file, obj_type, objId, file.name).subscribe(data => {
+                   _uploadService.uploadDoc(null, [file], obj_type, objId, file.name).subscribe(data => {
                        progressState.emit(100);
                        addNewFile.emit(data);
                        readFile(index+1);

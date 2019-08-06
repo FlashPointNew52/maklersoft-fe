@@ -37,6 +37,7 @@ import {TabListActivityComponent} from "./component/tab/tab-list-activity.compon
 import {TabDailyComponent} from "./component/tab/tab-daily.component";
 import {TabConfigComponent} from "./component/tab/tab-config.component";
 //new ui
+import {StarMarkComponent} from "./component/ui-elements/star-mark";
 import {SlidingMenuComponent} from "./component/ui-elements/sliding-menu";
 import {MultiSelectComponent} from "./component/ui-elements/multiselect";
 
@@ -116,7 +117,7 @@ import {ModalWindowComponent} from "./component/modal-window.component";
 import {AddressInputComponent} from "./component/ui-elements/address-input";
 
 const appRoutes: Routes = [
-    { path: 'admin', loadChildren: 'app/admin.module#AdminModule' },
+    { path: 'admin', loadChildren: 'src/app/admin.module#AdminModule' },
     { path: 'main', component: MainComponent },
     { path: '',
         redirectTo: '/main',
@@ -216,7 +217,7 @@ const appRoutes: Routes = [
         CommentsViewComponent,
         RatingViewComponent,
 
-
+        StarMarkComponent,
         SlidingMenuComponent,
         MultiSelectComponent,
         SelectsComponent,

@@ -136,7 +136,7 @@ import {User} from '../entity/user';
                 <div class="curr_date" *ngIf="mode == 'chat' || mode == 'notes'">Сегодня, {{curr_date}}</div>
                 <div class="tab-button" (click)="toggleNotebook()">Закрыть</div>
             </div>
-            <chat-view *ngIf="mode == 'chat'"></chat-view>
+            <chat-view *ngIf="mode == 'chat'" [mode]="hidden"></chat-view>
             <!--<div class="event-tab" *ngIf="show==1 || show==2">-->
                 <!--<div class="head"></div>-->
                 <!--<notebook-task-describe [task] = "data" [mode]="state" (update) = "update_tab_daily($event)"></notebook-task-describe>-->

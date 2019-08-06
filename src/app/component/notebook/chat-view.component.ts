@@ -1,10 +1,12 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Output, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, ElementRef, EventEmitter, OnChanges, Output, ViewChild} from "@angular/core";
 import {HubService} from "../../service/hub.service";
 import {Utils} from "../../class/utils";
 import * as moment from 'moment/moment';
+import {Tab} from "../../class/tab";
 
 @Component({
     selector: 'chat-view',
+    inputs: ['mode'],
     styles: [`
         *{
             cursor: default;
@@ -107,7 +109,7 @@ import * as moment from 'moment/moment';
         }
         .job.marg{
             margin-bottom: 4px;
-        }
+        } 
         .name.open{
             max-width: 140px;
         }
@@ -143,14 +145,18 @@ import * as moment from 'moment/moment';
             width: 30px;
             justify-content: center;
             align-items: center;
-            height: 30px;
             position: relative;
-            top: -13px;
+            top: -7px;
             right: -13px;
+            height: 15px;
             opacity: 0;
         }
+        .more-button.list{
+            top: -23px;
+            right: -20px;
+        }
 
-        .contact-block:hover .more-button, .msg-container:hover .more-button {
+        .contact-block:hover .more-button, .msg-block:hover .more-button {
             opacity: 1;
         }
 
@@ -242,15 +248,12 @@ import * as moment from 'moment/moment';
         }
 
         .chat-time {
-            margin-top: 27px;
+            margin-top: 16px;
             color: var(--color-inactive);
-            margin-bottom: 2px;
-        }
-        .chat-time:first-child{
-            margin-top: 10px;
+            margin-bottom: 7px;
         }
         .send {
-            background-color: #D3D5D6;
+            background-color: var(--bottom-border);
             min-height: 90px;
             height: auto;
             position: fixed;
@@ -266,7 +269,7 @@ import * as moment from 'moment/moment';
 
         .send-button-block {
             display: flex;
-            padding: 5px 0 5px 30px;
+            padding: 5px 0 5px 20px;
         }
 
         .attachment {
@@ -389,6 +392,10 @@ import * as moment from 'moment/moment';
             resize: none !important;
             padding: 0;
         }
+        textarea::placeholder{
+            color: #677578;
+            font-style: italic;
+        }
         .msg-count{
             position: relative;
             width: 20px;
@@ -415,15 +422,18 @@ import * as moment from 'moment/moment';
             justify-content: center;
             color: #32323D;
         }
+        .send-button:hover{
+            background-color: #F7E7BC;
+        }
         .name-icon{
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            min-height: 40px;
-            border-radius: 20px;
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            min-height: 36px;
+            border-radius: 18px;
             border: 1px solid #98968F;
             display: flex;
-            align-items: center;
+            align-items: center; 
             justify-content: center;
             color: #98968F;
             font-size: 18px;
@@ -433,13 +443,13 @@ import * as moment from 'moment/moment';
         }
         .name-icon.somebody-icon{
             margin-right: 15px;
-        }
+        } 
         .right-chat{
             justify-content: flex-end;
         }
     `],
     template: `
-        <div class="flex-col">
+        <div class="flex-col" (mousewheel)="_hubService.shared_var['cm_hidden'] = true">
         
         <div class="back" (click)="this.mode_block = 'contacts-list'" *ngIf="mode_block == 'chat'">Назад</div>
         <div class="back" (click)="this.mode_block = 'chat'" *ngIf="mode_block == 'contact-info'">Назад</div>
@@ -471,7 +481,7 @@ import * as moment from 'moment/moment';
                         <div class="name">{{contact.surname}} {{contact.name}} {{contact.father}}</div>
                         <div class="job">{{contact.job}}</div>
                     </div>
-                    <div class="more-button" (offClick)="_hubService.shared_var['cm_hidden'] = true" (click)="consel = i;tableContextMenu($event)">
+                    <div class="more-button list" (offClick)="_hubService.shared_var['cm_hidden'] = true" (click)="consel = i;tableContextMenu($event)">
                         <div class="point"></div> 
                         <div class="point"></div>
                         <div class="point"></div>
@@ -512,13 +522,13 @@ import * as moment from 'moment/moment';
             </div>
             <div class="flex-col send"> 
                 <textarea class="textarea" autosize 
-                         [(ngModel)]="message" (keydown)="checkKeyPress($event)">
+                         [(ngModel)]="message" (keydown)="checkKeyPress($event)" placeholder="Введите сообщение">
                        
                 </textarea>
                 <div class="send-button" (click)="sendMsg()" >В ЧАТ</div>
                 <div class="send-button-block">
-                    <div class="attachment"><img src="../../../assets/ph.png"/></div>
                     <div class="attachment"><img src="../../../assets/skr.png"/></div>
+                    <div class="attachment"><img src="../../../assets/ph.png"/></div>
                 </div>
             </div>
         </div>
@@ -579,9 +589,10 @@ import * as moment from 'moment/moment';
     `
 })
 
-export class ChatViewComponent implements AfterViewInit{
+export class ChatViewComponent implements AfterViewInit, OnChanges{
+    public mode: boolean = false;
     @Output() closeEvent: EventEmitter<any> = new EventEmitter();
-    menu_mode = 'contacts';
+    menu_mode = 'company';
     message: any;
     button = 'docs';
     cur_user = 'ПИРОЖКОВ';
@@ -622,8 +633,12 @@ export class ChatViewComponent implements AfterViewInit{
         //     this.closeChat();
         // })
     }
+    ngOnChanges() {
+        this.mode_block = 'contacts_list';
+    }
     ngAfterViewInit() {
-        this.menu_mode = 'contacts';
+        this.mode_block = 'contacts_list';
+        this.menu_mode = 'company';
     }
     @ViewChild('showChat', {static: true}) div: ElementRef;
 
@@ -679,13 +694,16 @@ export class ChatViewComponent implements AfterViewInit{
     sendMsg() {
         let date: any;
         date = new Date();
-        this.messages.push({user: this.cur_user, message: this.message, time: moment(new Date().getTime()).format('HH:mm')});
-        this.message = '';
-        setTimeout(() => {
-          let elems = document.documentElement.getElementsByClassName('msg-container') as HTMLCollectionOf<HTMLElement>;
-          elems.item(elems.length - 1).scrollIntoView({block: "end", behavior: "smooth"});
-        }, 100);
+        let msg = this.message as string;
+        if (msg.trim() != "") {
+            this.messages.push({user: this.cur_user, message: this.message, time: moment(new Date().getTime()).format('HH:mm')});
 
+            setTimeout(() => {
+                let elems = document.documentElement.getElementsByClassName('msg-container') as HTMLCollectionOf<HTMLElement>;
+                elems.item(elems.length - 1).scrollIntoView({block: "end", behavior: "smooth"});
+            }, 100);
+        }
+        this.message = '';
     }
     msgContextMenu(event) {
         event.preventDefault();

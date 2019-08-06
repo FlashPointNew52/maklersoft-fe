@@ -64,7 +64,17 @@ import {ObjectBlock} from "../../class/objectBlock";
         }
 
         .selected {
-            background-color: var(--selected-digest) !important;
+            background-color: var(--color-blue) !important;
+        }
+        digest-offer{
+            border-bottom: 1px solid var(--bottom-border);
+            width: 100%;
+            height: 122px;
+            display: block;
+        }
+
+        .digest-list digest-offer:last-of-type{
+            border-bottom: 1px solid var(--bottom-border);
         }
          
     `],
@@ -585,11 +595,8 @@ import {ObjectBlock} from "../../class/objectBlock";
                 <div more class="more">ЕЩЁ...
                     <div>
                         <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Карта</div>
-                        <div (click)="workAreaMode = 'photo'" [class.selected]="workAreaMode == 'photo'">Фото</div>
-                        <div (click)="workAreaMode = 'advert'" [class.selected]="workAreaMode == 'advert'">Реклама</div>
                         <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на ипотеку</div>
                         <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
-                        <div (click)="workAreaMode = 'egrn'" [class.selected]="workAreaMode == 'egrn'">Выписка из ЕГРН</div>
                         <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">Заметки</div>
                         <div (click)="openNotebook('diary', $event)" [class.selected]="workAreaMode == 'diary'">Ежедневник</div>
                         <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
@@ -611,6 +618,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                                       (click)="select($event, offer, i)"
                                       (contextmenu)="select($event, offer, i)"
                                       (dblclick)="openOffer(offer)"
+                                      [active]="selectedOffers.indexOf(offer) > -1"
                         ></digest-offer>
                     </ui-tab>
                     <ui-tab [title]="'БАЗА КОМПАНИИ'" (tabSelect)="source = 1; getOffers();">
@@ -619,6 +627,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                                       (click)="select($event, offer, i)"
                                       (contextmenu)="select($event, offer, i)"
                                       (dblclick)="openOffer(offer)"
+                                      [active]="selectedOffers.indexOf(offer) > -1"
                         ></digest-offer>
                     </ui-tab>
                 </ui-tabs-menu>
@@ -632,8 +641,6 @@ import {ObjectBlock} from "../../class/objectBlock";
                     [searchArea] = "request.searchArea" [offers] = "offers"
                 >
                 </yamap-view>
-                <adv-view *ngSwitchCase="'advert'"></adv-view>
-                <files-view [full]="paneHidden" [type]="'image'" [object_id]="request.id" [editMode]="editEnabled" *ngSwitchCase="'photo'"></files-view>
             </ng-container>
         </div>
     `
@@ -691,7 +698,7 @@ export class TabRequestComponent implements OnInit{
                 private _sessionService: SessionService,
                 private _organisationService: OrganisationService
     ) {
-        this.utilsObj = new Utils(_personService,_organisationService);
+        this.utilsObj = new Utils(_sessionService, _personService,_organisationService);
         this.agentOpts[this._sessionService.getUser().id] = {label: this._sessionService.getUser().name};
         for(let user of _userService.cacheUsers){
             this.agentOpts[user.value] = {label: user.label};
@@ -879,7 +886,7 @@ export class TabRequestComponent implements OnInit{
                             tab_sys.addTab('offer', {offer: o, canEditable});
                         });
                     }},
-                {class: "entry", disabled:  !Utils.canImpact(this.selectedOffers), icon: "", label: 'Удалить',
+                {class: "entry", disabled:  !this.utilsObj.canImpact(this.selectedOffers), icon: "", label: 'Удалить',
                     callback: () => {
                         this.clickMenu({event: "del_obj"});
                     }
@@ -897,7 +904,7 @@ export class TabRequestComponent implements OnInit{
                             }
                         },
                     ]},
-                {class: "submenu", disabled: !Utils.canImpact(this.selectedOffers), icon: "", label: "Назначить", items: [
+                {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedOffers), icon: "", label: "Назначить", items: [
                         {class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
                                 this.clickMenu({event: "del_agent", agent: null});
@@ -930,7 +937,7 @@ export class TabRequestComponent implements OnInit{
 
                     ]},
                 {class: "delimiter"},
-                {class: "submenu", disabled:  !Utils.canImpact(this.selectedOffers), icon: "", label: "Назначить тег", items: [
+                {class: "submenu", disabled:  !this.utilsObj.canImpact(this.selectedOffers), icon: "", label: "Назначить тег", items: [
                         {class: "tag", icon: "", label: "", offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null, tag,
                             callback: (new_tag) => {
                                 this.clickMenu({event: "set_tag", tag: new_tag});

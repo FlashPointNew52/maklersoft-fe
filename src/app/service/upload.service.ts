@@ -26,6 +26,8 @@ export class UploadService {
         name_obj = name_obj.replace(' ', "_");
 
         let _resourceUrl = this.RS + 'photo';
+        console.log(files[0].toString());
+
         let data_str = JSON.stringify({
             data: files[0],
             userId: this._sessionService.getUser().id,

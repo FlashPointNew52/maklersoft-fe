@@ -14,6 +14,8 @@ import {SessionService} from "../../service/session.service";
 import {Person} from "../../entity/person";
 import {PhoneBlock} from "../../class/phoneBlock";
 import {Organisation} from "../../entity/organisation";
+import {PersonService} from "../../service/person.service";
+import {OrganisationService} from "../../service/organisation.service";
 
 
 @Component({
@@ -39,7 +41,7 @@ import {Organisation} from "../../entity/organisation";
         }
 
         .selected { 
-          background-color: var(--selected-digest) !important;
+          background-color: var(--color-blue) !important;
         }
     `],
     template: `
@@ -134,7 +136,7 @@ import {Organisation} from "../../entity/organisation";
         <div class="head"><span>{{tab.header}}</span></div>
         <div class="pane" [style.width.px]="paneHidden ? 0 : 370">
                <div class = "source_menu">
-                   <div (click)="addRequest()">ДОБАВИТЬ</div>
+                   <div class="add"  (click)="addRequest()">ДОБАВИТЬ</div>
                    <div (click)="toggleSource(0, 'all')" class="average" [class.active]="this.source != 1">ОБЩАЯ</div>
                    <div (click)="toggleSource(1, 'our')"  [class.active]="this.source == 1">КОМПАНИЯ</div>
                </div>
@@ -142,12 +144,13 @@ import {Organisation} from "../../entity/organisation";
                 <div class="fixed-button" (click)="toggleLeftPane()">
                     <div class="arrow" [ngClass]="{'arrow-right': paneHidden, 'arrow-left': !paneHidden}"></div>
                 </div>
-                <div class="digest-list" (contextmenu)="showContextMenu($event)">
+                <div class="digest-list border" (contextmenu)="showContextMenu($event)">
                     <digest-request *ngFor="let req of requests; let i = index" [request]="req"
                             [class.selected]="selectedRequests.indexOf(req) > -1"
                             (click)="select($event, req, i)"
                             (contextmenu)="select($event, req, i)"
                             (dblclick)="dblClick(req)"
+                            [active]="selectedRequests.indexOf(req) > -1"
                     >
                     </digest-request>
                 </div>
@@ -186,13 +189,16 @@ export class TabListRequestComponent implements OnInit {
     sort: any = {};
 
     lastClckIdx: number = 0;
-
+    utilsObj = null;
     constructor(private _configService: ConfigService,
                 private _hubService: HubService,
                 private _requestService: RequestService,
                 private _userService: UserService,
                 private _sessionService: SessionService,
+                private _personService: PersonService,
+                private _organisationService: OrganisationService
     ) {
+        this.utilsObj = new Utils(_sessionService, _personService, _organisationService);
         setTimeout(() => {
             this.tab.header = 'Заявки';
         });
@@ -310,7 +316,7 @@ export class TabListRequestComponent implements OnInit {
                             tab_sys.addTab('offer', {offer: o, canEditable});
                         });
                     }},
-                {class: "entry", disabled:  !Utils.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
+                {class: "entry", disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
                     callback: () => {
                         this.clickMenu({event: "del_obj"});
                     }
@@ -328,7 +334,7 @@ export class TabListRequestComponent implements OnInit {
                             }
                         },
                     ]},
-                {class: "submenu", disabled: !Utils.canImpact(this.selectedRequests), icon: "", label: "Назначить", items: [
+                {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить", items: [
                         {class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
                                 this.clickMenu({event: "del_agent", agent: null});
@@ -365,7 +371,7 @@ export class TabListRequestComponent implements OnInit {
                         block.setShow(true, event);
                     }},
                 {class: "delimiter"},
-                {class: "submenu", disabled:  !Utils.canImpact(this.selectedRequests), icon: "", label: "Назначить тег", items: [
+                {class: "submenu", disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить тег", items: [
                         {class: "tag", icon: "", label: "", offer: this.selectedRequests.length == 1 ? this.selectedRequests[0] : null, tag,
                             callback: (new_tag) => {
                                 this.clickMenu({event: "set_tag", tag: new_tag});
