@@ -26,22 +26,24 @@ import {Output, EventEmitter} from '@angular/core';
         }
 
         .active {
-            background-color: var(--selected-digest);
+            background-color: var(--color-blue);
         }
-
+        .active > span{
+            color: white;
+        }
         .hidden_menu{
-            line-height: 25px;
+            line-height: 30px;
             width: 100%;
             cursor: pointer;
         }
 
         .hidden_menu div{
             padding: 0 40px 0 50px;
-            line-height: 25px;
+            line-height: 30px;
         }
 
         .hidden_menu .selected, .hidden_menu div:hover{
-            background-color: var(--hover-menu);
+            background-color: var(--bottom-border);
         }
 
     `]

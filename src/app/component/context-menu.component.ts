@@ -15,7 +15,7 @@ import {
             font-size: 12px;
             position: absolute;
             z-index: 9999;
-            width: 205px;
+            width: 170px;
             padding: 26px 0;
             border: 0px solid;
             background-color: rgba(255, 255, 255, 1);
@@ -181,25 +181,6 @@ export class ContextMenuComponent implements OnInit, OnChanges {
 
     @Output() dummy: EventEmitter<any> = new EventEmitter();
 
-    click(e: MouseEvent, item) {
-
-        if (item.disabled) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-        }
-
-        if (item.callback && item.class != "tag") {
-            item.callback();
-        }
-        this.hidden = true;
-    }
-
-    docClick() {
-        if(!this.hidden)
-            this.hidden = true;
-    }
-
     constructor(private elementRef: ElementRef) {
     }
 
@@ -229,7 +210,27 @@ export class ContextMenuComponent implements OnInit, OnChanges {
         }
 
     }
+    click(e: MouseEvent, item) {
 
+        if (item.disabled) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+
+        if (item.callback && item.class != "tag") {
+            item.callback();
+        }
+        this.hidden = true;
+    }
+
+    scroll(){
+        this.hidden = true;
+    }
+    docClick() {
+        if(!this.hidden)
+            this.hidden = true;
+    }
     calc_tag(){
         let tag = this.elementRef.nativeElement.querySelector('.tag') as HTMLElement;
         if(tag.offsetHeight != 0){

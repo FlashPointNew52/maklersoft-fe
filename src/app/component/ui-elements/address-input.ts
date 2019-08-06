@@ -14,19 +14,19 @@ import {SuggestionService} from "../../service/suggestion.service";
         <div [hidden]="hidden" class="hidden_menu">
             <div class="option">
                 <div>Регион</div>
-                <input [(ngModel)]="addressStructure.region.value" (keyup)="find('region', addressStructure.region.value, null); top=24">
+                <input [(ngModel)]="addressStructure.region.value" (keyup)="find('region', addressStructure.region.value, null); top=30">
             </div>
             <div class="option">
                 <div>Нас. пункт</div>
-                <input [(ngModel)]="addressStructure.city.value" (keyup)="find('city', addressStructure.city.value, null); top=49">
+                <input [(ngModel)]="addressStructure.city.value" (keyup)="find('city', addressStructure.city.value, null); top=55">
             </div>
             <div class="option">
                 <div>Улица</div>
-                <input [(ngModel)]="addressStructure.street.value" (keyup)="find('street', addressStructure.street.value, addressStructure.city.id); top=74">
+                <input [(ngModel)]="addressStructure.street.value" (keyup)="find('street', addressStructure.street.value, addressStructure.city.id); top=80">
             </div>
             <div class="option">
-                <div>Дом</div>
-                <input [(ngModel)]="addressStructure.building.value" (keyup)="find('building', addressStructure.building.value, addressStructure.street.id); top=99">
+                <div>Дом</div> 
+                <input [(ngModel)]="addressStructure.building.value" (keyup)="find('building', addressStructure.building.value, addressStructure.street.id); top=105">
             </div>
             <div class="option">
                 <div>Квартира</div>
@@ -46,12 +46,12 @@ import {SuggestionService} from "../../service/suggestion.service";
             </div>
             <div class="option">
                 <div>Станция</div>
-                <input [(ngModel)]="addressStructure.station.value">
+                <input [(ngModel)]="addressStructure.station.value"> 
             </div>
             <div class="suggestion" *ngIf="sgList.length > 0" [style.top.px]="top">
                 <span *ngFor="let sg of sgList" (click)="setKladr(sg)">{{sg?.typeShort}}. {{sg?.name}}{{typeAddress == 'city' ? 
                     ", "+ sg.parents[0]?.name + " " + sg.parents[0]?.typeShort : ""}}</span>
-            </div>
+            </div> 
         </div>
     `,
     styles: [`
@@ -65,9 +65,11 @@ import {SuggestionService} from "../../service/suggestion.service";
         }
 
         .active {
-            background-color: var(--selected-digest);
+            background-color: var(--color-blue);
         }
-
+        .active > span{
+            color: white;
+        }
         .hidden_menu{
             position: relative;
             line-height: 25px;
@@ -92,16 +94,19 @@ import {SuggestionService} from "../../service/suggestion.service";
         }
 
         .option:hover,  .option:hover > input{
-            background-color: var(--hover-menu);
+            top: -1px;
+            background-color: var(--bottom-border);
         }
-        
+        .option:hover > div:first-child{
+            padding-top: 1px;
+        }
         .suggestion{
             position: absolute;
             padding: 10px 0;
             background-color: var(--box-backgroung);
             width: 100%;
             left: 0;
-            box-shadow: 0 1px 6px 0 var(--box-shadow);
+            box-shadow: var(--box-shadow);
             z-index: 99;
         }
 
@@ -120,7 +125,7 @@ import {SuggestionService} from "../../service/suggestion.service";
 })
 
 export class AddressInputComponent implements OnInit, OnChanges{
-    public name: string = "Адрес";
+    public name: string = "Адрес предложения";
     public block: AddressBlock;
     public addressType: string;
 

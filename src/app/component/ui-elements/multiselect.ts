@@ -37,9 +37,11 @@ import {Output, EventEmitter} from '@angular/core';
         }
 
         .active {
-            background-color: var(--selected-digest);
+            background-color: var(--color-blue);
         }
-
+        .active > span{
+            color: white;
+        }
         .hidden_menu{
             line-height: 25px;
             width: 100%;
@@ -50,8 +52,8 @@ import {Output, EventEmitter} from '@angular/core';
         .option{
             width: 100%;
             display: inline-flex;
-            height: 22px;
-            line-height: 22px;
+            height: 30px;
+            line-height: 30px;
             margin-top: 6px;
             position: relative; 
         }
@@ -60,7 +62,7 @@ import {Output, EventEmitter} from '@angular/core';
             min-width: 85px;
         }
         selects, input{
-            height: 23px;
+            height: 30px;
             border-bottom: 1px solid var(--bottom-border);
         }
         input{

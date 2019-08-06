@@ -18,8 +18,8 @@
     --color-dark-blue: #252f32;
     --bottom-border: #eaebec;
     --hover-menu: #f7f7f8;
-
-    --box-shadow: 0 1px 6px 0 #bdc0c1;
+    --dark-grey: #677578;
+    --box-shadow: 0 1px 6px 0 var(--color-grey);
 }
 
 * {

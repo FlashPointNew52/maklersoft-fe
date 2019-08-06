@@ -75,7 +75,7 @@ import {Contact} from "../../entity/contact";
         }
 
         .selected {
-            background-color: var(--selected-digest) !important;
+            background-color: var(--color-blue) !important;
         }
         
         .rating{
@@ -86,10 +86,20 @@ import {Contact} from "../../entity/contact";
             width: 200px;
         }
 
-        .rating > ui-star-view{
+        .rating > star-mark{
             width: 76px;
         }
+        digest-offer{
+            border-bottom: 1px solid var(--bottom-border);
+            width: 100%;
+            height: 122px;
+            display: block;
+        }
 
+        .digest-list digest-offer:last-of-type{
+            border-bottom: 1px solid var(--bottom-border);
+        }
+        
     /*.suggestions {
         min-width: 160px;
         margin-top: 27px;
@@ -325,12 +335,6 @@ import {Contact} from "../../entity/contact";
                         <span>Стадия объекта</span>
                         <span class="view-value">{{ offClass.stageCodeOptions[offer?.stageCode]?.label}}</span>
                     </div>
-                    <div class="show_block">
-                        <span>Источник объекта</span>
-                        <span class="view-value" *ngIf="offer.sourceMedia && offer.sourceUrl"><a href="{{offer.sourceUrl}}" target="_blank">{{offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</a></span>
-                        <span class="view-value" *ngIf="offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</span>
-                        <span class="view-value" *ngIf="!offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceOptions[offer?.sourceCode]?.label}}</span>
-                    </div> 
                     <div class="show_block">
                         <span>Ответственный</span>
                         <span class="view-value link">{{ offer.agent?.name}}</span>
@@ -810,12 +814,12 @@ import {Contact} from "../../entity/contact";
                         <span>Охрана</span>
                         <switch-button [value]="offer?.guard" (newValue)="offer.guard = $event"></switch-button>
                     </div>
+                    <address-input [block]="offer?.addressBlock" [addressType]="offer.categoryCode == 'commersial' ? 'office': 'apartment'"
+                                   (newData)="offer.addressBlock = $event.address; offer.location = $event.location; selectedOffers = [offer]"
+                    ></address-input>
                     <input-line [name]="'Жилищный комплекс'" [value]="offer?.housingComplex"
                                 (newValue)="offer.housingComplex = $event"
                     ></input-line>
-                    <address-input [block]="offer?.addressBlock" [addressType]="offer.categoryCode == 'commersial' ? 'office': 'apartment'"
-                        (newData)="offer.addressBlock = $event.address; offer.location = $event.location; selectedOffers = [offer]"
-                    ></address-input> 
                     <div class="show_block" *ngIf="offer.categoryCode != 'land'">
                         <span>Новостройка</span>
                         <switch-button [value]="offer?.newBuilding" (newValue)="offer.newBuilding = $event"></switch-button>
@@ -1021,46 +1025,28 @@ import {Contact} from "../../entity/contact";
                         </div>
                     </ng-container>
                 </ng-container>
-<!--                //TODO: перенести ui-star-view в другую папку и переименовать в стар star-view-->
+<!--                // TODO: переместить label внутрь компонента-->
                 <div class="show_block rating">
                     <span class="view-label">Месторасположение</span>
-                    <ui-star-view [value]="this.offer.locRating?.map['remoteness']" (estimate)="this.offer.locRating.map['remoteness']=$event"
+                    <star-mark [value]="this.offer.locRating?.map['remoteness']" (estimate)="this.offer.locRating.map['remoteness']=$event"
                                   [editable]="editEnabled"
-                    ></ui-star-view>
+                    ></star-mark>
                     <span class="view-label">Транспортная доступность</span>
-                    <ui-star-view [value]="this.offer.locRating?.map['transport']" (estimate)="this.offer.locRating.map['transport']=$event"
+                    <star-mark [value]="this.offer.locRating?.map['transport']" (estimate)="this.offer.locRating.map['transport']=$event"
                                   [editable]="editEnabled"
-                    ></ui-star-view>
+                    ></star-mark>
                     <span class="view-label">Престижность района</span>
-                    <ui-star-view [value]="this.offer.locRating?.map['prestigious']" (estimate)="this.offer.locRating.map['prestigious']=$event"
+                    <star-mark [value]="this.offer.locRating?.map['prestigious']" (estimate)="this.offer.locRating.map['prestigious']=$event"
                                   [editable]="editEnabled"
-                    ></ui-star-view>
+                    ></star-mark>
                     <span class="view-label">Экология</span>
-                    <ui-star-view [value]="this.offer.locRating?.map['ecology']" (estimate)="this.offer.locRating.map['ecology']=$event"
+                    <star-mark [value]="this.offer.locRating?.map['ecology']" (estimate)="this.offer.locRating.map['ecology']=$event"
                                   [editable]="editEnabled"
-                    ></ui-star-view>
+                    ></star-mark>
                     <span class="view-label">Инфраструктура</span>
-                    <ui-star-view [value]="this.offer.locRating?.map['infrastructure']" (estimate)="this.offer.locRating.map['infrastructure']=$event"
+                    <star-mark [value]="this.offer.locRating?.map['infrastructure']" (estimate)="this.offer.locRating.map['infrastructure']=$event"
                                   [editable]="editEnabled"
-                    ></ui-star-view>
-                </div>
-                <div class="show_block rating" *ngIf="offer.typeCode == 'apartment' || offer.typeCode == 'room'">
-                    <span class="view-label">Придомовая территория</span>
-                    <ui-star-view [value]="this.offer.offerRaiting?.map['home_nearest']" (estimate)="this.offer.locRating.map['home_nearest']=$event"
-                                  [editable]="editEnabled"
-                    ></ui-star-view>
-                    <span class="view-label">Вид из окон</span>
-                    <ui-star-view [value]="this.offer.offerRaiting?.map['window_view']" (estimate)="this.offer.locRating.map['window_view']=$event"
-                                  [editable]="editEnabled"
-                    ></ui-star-view>
-                    <span class="view-label">Ремонт / состояние</span>
-                    <ui-star-view [value]="this.offer.offerRaiting?.map['condition']" (estimate)="this.offer.locRating.map['condition']=$event"
-                                  [editable]="editEnabled"
-                    ></ui-star-view>
-                    <span class="view-label">Сантехника</span>
-                    <ui-star-view [value]="this.offer.offerRaiting?.map['sanitary']" (estimate)="this.offer.locRating.map['sanitary']=$event"
-                                  [editable]="editEnabled"
-                    ></ui-star-view>
+                    ></star-mark>
                 </div>
                 <input-area [name]="'Дополнительно'" [value]="offer?.description" [disabled]="!editEnabled" (newValue)="offer.description = $event" [update]="update"></input-area>
             </ui-tab>
@@ -1152,9 +1138,18 @@ import {Contact} from "../../entity/contact";
                 <div>
                     <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Карта</div>
                     <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
+                    <div (click)="workAreaMode = 'photo'" [class.selected]="workAreaMode == 'photo'">Фото</div>
+                    <div (click)="workAreaMode = 'advert'" [class.selected]="workAreaMode == 'advert'">Реклама</div>
+                    <div (click)="workAreaMode = 'egrn'" [class.selected]="workAreaMode == 'egrn'">Выписка из ЕГРН</div>
+                    <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на ипотеку</div>
+                    <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">Заметки</div> 
+                    <div (click)="openNotebook('diary', $event)" [class.selected]="workAreaMode == 'diary'">Ежедневник</div>
+                    <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
+                    <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">IP-телефония</div>
                     <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка</div>
+                    <div (click)="workAreaMode = 'report'" [class.selected]="workAreaMode == 'report'">Отчет</div>
                     <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История</div>
-                    <div class="delete" (click)="$event">Удалить заявку</div>
+                    <div class="delete" (click)="$event">Удалить предложение</div> 
                 </div>
             </div>
         </ui-tabs-menu>
@@ -1167,6 +1162,7 @@ import {Contact} from "../../entity/contact";
                                   (click)="select($event, req, i)"
                                   (contextmenu)="select($event, req, i)"
                                   (dblclick)="openRequest(req)"
+                                    [active]="selectedRequests.indexOf(req) > -1"
                     ></digest-request>
                 </ui-tab>
                 <ui-tab [title]="'БАЗА КОМПАНИИ'" (tabSelect)="source = 1; getRequests();">
@@ -1175,6 +1171,7 @@ import {Contact} from "../../entity/contact";
                                   (click)="select($event, req, i)"
                                   (contextmenu)="select($event, req, i)"
                                   (dblclick)="openRequest(req)"
+                                    [active]="selectedRequests.indexOf(req) > -1"
                     ></digest-request>
                 </ui-tab>
             </ui-tabs-menu>
@@ -1186,7 +1183,9 @@ import {Contact} from "../../entity/contact";
             <yamap-view *ngSwitchCase="'map'"
                         [selected_offers]="selectedOffers"
             >
-            </yamap-view>
+            </yamap-view>  
+            <adv-view *ngSwitchCase="'advert'"></adv-view>
+            <files-view [full]="paneHidden" [type]="'image'" [object_id]="offer.id" [editMode]="editEnabled" *ngSwitchCase="'photo' || 'doc'"></files-view>
         </ng-container>
     </div>
     
@@ -1269,7 +1268,7 @@ export class TabOfferComponent implements OnInit {
                 private _suggestionService: SuggestionService,
                 private _sessionService: SessionService
     ) {
-        this.utilsObj = new Utils(_personService,_organisationService);
+        this.utilsObj = new Utils(_sessionService, _personService, _organisationService);
         setTimeout(() => {
             if (this.offer.id) {
                 this.tab.header = 'Предложение ';
@@ -1322,7 +1321,12 @@ export class TabOfferComponent implements OnInit {
 
         }
     }
+    openNotebook(name, event) {
+        let block = this._hubService.getProperty('notebook');
 
+        block.setMode(name, event);
+        block.setShow(true, event);
+    }
     toggleLeftPane() {
         this.paneHidden = !this.paneHidden;
     }
@@ -1359,15 +1363,7 @@ export class TabOfferComponent implements OnInit {
         }
         this.offer.locRating.map['average'] = middleRat.count > 0 ? middleRat.value/middleRat.count : 0;
 
-        middleRat = {count: 0, value: 0};
-        for(let ratCat in this.offer.offerRaiting.map){
-            if(this.offer.offerRaiting.map[ratCat] > 0){
-                middleRat.count++;
-                middleRat.value += this.offer.offerRaiting.map[ratCat];
-            }
-        }
 
-        this.offer.offerRaiting.map['average'] = middleRat.count > 0 ? middleRat.value/middleRat.count : 0;
         if(this.contact.type == 'person'){
             this._personService.save(this.contact as Person).subscribe(person => {
                 if(person) {

@@ -129,7 +129,6 @@ export class Offer {
     offerRef: number;
     // райтинги
     locRating: Rating;
-    offerRaiting: Rating;
 
     constructor() {
         // set default vals
@@ -150,8 +149,6 @@ export class Offer {
         this.emailBlock = new EmailBlock();
         this.locRating = new Rating();
         this.locRating.map = {average : 0};
-        this.offerRaiting = new Rating();
-        this.offerRaiting.map = {average : 0};
         this.conditions = new ConditionsBlock();
     }
 

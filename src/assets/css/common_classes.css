@@ -95,7 +95,9 @@ main{
     color: #252F32;
     font-size: 12px;
 }
-
+input::placeholder{
+    color: var(--dark-grey) !important;
+}
 
 .find_icon:before{
     content: "\E094";
@@ -179,6 +181,10 @@ main{
     overflow: hidden auto;
     background-color: rgb(255, 255, 255);
     height: calc(100% - 75px);
+
+}
+.digest-list.border{
+    border-top: 1px solid var(--color-blue);
 }
 
 .fixed-button {
@@ -249,6 +255,11 @@ main{
   background-color: #3b5998;
   color: #fff;
 }
+.source_menu > .add:hover{
+    background-color: #008000;
+    border-color: #008000;
+    color: #fff;
+}
 .source_menu > .average {
     border-left: none;
     border-right: solid rgba(59, 89, 152, 1) 1px;
@@ -276,6 +287,17 @@ main{
 }
 .source_menu .active:hover{
     border-left: solid rgba(59, 89, 152, 1) 1px;
+}
+
+.source_menu > .add {
+    border-color: rgba(59, 89, 152, 1);
+    border-right: 1px solid white;
+}
+.source_menu > .add:hover{
+    background-color: #008000;
+    border-color: #008000;
+    color: #fff;
+    border-left: solid #008000 1px;
 }
 
 .source_menu .edit_ready {
@@ -339,7 +361,7 @@ ui-tabs-menu > ui-tab:not(:empty):after {
 .more > div{
     display: none;
     background-color: white;
-    width: 140px;
+    width: 165px;
     position: absolute;
     box-shadow: 0 1px 6px 0 #bdc0c1;
     background-clip: padding-box;
@@ -347,7 +369,7 @@ ui-tabs-menu > ui-tab:not(:empty):after {
     z-index: 10;
     text-align: left;
     padding-top: 8px;
-    right: -65px;
+    right: -85px;
 }
 
 .more:hover > div{
@@ -381,20 +403,24 @@ div.delete:active{
 }
 sliding-menu, multiselect-menu, sliding-tag, address-input{
     width: 100%;
-    line-height: 27px;
+    line-height: 30px;
 }
 
 sliding-menu:hover > div:first-child, multiselect-menu:hover > div:first-child, sliding-tag:hover > div:first-child, address-input:hover > div:first-child{
-    background-color: #D3D5D6;
+    background-color: var(--color-blue);
 }
-
+sliding-menu:hover > .menu_header > span, multiselect-menu:hover > .menu_header > span, sliding-tag:hover > .menu_header > span, address-input:hover > .menu_header > span{
+    color: white;
+}
 input-line, input-area{
     position: relative;
     width: calc(100% - 50px);
     display: block;
     margin: 7px 25px 0 25px;
 }
-
+.input-line::placeholder{
+    color: var(--dark-grey);
+}
 .show_block{
     min-height: 30px;
     width: 100%;
@@ -842,3 +868,4 @@ digest-organisation.alreadyAdd:hover span, digest-organisation.alreadyAdd:hover 
     color: initial !important;
     font-weight: initial !important;
 }
+/*Стили для селектов (address-input, sliding-menu и т.д)*/

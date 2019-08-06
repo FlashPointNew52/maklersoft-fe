@@ -10,7 +10,7 @@ import {Person} from "../../entity/person";
 
 @Component({
     selector: 'digest-offer',
-    inputs: ['offer', 'dateType'],
+    inputs: ['offer', 'dateType', 'active'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     styles: [`
         .billet {
@@ -22,6 +22,7 @@ import {Person} from "../../entity/person";
             display: flex;
             flex-direction: column;
             justify-content: start;
+            height: 121px;
         }
 
         .billet:hover {
@@ -30,13 +31,12 @@ import {Person} from "../../entity/person";
         }
 
         .timestamp {
-                flex-grow: 1;
+            flex-grow: 1;
             font-size: 12px;
             color: #677578;
             text-align: left;
             margin-right: 10px;
         }
-
         ui-tag {
             position: absolute;
             left: 0;
@@ -55,7 +55,9 @@ import {Person} from "../../entity/person";
             line-height: 13px;
             min-height: 13px;
         }
-
+        .row1.active, .row2.active, .row3.active, .row4.active, .row5.active,.row1.active > .timestamp, .row1.active > a, .row1.active > span, .row5.active > .price > span:first-child{
+            color: white !important;
+        }
         .row2, .row3, .row4 {
             display: block;
         }
@@ -75,8 +77,8 @@ import {Person} from "../../entity/person";
         .row1 > a{
             color: #0E3E9B;
             width: 114px;
+            text-align: end;
         }
-
         .row1 > span:not(:last-of-type),  .row1 > span:not(:last-of-type) + span{
             color: #252F32;
         }
@@ -126,15 +128,15 @@ import {Person} from "../../entity/person";
         .row5 > .price > span:first-child{
             font-size: 14px;
         }
-
+      
     `],
     template: `
         <div class="billet" id="r{{offer.id}}">
             <ui-tag [value]="offer.tag"> </ui-tag>
-            <div class="row1">
-                <div class="timestamp"> {{ utils.getDateInCalendar(offer[dateType] || offer.changeDate || offer.addDate) }} </div>
+            <div class="row1" [class.active]="active">
+                <div class="timestamp" > {{ utils.getDateInCalendar(offer[dateType] || offer.changeDate || offer.addDate) }} </div>
                 <a *ngIf="offer.agentId || offer.personId || offer.companyId" (click)="openContact()">
-                    {{offer.agent?.name || offer.person?.name || offer.company?.name ||
+                    {{utils.trancateFio(offer.agent?.name || offer.person?.name || offer.company?.name) ||
                     ((pb.getNotNullData(offer.phoneBlock) | mask: '+0 (000) 000-00-00') || "") }}
                 </a>
 
@@ -143,7 +145,7 @@ import {Person} from "../../entity/person";
                 </span>
 
             </div>
-            <div class="row2" >
+            <div class="row2" [class.active]="active">
                     {{ (typeCodeOptionsHash[offer.typeCode] || "")
                     + (offer.roomsCount ? ", "+ offer.roomsCount+" комн." : "")
                     + (offer.floor  === undefined ? ", ?/" : ", "+ offer.floor+"/")
@@ -152,22 +154,22 @@ import {Person} from "../../entity/person";
                     + (offer.squareLiving  === undefined ? "?/" : ""+ offer.squareLiving +"/")
                     + (offer.squareKitchen  === undefined ? "?" : ""+ offer.squareKitchen) }}
             </div>
-            <div class="row3">
+            <div class="row3" [class.active]="active">
                     {{ offer.addressBlock.street === undefined ? "" : offer.addressBlock.street }}
                     {{ offer.addressBlock.building === undefined ? "" : (" " + offer.addressBlock.building) }}
                     {{ offer.addressBlock.city === undefined ? " " : ", " + offer.addressBlock.city }}
             </div> 
-            <div class="row4">
+            <div class="row4" [class.active]="active">
                     {{ offer.addressBlock.admArea === undefined ? "" : offer.addressBlock.admArea }}
                     {{ offer.addressBlock.area === undefined ? "" : ", " + offer.addressBlock.area }}
                     {{ offer.addressBlock?.busStop === undefined ? "" : ", " + offer.addressBlock.busStop }}
             </div>
-            <div class="row5" *ngIf="offer.offerTypeCode == 'sale'">
-                <div class="price">
+            <div class="row5" *ngIf="offer.offerTypeCode == 'sale'" [class.active]="active">
+                <div class="price" >
                     <span>{{utils.getNumWithDellimet((offer.ownerPrice || 0) * 1000)}} P</span>
                 </div>
             </div>
-            <div class="row5" *ngIf="offer.offerTypeCode == 'rent'">
+            <div class="row5" *ngIf="offer.offerTypeCode == 'rent'" [class.active]="active">
                 <div class="price">
                     <span>{{utils.getNumWithDellimet((offer.ownerPrice || 0) * 1000)}} P</span>
                 </div>
@@ -177,7 +179,7 @@ import {Person} from "../../entity/person";
 })
 
 export class DigestOfferComponent implements OnInit{
-
+    public active: boolean;
     public offer: Offer;
     public dateType: string = "addDate";
 
