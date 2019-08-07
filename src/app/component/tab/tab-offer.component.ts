@@ -118,7 +118,7 @@ import {Contact} from "../../entity/contact";
     <div class="search-form" *ngIf="mode == 1">
         <input type="text" class="input_line" placeholder="Введите текст запроса" [style.width]="'100%'"
             [(ngModel)]="searchQuery" (keyup)="$event" [disabled]="!editEnabled"
-        ><span class="find_icon_left"></span>
+        ><span class="find_icon_right"></span>
         <div class="tool-box" >
             <filter-select *ngIf="offer.offerTypeCode == 'sale'"
                 [name]="'Тип сделки'"
