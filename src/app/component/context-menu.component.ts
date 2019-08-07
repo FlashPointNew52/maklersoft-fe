@@ -88,7 +88,14 @@ import {
         .entry:hover {
             background-color: #e0e0e0;
         }
-
+        .entry.del:hover{
+            background-color: var(--color-red1);
+            color: white;
+        }
+        .entry.del:active{
+            background-color: #8b0000;
+            color: white;
+        }
         .disabled {
             /*background-color: #fff;
             color: #aaa;
@@ -119,7 +126,7 @@ import {
             <div
                 *ngFor="let i of menu?.items"
                 [ngSwitch]="i.class"
-                (click)="click($event, i)"
+                (click)="click($event, i)" 
             >
                 <div *ngSwitchCase="'submenu'" class="entry submenu-sc" [class.disabled]="i.disabled" style="position: relative;" (mouseenter)="calc_tag()">
                     <span *ngIf="i.icon" class="icon-{{ i.icon }}"></span>
@@ -130,7 +137,7 @@ import {
                             [ngSwitch]="si.class"
                             (click)="click($event, si)"
                         >
-                            <div *ngSwitchCase="'entry'" class="entry" [class.disabled]="si.disabled">
+                            <div *ngSwitchCase="'entry'" class="entry" [class.disabled]="si.disabled" >
                                 <span *ngIf="si.icon" class="icon-{{ si.icon }}"></span>
                                 {{ si.label }}
                             </div>
@@ -151,7 +158,7 @@ import {
                         </div>
                     </div>
                 </div>
-                <div *ngSwitchCase="'entry'" class="entry" [class.disabled]="i.disabled">
+                <div *ngSwitchCase="'entry'"  [class.del]="i.sub_class == 'del'" class="entry" [class.disabled]="i.disabled">
                     <span *ngIf="i.icon" class="icon-{{ i.icon }}"></span>
                     {{ i.label }}
                 </div>

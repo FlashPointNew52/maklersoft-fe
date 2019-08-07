@@ -12,21 +12,21 @@ import {SuggestionService} from "../../service/suggestion.service";
             <span>{{name}}</span>
         </div>
         <div [hidden]="hidden" class="hidden_menu">
-            <div class="option">
+            <div class="option"> 
                 <div>Регион</div>
                 <input [(ngModel)]="addressStructure.region.value" (keyup)="find('region', addressStructure.region.value, null); top=30">
             </div>
             <div class="option">
                 <div>Нас. пункт</div>
-                <input [(ngModel)]="addressStructure.city.value" (keyup)="find('city', addressStructure.city.value, null); top=55">
+                <input [(ngModel)]="addressStructure.city.value" (keyup)="find('city', addressStructure.city.value, null); top=60">
             </div>
             <div class="option">
                 <div>Улица</div>
-                <input [(ngModel)]="addressStructure.street.value" (keyup)="find('street', addressStructure.street.value, addressStructure.city.id); top=80">
+                <input [(ngModel)]="addressStructure.street.value" (keyup)="find('street', addressStructure.street.value, addressStructure.city.id); top=90">
             </div>
             <div class="option">
                 <div>Дом</div> 
-                <input [(ngModel)]="addressStructure.building.value" (keyup)="find('building', addressStructure.building.value, addressStructure.street.id); top=105">
+                <input [(ngModel)]="addressStructure.building.value" (keyup)="find('building', addressStructure.building.value, addressStructure.street.id); top=120">
             </div>
             <div class="option">
                 <div>Квартира</div>
@@ -106,7 +106,7 @@ import {SuggestionService} from "../../service/suggestion.service";
             background-color: var(--box-backgroung);
             width: 100%;
             left: 0;
-            box-shadow: var(--box-shadow);
+            box-shadow: 2px 5px 5px 0 var(--color-grey);
             z-index: 99;
         }
 

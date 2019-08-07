@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit} from '@angular/core';
+import {Component, OnInit, AfterViewInit, Output, EventEmitter} from '@angular/core';
 
 import {HubService} from '../../service/hub.service';
 import {ConfigService} from '../../service/config.service';
@@ -75,13 +75,13 @@ import {Contact} from "../../entity/contact";
         }
 
         .selected {
-            background-color: var(--color-blue) !important;
+            background-color: var(--color-blue);
         }
 
         .rating{
             flex-wrap: wrap;
         }
-
+ 
         .rating > span{
             width: 200px;
         }
@@ -118,7 +118,7 @@ import {Contact} from "../../entity/contact";
     <div class="search-form" *ngIf="mode == 1">
         <input type="text" class="input_line" placeholder="Введите текст запроса" [style.width]="'100%'"
             [(ngModel)]="searchQuery" (keyup)="$event" [disabled]="!editEnabled"
-        ><span class="find_icon_left"></span>
+        ><span class="find_icon_right"></span>
         <div class="tool-box" >
             <filter-select *ngIf="offer.offerTypeCode == 'sale'"
                 [name]="'Тип сделки'"
@@ -213,7 +213,7 @@ import {Contact} from "../../entity/contact";
     <div class="pane" [style.left.px]="paneHidden ? -339 : null">
         <div class = "source_menu">
             <div [class.active]="mode == 0" (click)="mode = 0">ПРЕДЛОЖЕНИЕ</div>
-            <div [class.active]="mode == 1"  class="last" (click)="mode = 1; filter.offerTypeCode = offer.offerTypeCode;">ЗАЯВКИ</div>
+            <div [class.active]="mode == 1"  class="last" (click)="mode = 1; filter.offerTypeCode = offer.offerTypeCode; workAreaMode = 'map'">ЗАЯВКИ</div>
             <div class="edit_ready" *ngIf="mode == 0">
                 <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
                 <span class="link" *ngIf="editEnabled && canEditable" (click)="save()">Готово</span>
@@ -1235,7 +1235,7 @@ export class TabOfferComponent implements OnInit {
     utils = Utils;
     utilsObj = null;
     openPopup: any = {visible: false};
-
+    @Output() block_changed: EventEmitter<any> = new EventEmitter();
     agentOpts: any[] = [{class:'entry', value: null, label: "Не назначено"}];
     similarOffers: Offer[] = [];
     isNotContact: boolean = false;

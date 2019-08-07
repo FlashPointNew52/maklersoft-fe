@@ -283,6 +283,10 @@ import {Utils} from "../../class/utils";
             position: absolute;
             left: calc(50% - 100px);
             top: -75px;
+            display: flex;
+        }
+        .block-title div:first-child{
+            margin-right: 15px;
         }
         .block-title div{
             font-size: 20px;
@@ -436,7 +440,7 @@ import {Utils} from "../../class/utils";
     `],
     template: `
         <div class="block-title" >
-            <div>ФОТО ПРЕДЛОЖЕНИЯ {{photos.length}}</div>
+            <div>ФОТО ПРЕДЛОЖЕНИЯ</div><div>({{photos.length}})</div>
         </div>
         <div class="files_body_new" [class.full]="full">
             <ul>

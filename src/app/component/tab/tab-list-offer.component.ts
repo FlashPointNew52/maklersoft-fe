@@ -49,7 +49,7 @@ import {Utils} from "../../class/utils";
     `],
     template: `
 
-        <div class="search-form">
+        <div class="search-form" *ngIf="workAreaMode != 'advert' && workAreaMode != 'photo'">
             <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'calc(100% - 108px)'"
                    [(ngModel)]="searchQuery" (keyup)="searchStringChanged($event)"
             ><span class="find_icon"></span>
@@ -167,7 +167,7 @@ import {Utils} from "../../class/utils";
             <div class="fixed-button" (click)="toggleLeftPane()">
                 <div class="arrow" [ngClass]="{'arrow-right': paneHidden, 'arrow-left': !paneHidden}"></div>
             </div>
-            <div class="digest-list border" (contextmenu)="showContextMenu($event)">
+            <div class="digest-list border" (contextmenu)="showContextMenu($event)" (offClick)="this._hubService.shared_var['cm_hidden'] = true"> 
                 <digest-offer *ngFor="let offer of offers; let i = index" [offer]="offer"
                                 [active]="selectedOffers.indexOf(offer) > -1"
                                 [class.selected]="selectedOffers.indexOf(offer) > -1"
@@ -176,6 +176,7 @@ import {Utils} from "../../class/utils";
                                 (click)="select($event, offer, i)"
                                 (contextmenu)="select($event, offer, i)"
                                 (dblclick)="dblClick(offer)"
+                              
                 ></digest-offer>
             </div>
         </div>
@@ -191,7 +192,8 @@ import {Utils} from "../../class/utils";
                             (showSameOffers) = "showSameOffers($event)"
                 >
                 </yamap-view>
-                <adv-view *ngSwitchCase="'advert'"></adv-view>
+                <adv-view *ngSwitchCase="'advert'" [count]="selectedOffers.length"></adv-view>
+                <files-view [full]="paneHidden" [type]="'image'" [object_id]="cur_id" [editMode]="false" *ngSwitchCase="'photo' || 'doc'"></files-view>
             </ng-container>
         </div>
     `
@@ -204,6 +206,7 @@ export class TabListOfferComponent implements OnInit{
     searchQuery: string = "";
     searchArea: GeoPoint[] = [];
     workAreaMode: string = 'map';
+    cur_id: any;
     sgList: string[] = [];
     filter: any = {
         isMiddleman: 'all',
@@ -408,7 +411,7 @@ export class TabListOfferComponent implements OnInit{
             pY: e.pageY,
             scrollable: false,
             items: [
-                {class: "entry", disabled: this.selectedOffers.length == 1 ? false : true, icon: "", label: 'Проверить', callback: () => {
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: 'Проверить', callback: () => {
                     this.openPopup = {visible: true, task: "check"};
                     /*var tab_sys = this._hubService.getProperty('tab_sys');
                     var rq = [];
@@ -422,11 +425,11 @@ export class TabListOfferComponent implements OnInit{
                 {class: "entry", disabled: false, icon: "", label: 'Открыть', callback: () => {
                     let tab_sys = this._hubService.getProperty('tab_sys');
                     this.selectedOffers.forEach(o => {
-                        let canEditable = this.source == OfferSource.IMPORT ? false : true && (this._sessionService.getUser().accountId == o.accountId);
+                        let canEditable = this.source == OfferSource.IMPORT ? false : (this._sessionService.getUser().accountId == o.accountId);
                         tab_sys.addTab('offer', {offer: o, canEditable});
                     });
                 }},
-                {class: "entry", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: 'Удалить',
+                {class: "entry", sub_class: 'del', disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: 'Удалить',
                     callback: () => {
                         this.clickMenu({event: "del_obj"});
                     }
@@ -440,14 +443,15 @@ export class TabListOfferComponent implements OnInit{
                         });
                     }
                 },
-                {class: "entry", disabled: this.selectedOffers.length == 1 ? false : true, icon: "", label: "Показать фото",
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Показать фото",
                     callback: () => {
-                        this.clickMenu({event: "photo"});
+                        this.cur_id = this.selectedOffers[0].id;
+                        this.workAreaMode = 'photo';
                     }
                 },
                 {class: "delimiter"},
                 {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
-                    {class: "entry", disabled: this.source == OfferSource.LOCAL ? true : false, label: "Как Предложение",
+                    {class: "entry", disabled: this.source == OfferSource.LOCAL, label: "Как Предложение",
                         callback: () => {
                             this.clickMenu({event: "add_to_local"});
                         }
@@ -470,12 +474,20 @@ export class TabListOfferComponent implements OnInit{
                       }
                     }
                 ].concat(uOpt)},
-                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: [
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
 
-                ]},
-                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: [
+                        block.setMode("diary", event);
+                        block.setShow(true, event);
+                    }
+                },
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
 
-                ]},
+                        block.setMode("notes", event);
+                        block.setShow(true, event);
+                    }
+                },
                 {class: "entry", disabled: false, icon: "", label: "Добавить в рекламу", callback: () => {
                     this.workAreaMode = 'advert';
                     }
@@ -487,18 +499,57 @@ export class TabListOfferComponent implements OnInit{
                     {class: "entry", disabled: false, label: "Email3"},
                 ]},
                 {class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
-                    {class: "entry", disabled: false, label: "Номер1"},
-                    {class: "entry", disabled: false, label: "Номер2"},
-                    {class: "entry", disabled: false, label: "Номер3"},
+                    {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                            let block = this._hubService.getProperty('notebook');
+
+                            block.setMode("chat", event);
+                            block.setShow(true, event);
+                        }
+                    },
+                    {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                            let block = this._hubService.getProperty('notebook');
+
+                            block.setMode("chat", event);
+                            block.setShow(true, event);
+                        }
+                    },
+                    {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                            let block = this._hubService.getProperty('notebook');
+
+                            block.setMode("chat", event);
+                            block.setShow(true, event);
+                        }
+                    },
                 ]},
                 {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
-                    {class: "entry", disabled: false, label: "Номер1"},
-                    {class: "entry", disabled: false, label: "Номер2"},
-                    {class: "entry", disabled: false, label: "Номер3"},
-                ]},
-                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: [
+                    {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                            let block = this._hubService.getProperty('notebook');
 
+                            block.setMode("phone", event);
+                            block.setShow(true, event);
+                        }
+                    },
+                    {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                            let block = this._hubService.getProperty('notebook');
+
+                            block.setMode("phone", event);
+                            block.setShow(true, event);
+                        }
+                    },
+                    {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                            let block = this._hubService.getProperty('notebook');
+
+                            block.setMode("phone", event);
+                            block.setShow(true, event);
+                        }
+                    },
                 ]},
+                {class: "submenu", disabled: false, icon: "", label: "Написать в чат",  callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+
+                        block.setMode("chat", event);
+                        block.setShow(true, event);
+                    }},
                 {class: "delimiter"},
                 {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить тег", items: [
                     {class: "tag", icon: "", label: "", offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null, tag,

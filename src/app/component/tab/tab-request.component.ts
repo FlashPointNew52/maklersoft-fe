@@ -64,7 +64,7 @@ import {ObjectBlock} from "../../class/objectBlock";
         }
 
         .selected {
-            background-color: var(--color-blue) !important;
+            background-color: var(--color-blue) 
         }
         digest-offer{
             border-bottom: 1px solid var(--bottom-border);
