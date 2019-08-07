@@ -26,7 +26,8 @@ export class UploadService {
         name_obj = name_obj.replace(' ', "_");
 
         let _resourceUrl = this.RS + 'photo';
-        console.log(files[0].toString());
+        const formData = new FormData();
+        formData.append('file', postData);
 
         let data_str = JSON.stringify({
             data: files[0],
@@ -49,7 +50,8 @@ export class UploadService {
                 ret_subj.next(url);
                 ret_subj.complete();
         });*/
-        this._http.post(_resourceUrl, data_str, { withCredentials: true}).pipe(
+        console.log(formData);
+        this._http.post(_resourceUrl, formData, { withCredentials: true}).pipe(
             map((res: Response) => res)).subscribe(
                 raw => {
                   let data = JSON.parse(JSON.stringify(raw));

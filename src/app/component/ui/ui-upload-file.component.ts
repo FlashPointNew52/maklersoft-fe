@@ -250,9 +250,8 @@ export class UIUploadFile implements OnInit{
         this.imageLoaded = true;
     }
 
-    handleInputChange(e) {
-        console.log(e);
-        let files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+    handleInputChange(event) {
+        let files = event.dataTransfer ? event.dataTransfer.files : event.target.files;
         let pattern = this.pattern;
         let reader = new FileReader();
         let type = this.type;
@@ -289,7 +288,7 @@ export class UIUploadFile implements OnInit{
            reader.onload = (() =>{
                if(type == 'image'){
 
-                   _uploadService.uploadPhoto(null, [file], obj_type, objId, file.name).subscribe(data => {
+                   _uploadService.uploadPhoto(file, file, obj_type, objId, file.name).subscribe(data => {
                        progressState.emit(100);
                        addNewFile.emit(data);
                        readFile(index+1);
