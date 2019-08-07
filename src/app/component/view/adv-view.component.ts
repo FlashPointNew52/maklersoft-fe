@@ -7,7 +7,7 @@ import {ConfigService} from '../../service/config.service';
 
 @Component({
     selector: 'adv-view',
-    inputs: ['offer', 'editMode'],
+    inputs: ['offer', 'editMode', 'count'],
     styles: [`
         .adv_header{
             width: calc(100vw - 370px - 30px);
@@ -178,14 +178,18 @@ import {ConfigService} from '../../service/config.service';
             position: absolute;
             left: calc(50% - 100px);
             top: -75px;
+            display: flex;
         }
-        .block-title div{
+        .block-title div:first-child{
+            margin-right: 15px;
+        }
+        .block-title div{ 
             font-size: 20px;
         }
     `],
     template: `
         <div class="block-title" >
-            <div>ИМПОРТ ПРЕДЛОЖЕНИЯ В РЕКЛАМУ</div>
+            <div>ИМПОРТ ПРЕДЛОЖЕНИЯ В РЕКЛАМУ</div><div>({{count}})</div>  
         </div>
         <div class="adv-buttons-mode">
             <div class="adv-button" (click)="button_mode = 'adv_areas'; cur_arr = platforms" [class.selected]="button_mode == 'adv_areas'">РЕКЛАМНЫЕ ПЛОЩАДКИ</div>
@@ -250,7 +254,7 @@ import {ConfigService} from '../../service/config.service';
 
 export class AdvView implements OnInit, OnChanges {
     public offers: Array<any> = [];
-
+    public count: number;
     public editMode: boolean = false;
     button_mode = 'adv_areas';
     cur_arr: any;
