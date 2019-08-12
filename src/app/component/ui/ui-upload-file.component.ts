@@ -208,7 +208,6 @@ export class UIUploadFile implements OnInit{
     pattern: RegExp;
     multiple: boolean;
 
-    @Output() fileChange: EventEmitter<any> = new EventEmitter();
     @Output() addNewFile: EventEmitter<any> = new EventEmitter();
     @Output() progressState: EventEmitter<any> = new EventEmitter();
 
@@ -254,61 +253,32 @@ export class UIUploadFile implements OnInit{
         let files = event.dataTransfer ? event.dataTransfer.files : event.target.files;
         let pattern = this.pattern;
         let reader = new FileReader();
-        let type = this.type;
-        let objId = this.obj_id;
-        let obj_type = this.obj_type;
-        let _uploadService = this._uploadService;
-        let addNewFile = this.addNewFile;
-        let progressState = this.progressState;
-        console.log(files);
-        reader.onloadstart = ((event) => {
+
+        reader.onloadstart = (() => {
             this.progressState.emit(0);
         });
-        reader.onprogress = ((event) => {
 
+        reader.onload = (() =>{
+            for(let file of files){
+                if (!file.type.match(pattern))  {
+                    alert("Файл " + file.name + " не поддерживается");
+                    return;
+                }
+                if (file.size == 0)  {
+                    alert("Внимание! Файл " + file.name+" пустой");
+                    return;
+                }
+            }
+
+            this._uploadService.uploadFiles(files).subscribe(data => {
+                if(data.progress)
+                    this.progressState.emit(data.progress);
+                else if(data.files)
+                    this.addNewFile.emit(data.files);
+            });
         });
 
-        reader.onloadend = ((event) => {
-
-        });
-
-        function readFile(index) {
-           if( index >= files.length )return;
-           let file = files[index];
-           if (!file.type.match(pattern))  {
-               alert("Файл " + file.name + " не поддерживается");
-               readFile(index+1);
-               return;
-           }
-           if (file.size == 0)  {
-               alert("Внимание! Файл " + file.name+" пустой");
-               readFile(index+1);
-               return;
-           }
-           reader.onload = (() =>{
-               if(type == 'image'){
-
-                   _uploadService.uploadPhoto(file, file, obj_type, objId, file.name).subscribe(data => {
-                       progressState.emit(100);
-                       addNewFile.emit(data);
-                       readFile(index+1);
-                   });
-               } else if(type == 'document'){
-                   _uploadService.uploadDoc(null, [file], obj_type, objId, file.name).subscribe(data => {
-                       progressState.emit(100);
-                       addNewFile.emit(data);
-                       readFile(index+1);
-                   });
-               }
-
-           });
-           if(type == 'image')
-              reader.readAsDataURL(file);
-           else if(type == 'document')
-              reader.readAsDataURL(file);
-       }
-
-       readFile(0);
+        reader.readAsDataURL(files[0]);
 
     }
 
