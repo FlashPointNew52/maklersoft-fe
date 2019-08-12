@@ -127,7 +127,12 @@ import {ObjectBlock} from "../../class/objectBlock";
             height: calc(50% - 117px);
             border-bottom: 1px solid #bdc0c1;
         }
-
+        .ui-view-value{
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+        }
     `],
     template: `
         <div class="property_face">
@@ -139,17 +144,16 @@ import {ObjectBlock} from "../../class/objectBlock";
             </div>
             <div class="last_name">{{utils.getSurname(user.name) || "Неизвестно"}}</div>
             <div class="first_name">{{utils.getFirstName(user.name) || "Неизвестно"}}</div>
-            <ui-view-value
-                [options]="positionOptions"
-                [value]="user.position"
-            >
-            </ui-view-value>
+            <div class="ui-view-value" [ngStyle]="positionOptions">
+                {{ userClass.positionOptionsByDepart[user.department][user.position]?.label }}
+            </div>
 
         </div>
         <hr class='underline'>
+        <hr class='underline progress_bar' [style.width]="progressWidth+'vw'"> 
         <div class="pane">
             <div class="edit_ready">
-                <span class="link" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
+                <span class="link"  style="    z-index: 99;" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
                 <span class="link" *ngIf="editEnabled" (click)="save()">Готово</span>
             </div>
             <ui-tabs-menu>
@@ -461,17 +465,17 @@ import {ObjectBlock} from "../../class/objectBlock";
                 </div>
                 <div class="graf_block">
                   <div class="graf1">
-                    <digest-timeline-chart></digest-timeline-chart>
+<!--                    <digest-timeline-chart></digest-timeline-chart>-->
                   </div>
                   <div class="graf2">
-                    <digest-line-chart
-                      [title]="'РЕЙТИНГ В ДИНАМИКЕ'" [variant] = "1"
-                    ></digest-line-chart>
+<!--                    <digest-line-chart-->
+<!--                      [title]="'РЕЙТИНГ В ДИНАМИКЕ'" [variant] = "1"-->
+<!--                    ></digest-line-chart>-->
                   </div>
                   <div class="graf3">
-                    <digest-line-chart
-                      [title]="'АКТИВНОСТЬ ВЗАИМОДЕЙСТВИЯ'" [variant] = "0"
-                    ></digest-line-chart>
+<!--                    <digest-line-chart-->
+<!--                      [title]="'АКТИВНОСТЬ ВЗАИМОДЕЙСТВИЯ'" [variant] = "0"-->
+<!--                    ></digest-line-chart>-->
                   </div>
                 </div>
 
@@ -482,7 +486,8 @@ import {ObjectBlock} from "../../class/objectBlock";
 export class TabUserComponent implements OnInit, AfterViewInit {
     public tab: Tab;
     user: User;
-
+    progressWidth: number = 0;
+    progressTimer: number;
     block = ObjectBlock;
     utils = Utils;
     userClass = User;
@@ -622,11 +627,24 @@ export class TabUserComponent implements OnInit, AfterViewInit {
     }
 
     addFile(event){
-        this.user.photo = event;
-        this.user.photoMini = event;
+        this.user.photo = event[0].href;
+        this.user.photoMini = event[0].href;
     }
 
-    public displayProgress($event: any) {
-        
+    public displayProgress(event) {
+        clearInterval(this.progressTimer);
+        this.progressWidth = event;
+        if(event < 100){
+            this.progressTimer = setInterval(()=>{
+                if (this.progressWidth >= 80) {
+                    clearInterval(this.progressTimer);
+                } else {
+                    this.progressWidth++;
+                }
+            }, 10);
+        } else {
+            this.progressWidth = 100;
+            setTimeout(()=>{this.progressWidth = 0;}, 1000);
+        }
     }
 }

@@ -19,6 +19,8 @@
     --bottom-border: #eaebec;
     --hover-menu: #f7f7f8;
     --dark-grey: #677578;
+    --color-notif: #F5F3EB;
+    --notif-border: #EEEBDD;
     --box-shadow: 0 1px 6px 0 var(--color-grey);
 }
 

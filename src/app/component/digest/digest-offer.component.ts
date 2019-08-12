@@ -26,7 +26,7 @@ import {Person} from "../../entity/person";
         }
 
         .billet:hover {
-            background-color: var(--billet-hover);
+            background-color: var(--bottom-border);
             cursor: pointer;
         }
 

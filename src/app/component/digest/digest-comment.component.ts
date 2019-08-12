@@ -108,14 +108,17 @@ import {SessionService} from "../../service/session.service";
         }
 
         .estimate div:first-child {
-            width: 15px;
-            height: 15px;
+            width: 26px;
+            height: 26px;
             float: right;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 13px;
             margin-top: -3px;
             background-size: cover;
             margin-left: 10px;
-            background: #c8c8c8 url(/assets/person_icon/like.png) no-repeat center;
+            background: url(../../../assets/like.png) no-repeat center;
         }
 
         .estimate div:last-child {
@@ -126,7 +129,7 @@ import {SessionService} from "../../service/session.service";
         }
 
         .estimate .selected {
-            background-color: #8c8c8c !important;
+            background-color: var(--bottom-border) !important;
         }
     `],
 
@@ -147,13 +150,13 @@ import {SessionService} from "../../service/session.service";
                 </span>
               <div class="estimate">
                   <div (click)="estimate(true)" [class.selected]="comment.like_users.indexOf(ses_agent.id) > -1"
-                  ></div>
+                  ><img src="../../../assets/like.png" alt="like" style="width: 20px; height: 20px"></div>
                   <div>{{comment.like_count}}</div>
               </div>
               <div class="estimate" style="right: 70px">
-                  <div (click)="estimate(false)" style="margin-top: 0px; transform: rotate(180deg);"
+                  <div (click)="estimate(false)" style=" transform: rotate(180deg);"
                        [class.selected]="comment.dislike_users.indexOf(ses_agent.id) > -1"
-                  ></div>
+                  ><img src="../../../assets/like.png" alt="like" style="width: 20px; height: 20px"></div>
                     <div>{{comment.dislike_count}}</div>
               </div>
           </div>

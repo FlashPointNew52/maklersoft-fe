@@ -8,6 +8,7 @@ import {UploadService} from '../../service/upload.service';
 import * as moment from 'moment/moment';
 import 'moment/locale/ru.js';
 import {Utils} from "../../class/utils";
+import {UploadFile} from "../../class/uploadFile";
 
 @Component({
     selector: 'files-view',
@@ -245,12 +246,15 @@ import {Utils} from "../../class/utils";
         .photo-style{
             width: 370px;
             height: 175px;
+            display: none;
         }
-        
+        .photo-style.open{
+            display: block;
+        }
         .photo{
             width: 100%;
             height: 175px;
-            background-image: url("assets/ddd.png");
+            background-image: url("../../../assets/ddd.png");
             background-size: cover;
             background-position: center;
         }
@@ -292,10 +296,13 @@ import {Utils} from "../../class/utils";
             font-size: 20px;
         }
         .edit-photos{
-            display: flex;
+            display: none;
             flex-direction: column;
             width: 100%;
         }
+        .edit-photos.open{
+            display: flex;
+                     }
         .title-block{
             height: 30px;
             border-bottom: 1px solid var(--selected-digest);
@@ -352,7 +359,7 @@ import {Utils} from "../../class/utils";
             cursor: pointer;
         }
         .arrow-block .arrow-left, .arrow-block .arrow-right{
-            background-image: url(/assets/arrow.png);
+            background-image: url(../../../assets/arrow.png);
             width: 80px;
             height: 30px;
             background-size: 100% 100%;
@@ -378,12 +385,12 @@ import {Utils} from "../../class/utils";
         }
         .exit{
             position: relative;
-            width: 30px;
-            height: 30px;
+            width: 46px;
+            height: 46px;
             top: -542px;
-            left: calc(100% - 60px);
+            left: calc(100% - 75px);
             background-size: 100% 100%;
-            border-radius: 15px;
+            border-radius: 23px;
         }
         .exit:hover{
             background-color: white;
@@ -394,10 +401,10 @@ import {Utils} from "../../class/utils";
             background-color: #bdc0c1;
         }
         .exit .line:first-child{
-            transform: rotate(-45deg) translate(-11px, 10px);
+            transform: rotate(-45deg) translate(-10px, 22px);
         }
         .exit .line:last-child{
-            transform: rotate(45deg) translate(9px, 9px);
+            transform: rotate(45deg) translate(20px, 9px);
         }
         .bottom-gal{
             height: 135px;
@@ -440,7 +447,7 @@ import {Utils} from "../../class/utils";
     `],
     template: `
         <div class="block-title" >
-            <div>ФОТО ПРЕДЛОЖЕНИЯ</div><div>({{photos.length}})</div>
+            <div>ФОТО ПРЕДЛОЖЕНИЯ</div><div>({{files.length}})</div>
         </div>
         <div class="files_body_new" [class.full]="full">
             <ul>
@@ -451,33 +458,33 @@ import {Utils} from "../../class/utils";
                                     [parent]="'photo'"
                     ></ui-upload-file>
                 </li>
-                <ng-container *ngIf="editMode">
-                    <li *ngFor="let photo of photos, let i = index" class="photo-style">
-                        <div class="photo" [style.background-image]="'url(' + photo.url + ')'"></div>
+          
+                    <li *ngFor="let photo of files, let i = index" class="photo-style" [class.open]="editMode">
+                        <div class="photo" [style.background-image]="'url(' + photo.href + ')'"></div>
                         <div class="tools">
-                            <div style= "background-image: url('assets/photo_icon/arrow.png');transform: rotate(180deg);" (click) = "move_up(i)"></div>
-                            <div style= "background-image: url('assets/photo_icon/arrow.png')" (click) = "move_bottom(i)"></div>
-                            <div style= "background-image: url('assets/photo_icon/cross.png');" (click) = "file_delete(i)"></div>
-                            <div style= "background-image: url('assets/photo_icon/check.png')" (click) = "file_main(i)"></div>
-                            <div style= "background-image: url('assets/photo_icon/zoom.png');" (click) = "file_show(i)"></div>
-                        </div> 
+<!--                            <div style= "background-image: url('../../../assets/photo_icon/arrow.png');transform: rotate(180deg);" (click) = "move_up(i)"></div>-->
+<!--                            <div style= "background-image: url('../../../assets/photo_icon/arrow.png')" (click) = "move_bottom(i)"></div>-->
+                            <div style= "background-image: url('../../../assets/photo_icon/cross.png');" (click) = "file_delete(i)"></div>
+<!--                            <div style= "background-image: url('../../../assets/photo_icon/check.png')" (click) = "file_main(i)"></div>-->
+<!--                            <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "file_show(i)"></div>-->
+                        </div>  
                     </li>
-                </ng-container>
-                <div *ngIf="!editMode">
-                    <div *ngFor="let obj of new_struct, let i = index" class="edit-photos">
+     
+     
+                    <div *ngFor="let obj of new_struct, let i = index" class="edit-photos" [class.open]="!editMode">
                         <div class="title-block">{{obj.convert}} <div class="add_author">{{obj.author}}</div></div>
                         <ul>
-                            <li *ngFor="let url of obj.urls, let j = index" class="photo-style">
+                            <li *ngFor="let url of obj.urls, let j = index" class="photo-style" [class.open]="!editMode">
                                 <div class="photo" [style.background-image]="'url(' + url + ')'"></div>
                                 <div class="tools">
-                                    <div style= "background-image: url('assets/photo_icon/zoom.png');" (click) = "galleryOpenFunc(url)"></div>
+                                    <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "galleryOpenFunc(url)"></div>
                                 </div>
                             </li>
                             
                         </ul>
                         
                     </div>
-                </div>
+        
             </ul>
             
         </div>
@@ -490,8 +497,8 @@ import {Utils} from "../../class/utils";
             <div class="exit" (click)="galleryOpen = false"><div class="line"></div><div class="line"></div></div>
             <div class="bottom-gal">
                 <ul id="carousel-ul">
-                    <li *ngFor="let photo of photos, let i = index" class="carousel-li" [class.clicked]="photo.url == cur_photo">
-                        <div class="photo" [style.background-image]="'url(' + photo.url + ')'" (click) = "galleryOpenFunc(photo.url)"></div>
+                    <li *ngFor="let photo of files, let i = index" class="carousel-li" [class.clicked]="photo.href == cur_photo">
+                        <div class="photo" [style.background-image]="'url(' + photo.href + ')'" (click) = "galleryOpenFunc(photo.href)"></div>
                     </li>
                 </ul> 
             </div>
@@ -560,7 +567,7 @@ import {Utils} from "../../class/utils";
 })
 
 export class FilesView implements OnInit, OnChanges {
-    public files: any[] = [];
+    public files: UploadFile[] = [];
     public galleryOpen: boolean = false;
     public type: string = 'image';
     public editMode: boolean = false;
@@ -573,14 +580,6 @@ export class FilesView implements OnInit, OnChanges {
     cur_index: any;
     users: any= {};
     new_struct = [{"date": Number, "urls": [], "convert": "", "author": ""}];
-    photos: any = [ {"url": "https://avatars.mds.yandex.net/get-pdb/163339/7eaf6e1b-a165-42f5-845a-e413949391ae/s1200", "add_date": 1563877357, "author": "ИВАНОВ Иван Иванович"},
-        {"url": "https://avatars.mds.yandex.net/get-pdb/33827/a70114b9-834a-4e70-be18-31e81a1c4450/s1200", "add_date": 1563877357, "author": "ИВАНОВ Иван Иванович"},
-        {"url": "https://avatars.mds.yandex.net/get-pdb/34158/546eafd4-9d82-478e-8c33-763de0c27903/s1200", "add_date": 1563877156, "author": "ИВАНОВ Иван Иванович"},
-        {"url": "https://avatars.mds.yandex.net/get-pdb/163339/191ed1e0-2525-4b2c-ac25-2c47b1d93672/s1200", "add_date": 1563809436, "author": "ПИРОЖКОВ Сергей Андреевич"},
-        {"url": "https://avatars.mds.yandex.net/get-pdb/163339/fc4881b6-1222-402e-9137-e68d39fe5be1/s1200", "add_date": 1563809436, "author": "ИВАНОВ Иван Иванович"},
-        {"url": "https://avatars.mds.yandex.net/get-pdb/33827/b6f86116-a834-481f-8918-2b2945e7b626/s1200", "add_date": 1563809436, "author": "ИВАНОВ Иван Иванович"},
-        {"url": "https://avatars.mds.yandex.net/get-pdb/1412212/e96e89d1-5eff-4444-a0d8-96ea2600ca32/s1200", "add_date": 1563650196, "author": "ПИРОЖКОВ Сергей Андреевич"},
-        {"url": "https://avatars.mds.yandex.net/get-pdb/251121/c9013acb-9834-43b0-8e8d-dab875f150b1/s1200", "add_date": 1563650196, "author": "ПИРОЖКОВ Сергей Андреевич"}];
 
     @Output() add: EventEmitter<any> = new EventEmitter();
     @Output() fileIndexClick: EventEmitter<any> = new EventEmitter();
@@ -598,32 +597,33 @@ export class FilesView implements OnInit, OnChanges {
     ngOnInit(){
         if(!this.files)
             this.files=[];
-        if(this.type != 'image'){
-            this.getAddUser();
-        }
-        this.sortPhotos(this.photos);
+        // if(this.type != 'image'){
+        //     this.getAddUser();
+        // }
+        this.sortPhotos(this.files);
+        console.log(this.files);
     }
 
     ngOnChanges(changes: SimpleChanges) {
         if(!this.files)
             this.files=[];
-        if(this.type != 'image'){
-            this.getAddUser();
-            console.log('Update');
-        }
+        // if(this.type != 'image'){
+        //     this.getAddUser();
+        //     console.log('Update');
+        // }
     }
     galleryOpenFunc( url){
         this.galleryOpen = true;
         this.cur_photo = url;
         this.cur_index = 0;
-        for (let i = 0; i < this.photos.length; i++) {
-            if (this.photos[i].url == url)  this.cur_index = i;
+        for (let i = 0; i < this.files.length; i++) {
+            if (this.files[i].href == url)  this.cur_index = i;
         }
         this.position = 0;
         const listElems = document.getElementsByClassName('carousel-li') as HTMLCollectionOf<HTMLElement>;
         const list = document.getElementById('carousel-ul') as HTMLElement;
 
-        if ( this.photos.length - this.cur_index < 4) this.cur_index = this.photos.length - 3;
+        if ( this.files.length - this.cur_index < 4) this.cur_index = this.files.length - 3;
         if (this.cur_index <= 0) this.cur_index = 1;
         this.position = Math.max(this.position - this.widthReview * this.count, -this.widthReview * (listElems.length - this.count - 3)) * this.cur_index - 1;
         list.style.setProperty('margin-left', this.position + 'px');
@@ -632,17 +632,17 @@ export class FilesView implements OnInit, OnChanges {
         if (this.cur_index != 0) {
             this.cur_index--;
         }
-        this.cur_photo = this.photos[this.cur_index].url;
+        this.cur_photo = this.files[this.cur_index].href;
         console.log(this.cur_photo);
         const list = document.getElementById('carousel-ul') as HTMLElement;
         this.position = Math.min(this.position + this.widthReview * this.count, 0);
         list.style.setProperty('margin-left', this.position + 'px');
     }
     next_photo() {
-        if (this.cur_index != this.photos.length - 1) {
+        if (this.cur_index != this.files.length - 1) {
             this.cur_index++;
         }
-        this.cur_photo = this.photos[this.cur_index].url;
+        this.cur_photo = this.files[this.cur_index].href;
         console.log(this.cur_photo);
         const listElems = document.getElementsByClassName('carousel-li') as HTMLCollectionOf<HTMLElement>;
         const list = document.getElementById('carousel-ul') as HTMLElement;
@@ -654,13 +654,13 @@ export class FilesView implements OnInit, OnChanges {
         for (let i = 0; i < photo_arr.length; i++) {
             check = false;
             for (let j = 0; j < this.new_struct.length; j++) {
-                if (this.new_struct[j].date == photo_arr[i].add_date && this.new_struct[j].author == photo_arr[i].author){
-                    this.new_struct[j].urls.push(photo_arr[i].url);
+                if (this.new_struct[j].date == photo_arr[i].addDate && this.new_struct[j].author == photo_arr[i].userName){
+                    this.new_struct[j].urls.push(photo_arr[i].href);
                     check = true;
                 }
             }
             if (!check) {
-                this.new_struct.push({"date":photo_arr[i].add_date, "urls": [photo_arr[i].url], "convert": Utils.getDateInCalendar(photo_arr[i].add_date), "author": photo_arr[i].author});
+                this.new_struct.push({"date":photo_arr[i].addDate, "urls": [photo_arr[i].href], "convert": Utils.getDateInCalendar(photo_arr[i].addDate), "author": photo_arr[i].userName});
             }
         }
         this.new_struct.splice(0,1);
@@ -683,8 +683,8 @@ export class FilesView implements OnInit, OnChanges {
             let temp = this.files[i-1];
             this.files[i-1] = this.files[i];
             this.files[i] = temp;
-            let temp2 : HTMLElement;
-            temp.style.removeProperty('backgroundColor');
+            // let temp2 : HTMLElement;
+            // temp.style.removeProperty('backgroundColor');
             setTimeout(() => {
                 this.ref.detectChanges();
             }, 100);
@@ -713,38 +713,19 @@ export class FilesView implements OnInit, OnChanges {
         this.progressLoad.emit(ev);
     }
 
-    getFileName(url){
-        let ext = url.split(".").pop();
-        let new_url = url.replace(ext, '');
-        let data : string[] = new_url.split("/").pop().split("_");
-        data.pop();
-        data.pop();
-        return data.join(" ") + '.' + ext;
-    }
-
-    getFileDate(url){
-        let ext = url.split(".").pop();
-        let new_url = url.replace(ext, '');
-        let data : string[] = new_url.split("_");
-        data.pop();
-        let time = parseInt(data.pop(), 10)*1000;
-        return moment(time).calendar();
-    }
-
-    getAddUser(){
-        this.users={};
-        for(let i = 0; i< this.files.length; ++i){
-            let ext = this.files[i].split(".").pop();
-            let new_url = this.files[i].replace("\."+ext, '');
-            let data : string[] = new_url.split("_");
-            let id= parseInt(data.pop(), 10);
-            this._userService.get(id).subscribe(data => {
-                this.users[this.files[i]] = data;
-                this.ref.detach();
-                setTimeout(() => {
-                    this.ref.detectChanges();
-                }, 100);
-            });
-        }
-    }
+    // getAddUser(){
+    //     this.users={};
+    //     for(let i = 0; i< this.files.length; ++i){
+    //         let ext = this.files[i].ext;
+    //         let new_url = this.files[i].href;
+    //         let id = this.files[i].userId;
+    //         this._userService.get(id).subscribe(data => {
+    //             // this.users[this.files[i]] = data;
+    //             this.ref.detach();
+    //             setTimeout(() => {
+    //                 this.ref.detectChanges();
+    //         }, 100);
+    //         });
+    //     }
+    // }
 }

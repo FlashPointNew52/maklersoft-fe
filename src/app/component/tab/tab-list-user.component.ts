@@ -33,14 +33,15 @@ import {Person} from "../../entity/person";
             padding-top: 6px;
             box-sizing: border-box;
             cursor: pointer;
+            display: flex;
         }
 
         digest-user:hover{
-            background-color: #f3f3f3;
+            background-color: var(--bottom-border);
         }
 
         digest-user.selected{
-            background-color: #b5b5b5;
+            background-color: var(--color-blue);
         }
 
     `],
@@ -104,6 +105,7 @@ import {Person} from "../../entity/person";
                 (click)="clickUser($event, u, i)"
                 (dblclick)="openUser(u)"
                 [class.selected]="selectedUser.indexOf(u) > -1"
+                         [selected]="selectedUser.indexOf(u) > -1"
                 [dateType] = "sort.changeDate ? 'changeDate' : sort.assignDate ? 'assignDate' : 'addDate'"
                 (contextmenu)="clickUser($event, u, i)"
             >

@@ -313,16 +313,6 @@ import {SessionService} from "../../service/session.service";
                             <div *ngIf="stage.summ && stage.summ > 0">{{split_number(stage.summ)}}&#8381;</div>
                         </div>
                         <div class='stage_body'>
-                            <digest-offer-table2 *ngFor="let data of stage.offers"
-                                    style="display: block; background-color: transparent;"
-                                    [offer]="data"
-                                    [withPhoto]="false"
-
-                                    (dblclick)="open_offer(stage, data)"
-                                    (touchstart)="tStart(data)"
-                                    (touchend)="tEnd(data)"
-                            >
-                            </digest-offer-table2>
                         </div>
                     </div>
                 </div>

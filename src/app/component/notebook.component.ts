@@ -27,6 +27,9 @@ import {User} from '../entity/user';
         display: flex;
           border-bottom: 1px solid #d3d5d6;
       }
+      .head-notebook.diary{
+          border: none;
+      }
 
       .notebook > .border-stripe {
         width: 30px;
@@ -85,6 +88,9 @@ import {User} from '../entity/user';
         top: 10px;
       }
 
+      .tab-button.diary{
+          right: calc(-100% + 80px);
+      }
       notebook-task {
         display: flex;
         flex-wrap: wrap;
@@ -128,15 +134,15 @@ import {User} from '../entity/user';
     template: `
         <div class="notebook" [hidden]="this.hidden" [style.width.px]="this.hidden == true ? 0 : 400">
             
-            <div class="head-notebook">
+            <div class="head-notebook" [class.diary]="mode == 'diary'">
                 <div class="chat-word" *ngIf="mode == 'chat'">ЧАТ</div>
                 <div class="chat-word" *ngIf="mode == 'phone'">IP-ТЕЛЕФОНИЯ</div>
-                <div class="chat-word" *ngIf="mode == 'diary'">ЕЖЕДНЕВНИК</div>
                 <div class="chat-word" *ngIf="mode == 'notes'">ЗАМЕТКИ</div>
-                <div class="curr_date" *ngIf="mode == 'chat' || mode == 'notes'">Сегодня, {{curr_date}}</div>
-                <div class="tab-button" (click)="toggleNotebook()">Закрыть</div>
+                <div class="curr_date" *ngIf="mode == 'chat'" >Сегодня, {{curr_date}}</div>
+                <div class="tab-button" [class.diary]="mode == 'diary'" (click)="toggleNotebook()">Закрыть</div>
             </div>
             <chat-view *ngIf="mode == 'chat'" [mode]="hidden"></chat-view>
+            <notification-view *ngIf="mode == 'diary'"></notification-view>
             <!--<div class="event-tab" *ngIf="show==1 || show==2">-->
                 <!--<div class="head"></div>-->
                 <!--<notebook-task-describe [task] = "data" [mode]="state" (update) = "update_tab_daily($event)"></notebook-task-describe>-->

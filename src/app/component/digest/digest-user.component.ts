@@ -11,7 +11,7 @@ import {PhoneBlock} from "../../class/phoneBlock";
 
 @Component({
     selector: 'digest-user',
-    inputs: ['user', 'dateType'],
+    inputs: ['user', 'dateType', 'selected'],
     styles: [`
         .billet {
             height: 45px;
@@ -23,7 +23,6 @@ import {PhoneBlock} from "../../class/phoneBlock";
         .billet > div{
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
         }
 
         ui-tag{
@@ -34,14 +33,16 @@ import {PhoneBlock} from "../../class/phoneBlock";
         .name{
             font-weight: bold;
             color: #252F32;
+            line-height: 17px;
         }
-
+        
         .name > span{
             text-transform: uppercase;
         }
 
         .date{
             color: #252F32;
+            line-height: 16px;
         }
 
         .rate{
@@ -76,36 +77,44 @@ import {PhoneBlock} from "../../class/phoneBlock";
         .organisation{
 
         }
+        .name.selected, .name.selected > span, .date.selected, .city.selected, .rate.selected, .type.selected, .link.selected, .user.selected, .phone.selected, .organisation.selected{
+            color: white !important;
+        }
     `],
     template: `
+        <div style= "width: 4px; margin-right: 11px;    height: calc(100% + 6px);
+    position: relative;
+    top: -6px;">
+            <ui-tag [value]="user.tag"></ui-tag>
+        </div>
         <div class="billet">
-            <div style= "width: 4px; margin-right: 11px;">
-                <ui-tag [value]="user.tag"></ui-tag>
-            </div>
+<!--            <div style= "width: 4px; margin-right: 11px;">-->
+<!--                <ui-tag [value]="user.tag"></ui-tag>-->
+<!--            </div>-->
             <div style= "width: 300px">
-                <div class="date">{{dateType == 'addDate' ? "Добавлено: " : dateType == 'changeDate' ? "Изменено: " : "Назначено: "}}
+                <div class="date" [class.selected]="selected">{{dateType == 'addDate' ? "Добавлено: " : dateType == 'changeDate' ? "Изменено: " : "Назначено: "}}
                     {{ utils.getDateInCalendar(user[dateType] || user.changeDate || user.addDate) }}</div>
-                <div class="name"><span>{{utils.getSurname(user.name) || "Неизвестно"}}</span> {{utils.getFirstName(user.name) }}</div>
-                <div class="city">{{getAddress()}}</div>
+                <div class="name" [class.selected]="selected"><span>{{utils.getSurname(user.name) || "Неизвестно"}}</span> {{utils.getFirstName(user.name) }}</div>
+                <div class="city" [class.selected]="selected">{{getAddress()}}</div>
             </div>
             <div style= "width: 35px; margin-right: 35px;">
-                <span class="rate">{{user.rate | number: '1.0-1' || '0'}}</span>
+                <span class="rate" [class.selected]="selected">{{user.rate | number: '1.0-1' || '0'}}</span>
             </div>
             <div style= "width: 195px;  margin-right: 35px;">
-                <span class="type">{{positionOptions[user.position] || 'Неизвестно'}}</span>
+                <span class="type" [class.selected]="selected">{{positionOptions[user.position] || 'Неизвестно'}}</span>
             </div>
             <div style= "width: 185px; margin-right: 15px;">
-                <span class="mail link">{{getMail(0) || ""}}</span>
-                <span class="mail link">{{getMail(1) || ""}}</span>
+                <span class="mail link" [class.selected]="selected">{{getMail(0) || ""}}</span>
+                <span class="mail link" [class.selected]="selected">{{getMail(1) || ""}}</span>
             </div>
             <div style= "width: 200px; margin-right: 15px;">
               <div class="phones" class="user">
-                  <span class="phone">{{phones[0] ? ("+7" + phones[0].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
-                  <span class="phone">{{phones[1] ? ("+7" + phones[1].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
+                  <span class="phone" [class.selected]="selected">{{phones[0] ? ("+7" + phones[0].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
+                  <span class="phone" [class.selected]="selected">{{phones[1] ? ("+7" + phones[1].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
               </div>
             </div>
             <div style="width: 255px;">
-                <span class="organisation link" (click)="openOrganisation()">{{user.organisation?.name || ' '}}</span>
+                <span class="organisation link"  [class.selected]="selected" (click)="openOrganisation()">{{user.organisation?.name || ' '}}</span>
             </div>
         </div>
     `
@@ -114,6 +123,7 @@ import {PhoneBlock} from "../../class/phoneBlock";
 export class DigestUserComponent implements OnInit {
     public user: User;
     public dateType: string = "addDate";
+    public selected: boolean;
     positionOptions = User.positionOptionsHash;
     utils = Utils;
     phones: any[] = [];

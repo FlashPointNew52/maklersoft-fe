@@ -12,6 +12,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material';
 import {MatMomentDateModule} from '@angular/material-moment-adapter';
 import {ChatViewComponent} from "./component/notebook/chat-view.component";
+import {NotificationViewComponent} from "./component/view/notification-view.component";
 import { TextareaAutosizeModule } from 'ngx-textarea-autosize';
 //import {YaCoreModule } from './component/ya-map-component/core.module';
 import {ContextMenuComponent} from "./component/context-menu.component";
@@ -52,17 +53,12 @@ import {UIViewLine} from "./component/ui/ui-view-line.component";
 import {UIViewTextComponent} from "./component/ui/ui-view-text.component";
 import {UISlidingMenuComponent} from "./component/ui/ui-slidingMenu.component";
 import {DigestOfferComponent} from "./component/digest/digest-offer.component";
-import {DigestOfferMapComponent} from "./component/digest/digest-offer-map.component";
-import {DigestOfferLineComponent} from "./component/digest/digest-offer-line.component";
-import {DigestOfferTableComponent} from "./component/digest/digest-offer-table.component";
-import {DigestOfferTable2Component} from "./component/digest/digest-offer-table2.component";
 import {DigestCommentComponent} from "./component/digest/digest-comment.component";
 import {UITabs} from "./component/ui/ui-tabs.component";
 import {UITabsMenu} from "./component/ui/ui-tabs-menu.component";
 import {UITab} from "./component/ui/ui-tab.component";
 import {DigestHistoryComponent} from "./component/digest/digest-history.component";
 import {DigestUserComponent} from "./component/digest/digest-user.component";
-import {DigestWindowComponent} from "./component/digest/digest-window.component";
 import {DigestOrganisationComponent} from "./component/digest/digest-organisation.component";
 import {DigestRequestComponent} from "./component/digest/digest-request.component";
 import {DigestRequestSmallComponent} from "./component/digest/digest-request-small.component";
@@ -85,7 +81,6 @@ import {UIViewSocials} from "./component/ui/ui-view-socials";
 import {DigestPieChartComponent} from "./component/digest/digest-pie-chart.component";
 import {DigestColumnChartComponent} from "./component/digest/digest-column-chart.component";
 import {DigestAreaChartComponent} from "./component/digest/digest-area-chart.component";
-import {GmapView} from "./component/view/gmap-view.component";
 import {YamapView} from "./component/view/yamap-view.component";
 import {FilesView} from "./component/view/files-view.component";
 import {AdvView} from "./component/view/adv-view.component";
@@ -117,7 +112,7 @@ import {ModalWindowComponent} from "./component/modal-window.component";
 import {AddressInputComponent} from "./component/ui-elements/address-input";
 
 const appRoutes: Routes = [
-    { path: 'admin', loadChildren: 'app/admin.module#AdminModule' },
+    { path: 'admin', loadChildren: 'src/app/admin.module#AdminModule' },
     { path: 'main', component: MainComponent },
     { path: '',
         redirectTo: '/main',
@@ -129,6 +124,7 @@ const appRoutes: Routes = [
 @NgModule({
     declarations: [
         ChatViewComponent,
+        NotificationViewComponent,
         AppComponent,
         FormatDatePipe,
         StrNnPipe,
@@ -161,14 +157,8 @@ const appRoutes: Routes = [
         TabActivityComponent,
         TabDailyComponent,
         DigestOfferComponent,
-        DigestOfferMapComponent,
-        DigestOfferLineComponent,
-        DigestOfferTableComponent,
-        DigestOfferTable2Component,
-
         DigestHistoryComponent,
         DigestUserComponent,
-        DigestWindowComponent,
         DigestOrganisationComponent,
         DigestRequestComponent,
         DigestRequestSmallComponent,
@@ -177,7 +167,6 @@ const appRoutes: Routes = [
         DigestColumnChartComponent,
         DigestAreaChartComponent,
         DigestCommentComponent,
-        GmapView,
         YamapView,
         FilesView,
         AdvView,

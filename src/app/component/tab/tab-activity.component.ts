@@ -305,28 +305,12 @@ import {SessionService} from "../../service/session.service";
                         <div class="summ">
                             <div *ngIf="main_stage.summ && main_stage.summ > 0">{{split_number(main_stage.summ)}}&#8381;</div>
                         </div>
-                        <digest-offer-table2 *ngFor="let data of main_stage.offers"
-                            style="display: block; background-color: transparent;"
-                            [offer]="data"
-                            [withPhoto]="false"
-                            (touchstart)="tStart(data)"
-                            (touchend)="tEnd(data)"
-                        >
-                        </digest-offer-table2>
                     </div>
                     <div class='stage' [style.z-index]="101" *ngIf="is_offer">
                         <div class='label' >{{main_stage.label}}</div>
                         <div class="summ">
 
                         </div>
-                        <digest-offer-table2
-                            style="display: block; background-color: transparent;"
-                            [offer]="main_offer"
-                            [withPhoto]="false"
-                            (touchstart)="tStart(data)"
-                            (touchend)="tEnd(data)"
-                        >
-                        </digest-offer-table2>
                     </div>
                     <div class='stage' *ngFor="let stage of main_stage.substage; let i=index" [class.active] = "stage.active" [style.z-index]="100-i">
                         <div class='label' (click)="set_stage(i)">{{stage.label}} ({{stage.offers?.length}})</div>
@@ -334,17 +318,6 @@ import {SessionService} from "../../service/session.service";
 
                         </div>
                         <div class='stage_body'>
-                            <digest-offer-table2 *ngFor="let data of stage.offers"
-                                    style="display: block; background-color: transparent;"
-                                    [offer]="data"
-                                    [withPhoto]="false"
-                                    (click)="click($event, data)"
-                                    (contextmenu)="click($event, data)"
-                                    (dblclick)="openOffer(data)"
-                                    (touchstart)="tStart(data)"
-                                    (touchend)="tEnd(data)"
-                            >
-                            </digest-offer-table2>
                         </div>
                     </div>
                 </div>

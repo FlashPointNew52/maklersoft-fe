@@ -103,7 +103,7 @@ import {RatingService} from "../../service/rating.service";
               <circle _ngcontent-c13="" cx="70" cy="70" id="pie" r="67" fill="#fff"></circle>
               <circle _ngcontent-c13="" cx="65" cy="65" id="pie" r="61" fill="transparent" stroke="#c7c7c7"
                       stroke-width="7"></circle>
-              <circle _ngcontent-c13="" cx="65" cy="65" id="pie" r="61" fill="transparent" stroke="#3f51b5"
+              <circle _ngcontent-c13="" cx="65" cy="65" id="pie" r="61" fill="transparent" stroke="var(--color-blue)"
                       stroke-width="7" [attr.stroke-dasharray]="getDash()" stroke-dashoffset="0"
                       style="transition: stroke-dasharray 2s;"
               ></circle>
