@@ -316,7 +316,7 @@ export class TabListRequestComponent implements OnInit {
                             tab_sys.addTab('offer', {offer: o, canEditable});
                         });
                     }},
-                {class: "entry", disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
+                {class: "entry", sub_class: 'del', disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
                     callback: () => {
                         this.clickMenu({event: "del_obj"});
                     }
@@ -341,9 +341,11 @@ export class TabListRequestComponent implements OnInit {
                             }
                         }
                     ].concat(uOpt)},
-                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: [
-
-                    ]},
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('diary', event);
+                        block.setShow(true, event);
+                    }},
                 {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
                         let block = this._hubService.getProperty('notebook');
                         block.setMode('notes', event);
@@ -361,9 +363,27 @@ export class TabListRequestComponent implements OnInit {
                         {class: "entry", disabled: false, label: "Номер3"},
                     ]},
                 {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
-                        {class: "entry", disabled: false, label: "Номер1"},
-                        {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"},
+                        {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
                     ]},
                 {class: "submenu", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
                         let block = this._hubService.getProperty('notebook');

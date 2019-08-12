@@ -447,16 +447,6 @@ import {SessionService} from "../../service/session.service";
                         <tr *ngFor="let offer of offers" style="height: initial;">
                             <td style="width: 30px">{{"NEW"}}</td>
                             <td>
-                                <digest-offer-table
-                                    style="width: 270px; display: block; background-color: transparent;"
-                                    [offer]="offer"
-                                    (click)="click($event, offer)"
-                                    (contextmenu)="click($event, offer)"
-                                    (dblclick)="openOffer(offer)"
-                                    (touchstart)="tStart(offer)"
-                                    (touchend)="tEnd(offer)"
-                                >
-                                </digest-offer-table>
                             </td>
                             <td style="width: 65px">4</td>
                             <td style="width: 55px">5</td>
@@ -716,17 +706,6 @@ import {SessionService} from "../../service/session.service";
                     <tbody>
                         <tr *ngFor="let data of offers">
                             <td style="width: 360px">
-                                <digest-offer-table
-                                    style="width: 360px; display: block; background-color: transparent;"
-                                    [offer]="data"
-                                    [withPhoto]="true"
-                                    (click)="click($event, data)"
-                                    (contextmenu)="click($event, data)"
-                                    (dblclick)="openOffer(data)"
-                                    (touchstart)="tStart(data)"
-                                    (touchend)="tEnd(data)"
-                                >
-                                </digest-offer-table>
                             </td>
                             <td style="width: 65px">70</td>
                             <td style="width: 55px">20</td>

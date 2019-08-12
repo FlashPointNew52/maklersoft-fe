@@ -1,11 +1,20 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, OnChanges, Output, ViewChild} from "@angular/core";
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    EventEmitter,
+    OnChanges,
+    Output,
+    ViewChild
+} from "@angular/core";
 import {HubService} from "../../service/hub.service";
 import {Utils} from "../../class/utils";
 import * as moment from 'moment/moment';
-import {Tab} from "../../class/tab";
 
 @Component({
     selector: 'chat-view',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     inputs: ['mode'],
     styles: [`
         *{

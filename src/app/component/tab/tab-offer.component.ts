@@ -1192,7 +1192,7 @@ import {Contact} from "../../entity/contact";
             >
             </yamap-view>  
             <adv-view *ngSwitchCase="'advert'"></adv-view>
-            <files-view [full]="paneHidden" [type]="'image'" [object_id]="offer.id" [editMode]="editEnabled" *ngSwitchCase="'photo' || 'doc'"></files-view>
+            <files-view (progressLoad)="displayProgress($event)" [full]="paneHidden" [type]="'image'" [files]="offer.photos" [object_id]="offer.id" [editMode]="editEnabled" *ngSwitchCase="'photo' || 'doc'"></files-view>
         </ng-container>
     </div>
 
@@ -1528,9 +1528,9 @@ export class TabOfferComponent implements OnInit {
 
     addFile(event, array){
         if(array == 'photo')
-            this.offer.photoUrl ? this.offer.photoUrl.unshift(event) : this.offer.photoUrl = [event];
+            this.offer.photos ? this.offer.photos.unshift(event) : this.offer.photos = [event];
         else if(array == 'doc')
-            this.offer.docUrl ? this.offer.docUrl.unshift(event) : this.offer.docUrl = [event];
+            this.offer.documents ? this.offer.documents.unshift(event) : this.offer.documents = [event];
     }
 
   contextMenu(e) {

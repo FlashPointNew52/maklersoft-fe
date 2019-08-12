@@ -65,10 +65,10 @@ import {Output, EventEmitter} from '@angular/core';
         .ui-slider-line > .line > div{
             height: 100%;
             width: 0;
-            background-color: #3f51b5;
+            background-color: var(--color-blue);
             transition: width 2s;
         }
-
+ 
         .ui-slider-line > .line > .slider, .ui-slider-line > .line > .avatar{
             width: 5px;
             height: 15px;

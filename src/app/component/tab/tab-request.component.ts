@@ -53,7 +53,7 @@ import {ObjectBlock} from "../../class/objectBlock";
             height: 100%;
             display: block;
             position: relative;
-        }
+        } 
 
         .property_face > ui-tag{
             position: absolute;

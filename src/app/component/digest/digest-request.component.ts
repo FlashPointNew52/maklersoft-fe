@@ -10,6 +10,7 @@ import {UserService} from "../../service/user.service";
 import {Utils} from "../../class/utils";
 import {Offer} from "../../entity/offer";
 import {ObjectBlock} from "../../class/objectBlock";
+import {SessionService} from "../../service/session.service";
 
 @Component({
     selector: 'digest-request',
@@ -23,7 +24,7 @@ import {ObjectBlock} from "../../class/objectBlock";
         }
 
         .billet:hover {
-            background-color: var(--billet-hover);
+            background-color: var(--bottom-border);
             cursor: pointer;
         }
 
@@ -87,7 +88,7 @@ import {ObjectBlock} from "../../class/objectBlock";
             <div class="main_row" [class.active]="active">
                 <span>{{utils.getDateInCalendar(request?.addDate)}}</span>
 <!--                <span>{{request?.person?.isMiddleman || request?.company?.isMiddleman ? 'Посредник' : 'Принципал'}}</span>-->
-                <span class="link">{{utils.trancateFio(request?.agent?.name || request?.person?.name || request?.company?.name) }}</span>
+                <span class="link" (click)="openContact()">{{utils.trancateFio(request?.agent?.name || request?.person?.name || request?.company?.name) }}</span>
             </div>
             <div class="row bold" [class.active]="active">
                 <span>Тип объекта</span>
@@ -127,12 +128,24 @@ export class DigestRequestComponent implements OnInit {
     agent: User = new User();
 
 
-    constructor(private _hubService: HubService, private _userService: UserService, private _personService: PersonService) { }
+    constructor(private _hubService: HubService, private _userService: UserService, private _personService: PersonService, private _sessionService: SessionService) { }
 
     ngOnInit() {
 
     }
+    openContact(){
 
+        let tab_sys = this._hubService.getProperty('tab_sys');
+        if(this.request.agent)
+            tab_sys.addTab('user', {user: this.request.agent});
+        else if(this.request.person){
+            let canEditable = this._sessionService.getUser().accountId == this.request.person.accountId;
+            tab_sys.addTab('person', {person: this.request.person, canEditable});
+        } else{
+            let canEditable = this._sessionService.getUser().accountId == this.request.company.accountId;
+            tab_sys.addTab('organisation', {organisation: this.request.company, canEditable});
+        }
+    }
 
 
 }

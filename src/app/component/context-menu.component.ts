@@ -59,8 +59,8 @@ import {
         .entry {
             padding: 3px 24px;
             font-weight: normal;
-            line-height: 21px;
-            height: 25px;
+            line-height: 19px;
+            height: 26px;
             color: #424242;
             white-space: nowrap;
             min-width: 120px;

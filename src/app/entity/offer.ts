@@ -8,6 +8,7 @@ import {Person} from "./person";
 import {Organisation} from "./organisation";
 import {Rating} from "../class/rating";
 import {ConditionsBlock} from "../class/conditionsBlock";
+import {UploadFile} from "../class/uploadFile";
 
 
 export class Offer {
@@ -65,9 +66,9 @@ export class Offer {
 
     location: GeoPoint;             //координаты
 
-    photoUrl: string[];             //url фото
-    docUrl: string[];               //url документов
-
+    photos   : UploadFile[];         //url фото
+    documents: UploadFile[];         //url документов
+    
     sourceCode: string;             //источник объекта
 
     offerTypeCode: string;          //Предложение (аренда/продажа)
