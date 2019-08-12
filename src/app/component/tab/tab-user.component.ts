@@ -622,8 +622,8 @@ export class TabUserComponent implements OnInit, AfterViewInit {
     }
 
     addFile(event){
-        this.user.photo = event;
-        this.user.photoMini = event;
+        this.user.photo = event[0].href;
+        this.user.photoMini = event[0].href;
     }
 
     public displayProgress($event: any) {

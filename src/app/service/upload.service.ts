@@ -1,99 +1,53 @@
 import {Injectable} from '@angular/core';
 import {AsyncSubject} from "rxjs";
 import {SessionService} from "./session.service";
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpEvent, HttpHeaders} from "@angular/common/http";
 import {ConfigService} from './config.service';
 import {map} from 'rxjs/operators';
-
-
 
 @Injectable()
 export class UploadService {
 
-    RS: String = "";
+    RS: string = "";
 
     constructor(private _configService: ConfigService,
-        private _http: HttpClient,
-        private _sessionService: SessionService
-    ) {
+                private _http: HttpClient,
+                private _sessionService: SessionService
+    ){
         this.RS = this._configService.getConfig().RESTServer + '/api/v1/upload/';
-    };
+    }
 
-    uploadPhoto(postData: any, files: File[], type: string, id: number, name: string) {
-        let ret_subj = <AsyncSubject<string>>new AsyncSubject();
-        let ext = name.split(".").pop();
-        let name_obj = name.replace('.'+ext, "");
-        name_obj = name_obj.replace(' ', "_");
+    uploadFiles(files: File[]){
+        let ret_subj = new AsyncSubject() as AsyncSubject<any>;
+        let formData = new FormData();
+        let _resourceUrl = this.RS + 'file';
+        for(let x = 0; x < files.length; x++) { 
+            formData.append('files[]', files[x]);
+        }
 
-        let _resourceUrl = this.RS + 'photo';
-        const formData = new FormData();
-        formData.append('file', postData);
+        this._http.post(_resourceUrl, formData, { withCredentials: true, reportProgress: true,  observe: 'events'}).pipe(
+            map((res: any) => res)).subscribe(
+            data => {
+                    let res: any = {};
+                    if(data.type == 1 && data.loaded && data.total){
+                        ret_subj.next({progress: Math.floor(data.loaded / data.total*100)});
+                    }
+                    else if(data.body){
+                        console.log(data.body.files);
+                        ret_subj.next({files: data.body.files});
+                        ret_subj.complete();
+                    }
+                //let data = JSON.parse(JSON.stringify(raw));
+                //let url: string = data.result;
 
-        let data_str = JSON.stringify({
-            data: files[0],
-            userId: this._sessionService.getUser().id,
-            accountId: this._sessionService.getUser().accountId,
-            objId: id,
-            type: type,
-            ext: ext,
-            file_name: name_obj
-        });
 
-        /*this.http.withUploadProgressListener(progress =>
-            { console.log(`Uploading ${progress.percentage}%`);
-        }).post(_resourceUrl, data_str, {withCredentials: true})
-            .map(res => {
-                return res.json();
-            })
-            .subscribe(data => {
-                let url: string = data.result;
-                ret_subj.next(url);
-                ret_subj.complete();
-        });*/
-        console.log(formData);
-        this._http.post(_resourceUrl, formData, { withCredentials: true}).pipe(
-            map((res: Response) => res)).subscribe(
-                raw => {
-                  let data = JSON.parse(JSON.stringify(raw));
-                    let url: string = data.result;
-                    ret_subj.next(url);
-                    ret_subj.complete();
-
-                },
-                err => console.log(err)
+            },
+            err => this._sessionService.handle_errors(err)
         );
 
         return ret_subj;
     }
 
-    uploadDoc(postData: any, files: File[], type: string, id: number, name: string) {
-        let ret_subj = <AsyncSubject<string>>new AsyncSubject();
-        let _resourceUrl = this.RS + 'doc';
-        let ext = name.split(".").pop();
-        let name_obj = name.replace('.'+ext, "");
-        name_obj = name_obj.replace(' ', "_");
-        let data_str = JSON.stringify({
-            data: files[0],
-            userId: this._sessionService.getUser().id,
-            accountId: this._sessionService.getUser().accountId,
-            objId: id,
-            ext: ext,
-            type: type,
-            file_name: name_obj
-        });
-
-        this._http.post(_resourceUrl, data_str, { withCredentials: true}).pipe(
-            map((res: Response) => res)).subscribe(
-                raw => {
-                  let data = JSON.parse(JSON.stringify(raw));
-                    let url: string = data.result;
-                    ret_subj.next(url);
-                    ret_subj.complete();
-                },
-                err => console.log(err)
-        );
-        return ret_subj;
-    }
 
     delete(fileName: string) {
         let ret_subj = <AsyncSubject<string>>new AsyncSubject();
