@@ -158,7 +158,7 @@ import {Utils} from "../../class/utils";
         <hr class='underline'>
         <div class="head"><span>{{tab.header}}</span></div>
 
-        <div class="pane" [style.width.px]="paneHidden ? 0 : 370">
+        <div class="pane" [style.left.px]="paneHidden ? 30 : -340">
             <div class = "source_menu">
                 <div class="add"  (click)="addOffer()">ДОБАВИТЬ</div>
                 <div (click)="toggleSource('import')" class="average" [class.active]="this.source != 1">ИМПОРТ</div>
@@ -223,7 +223,7 @@ export class TabListOfferComponent implements OnInit{
     importSort = Offer.importSort;
     localSort = Offer.localSort;
 
-    paneHidden: boolean = false;
+    paneHidden: boolean = true;
 
     mapDrawAllowed = false;
 

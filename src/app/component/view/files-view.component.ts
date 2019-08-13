@@ -447,20 +447,20 @@ import {UploadFile} from "../../class/uploadFile";
     `],
     template: `
         <div class="block-title" >
-            <div>ФОТО ПРЕДЛОЖЕНИЯ</div><div>({{files.length}})</div>
+            <div>ФОТО ПРЕДЛОЖЕНИЯ</div><div>({{files?.length}})</div>
         </div>
         <div class="files_body_new" [class.full]="full">
             <ul>
                 <li *ngIf="editMode">
                     <ui-upload-file [type]="type"
-                                    (addNewFile) = "addFile($event)" [obj_id]="object_id"
+                                    (addNewFile) = "addFile($event)"
                                     (progressState) = "progressEvent($event)"
                                     [parent]="'photo'"
                     ></ui-upload-file>
                 </li>
           
                     <li *ngFor="let photo of files, let i = index" class="photo-style" [class.open]="editMode">
-                        <div class="photo" [style.background-image]="'url(' + photo.href + ')'"></div>
+                        <div class="photo" [style.background-image]="photo.href ? 'url(' + photo?.href + ')' : ''"></div>
                         <div class="tools">
 <!--                            <div style= "background-image: url('../../../assets/photo_icon/arrow.png');transform: rotate(180deg);" (click) = "move_up(i)"></div>-->
 <!--                            <div style= "background-image: url('../../../assets/photo_icon/arrow.png')" (click) = "move_bottom(i)"></div>-->
@@ -470,9 +470,8 @@ import {UploadFile} from "../../class/uploadFile";
                         </div>  
                     </li>
      
-     
                     <div *ngFor="let obj of new_struct, let i = index" class="edit-photos" [class.open]="!editMode">
-                        <div class="title-block">{{obj.convert}} <div class="add_author">{{obj.author}}</div></div>
+                        <div class="title-block">{{obj?.convert}} <div class="add_author">{{obj?.author}}</div></div>
                         <ul>
                             <li *ngFor="let url of obj.urls, let j = index" class="photo-style" [class.open]="!editMode">
                                 <div class="photo" [style.background-image]="'url(' + url + ')'"></div>
@@ -480,13 +479,9 @@ import {UploadFile} from "../../class/uploadFile";
                                     <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "galleryOpenFunc(url)"></div>
                                 </div>
                             </li>
-                            
                         </ul>
-                        
                     </div>
-        
             </ul>
-            
         </div>
         <div class="gallery" [class.full]="full" [class.open]="galleryOpen">
             <div class="gal-top"> 
@@ -498,71 +493,11 @@ import {UploadFile} from "../../class/uploadFile";
             <div class="bottom-gal">
                 <ul id="carousel-ul">
                     <li *ngFor="let photo of files, let i = index" class="carousel-li" [class.clicked]="photo.href == cur_photo">
-                        <div class="photo" [style.background-image]="'url(' + photo.href + ')'" (click) = "galleryOpenFunc(photo.href)"></div>
+                        <div class="photo" [style.background-image]="photo.href ? 'url(' + photo?.href + ')' : ''" (click) = "galleryOpenFunc(photo?.href)"></div>
                     </li>
                 </ul> 
             </div>
         </div>
-<!--        <div class="files_header">-->
-<!--            <ui-upload-file [type]="type" *ngIf="editMode"-->
-<!--                            (addNewFile) = "addFile($event)" [obj_id]="object_id"-->
-<!--                            (progressState) = "progressEvent($event)"-->
-<!--            ></ui-upload-file>-->
-<!--            <div *ngIf="!editMode" style= "font-size: 10px;padding-left: 18px; color: #9e9e9e;">-->
-<!--                Для добавления, редактирования фотографий нажмите  "Изменить"-->
-<!--            </div>-->
-<!--            <hr>-->
-<!--            <div>-->
-<!--                <span [style.background-image]= "type == 'image' ? 'url(assets/photo.png)' : 'url(assets/docum.png)'"-->
-<!--                ></span><span>{{files.length}}</span>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="files_body">-->
-<!--            <ul>-->
-<!--                <div *ngIf="files.length == 0" class="empty_file">-->
-<!--                    {{type == 'image' ? "НЕТ ДОБАВЛЕННЫХ ФОТО" : "НЕТ ДОБАВЛЕННЫХ ДОКУМЕНТОВ"}}-->
-<!--                </div>-->
-<!--                <li *ngFor="let file of files; let i = index"-->
-<!--                >-->
-<!--                    <div class="container" *ngIf="type == 'image'">-->
-<!--                        <div class="fog" [style.background-image]="'url('+file+')'"></div>-->
-<!--                        <img [src]="file">-->
-<!--                        <div class="tools" *ngIf="editMode">-->
-<!--                            <div style= "background-image: url('assets/photo_icon/arrow.png');transform: rotate(180deg);" (click) = "move_up(i)"></div>-->
-<!--                            <div style= "background-image: url('assets/photo_icon/arrow.png')" (click) = "move_bottom(i)"></div>-->
-<!--                            <div style= "background-image: url('assets/photo_icon/cross.png');background-size: 70%;" (click) = "file_delete(i)"></div>-->
-<!--                            <div style= "background-image: url('assets/photo_icon/check.png')" (click) = "file_main(i)"></div>-->
-<!--                            <div style= "background-image: url('assets/photo_icon/zoom.png');background-size: 70%;" (click) = "file_show(i)"></div>-->
-<!--                        </div>-->
-<!--                        <div class="tools_small" *ngIf="!editMode">-->
-<!--                            <div style= "background-image: url('assets/photo_icon/zoom.png');background-size: 70%;" (click) = "file_show(i)"></div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <span *ngIf="type == 'image'" style= "font-size: 10px; margin-top: 5px;">Создано:</span>-->
-<!--                    <span *ngIf="type == 'image'" >Вчера 13:00</span>-->
-<!--                    <div class="doc_container" *ngIf="type == 'document'">-->
-<!--                        <span class="time">{{getFileDate(file)}}</span>-->
-<!--                        <img src="assets/docum_file.png">-->
-<!--                        <div class="doc_decr">-->
-<!--                            <span class="file_name">{{getFileName(file)}}</span>-->
-<!--                            <span class="user_name">Добавлено-->
-<!--                                <span class="link">{{users[file]?.name || 'Неизвестно'}}</span>-->
-<!--                            </span>-->
-<!--                        </div>-->
-<!--                        <div class="tools" *ngIf="editMode">-->
-<!--                            <div style= "background-image: url('assets/photo_icon/arrow.png');transform: rotate(180deg);" (click) = "move_up(i)"></div>-->
-<!--                            <div style= "background-image: url('assets/photo_icon/arrow.png')" (click) = "move_bottom(i)"></div>-->
-<!--                            <div style= "background-image: url('assets/photo_icon/cross.png');background-size: 70%;" (click) = "file_delete(i)"></div>-->
-<!--                            <div style= "background-image: url('assets/photo_icon/check.png')" (click) = "file_main(i)"></div>-->
-<!--                            <a [href]="file" target="_blank" style= "background-image: url('assets/photo_icon/zoom.png');background-size: 70%;"></a>-->
-<!--                        </div>-->
-<!--                        <div class="tools_small" *ngIf="!editMode">-->
-<!--                            <a [href]="file" target="_blank" style= "background-image: url('assets/photo_icon/zoom.png');background-size: 70%;"></a>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--        </div>-->
     `
 })
 
@@ -595,8 +530,6 @@ export class FilesView implements OnInit, OnChanges {
     }
 
     ngOnInit(){
-        if(!this.files)
-            this.files=[];
         // if(this.type != 'image'){
         //     this.getAddUser();
         // }
@@ -605,12 +538,11 @@ export class FilesView implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if(!this.files)
-            this.files=[];
         // if(this.type != 'image'){
         //     this.getAddUser();
         //     console.log('Update');
         // }
+        this.sortPhotos(this.files);
     }
     galleryOpenFunc( url){
         this.galleryOpen = true;
@@ -675,32 +607,6 @@ export class FilesView implements OnInit, OnChanges {
 
     file_delete(i){
         this.files.splice(i, 1);
-    }
-
-    move_up(i){
-        if(i != 0){
-            this.ref.detach();
-            let temp = this.files[i-1];
-            this.files[i-1] = this.files[i];
-            this.files[i] = temp;
-            // let temp2 : HTMLElement;
-            // temp.style.removeProperty('backgroundColor');
-            setTimeout(() => {
-                this.ref.detectChanges();
-            }, 100);
-        }
-    }
-
-    move_bottom(i){
-        if(i != this.files.length - 1){
-            this.ref.detach();
-            let temp = this.files[i+1];
-            this.files[i+1] = this.files[i];
-            this.files[i] = temp;
-            setTimeout(() => {
-                this.ref.detectChanges();
-            }, 100);
-        }
     }
 
     file_main(i){

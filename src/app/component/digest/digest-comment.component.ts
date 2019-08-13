@@ -105,6 +105,7 @@ import {SessionService} from "../../service/session.service";
             bottom: 5px;
             right: 128px;
             line-height: 15px;
+            
         }
 
         .estimate div:first-child {
@@ -118,7 +119,7 @@ import {SessionService} from "../../service/session.service";
             margin-top: -3px;
             background-size: cover;
             margin-left: 10px;
-            background: url(../../../assets/like.png) no-repeat center;
+            transition: .3s background-color;
         }
 
         .estimate div:last-child {
@@ -128,7 +129,7 @@ import {SessionService} from "../../service/session.service";
             text-align: right;
         }
 
-        .estimate .selected {
+        .estimate >  div:first-child:hover {
             background-color: var(--bottom-border) !important;
         }
     `],

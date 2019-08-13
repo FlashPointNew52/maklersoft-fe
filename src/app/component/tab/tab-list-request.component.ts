@@ -134,7 +134,7 @@ import {OrganisationService} from "../../service/organisation.service";
 
         <hr class='underline'> 
         <div class="head"><span>{{tab.header}}</span></div>
-        <div class="pane" [style.width.px]="paneHidden ? 0 : 370">
+        <div class="pane" [style.left.px]="paneHidden ? 30 : -340">
                <div class = "source_menu">
                    <div class="add"  (click)="addRequest()">ДОБАВИТЬ</div>
                    <div (click)="toggleSource(0, 'all')" class="average" [class.active]="this.source != 1">ОБЩАЯ</div>
@@ -173,7 +173,7 @@ export class TabListRequestComponent implements OnInit {
     hitsCount: number = 0;
     page: number = 0;
     perPage: number = 32;
-    paneHidden: boolean = false;
+    paneHidden: boolean = true;
 
     filter: any = {
         offerTypeCode: 'sale',
