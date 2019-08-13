@@ -48,9 +48,10 @@ import {Utils} from "../../class/utils";
         .buttons-block{
             display: flex;
             padding: 0 20px;
+            margin-top: 15px;
         }
         .buttons-block > div{
-            height: 40px;
+            height: 35px;
             width: 50%;
             display: flex;
             align-items: center;
@@ -89,11 +90,23 @@ import {Utils} from "../../class/utils";
             right: 25px;
             height: 18px;
             width: 18px;
-            top: 103px;
+            top: 108px;
         }
+        .pane-head{
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            padding: 0 15px;
+        } 
         .head-time{
             width: 100%;
             height: 30px;
+            color: #7D7D7A;
+        }
+        .parentName{
+            text-transform: uppercase;
+            color: #4D4D49;
+            font-weight: bold;
         }
         .contact-block{
             display: flex;
@@ -132,15 +145,18 @@ import {Utils} from "../../class/utils";
             <div class="chat-word" >УВЕДОМЛЕНИЯ</div>
             <div class="flex-col">
                 <div class="buttons-block">
-                    <div [class.active]="button_active == 'my'" (click)="button_active = 'my'">МОИ</div>
-                    <div [class.active]="button_active == 'all'" (click)="button_active = 'all'">ВСЕ</div>
+                    <div [class.active]="button_active == 'my'" (click)="button_active = 'my'">Мои ({{events.length}})</div>
+                    <div [class.active]="button_active == 'all'" (click)="button_active = 'all'">Все ({{events.length}})</div>
                 </div>
                 <div class="search-block"><input placeholder="Введите текст для поиска"><img src="../assets/лупа.png" class="magnifier"></div>
             </div>
             <div class="out-scroll">
                 <div *ngFor="let event of events" class="flex-col event-block">
-                    <div class="flex-center head-time">{{event.time}}</div>
                     <div class="contact-block flex-col">
+                        <div class="pane-head">
+                            <div class="parentName">{{event.parentName}}</div>
+                            <div class="head-time">{{event.time}}</div>
+                        </div>
                         <div style="display: flex">
                             <img [src]="event.pic" alt="изображение контакта">
                             <div class="flex-col">
@@ -169,15 +185,13 @@ export class NotificationViewComponent implements AfterViewInit, OnChanges{
     button_active = 'all';
     @Output() closeEvent: EventEmitter<any> = new EventEmitter();
     events = [
-        {user: 'ИВАНОВ Иван Иванович', company: 'Центр оценки и продажи недвижимости', human_type: 'Постоянный клиент', eventType: 'Сообщение', pic: '../../assets/photo (2).PNG',time: Utils.getDateInCalendar(1565351610),
+        {parentName: "Ежедневник", user: 'ИВАНОВ Иван Иванович', company: 'Центр оценки и продажи недвижимости', human_type: 'Постоянный клиент', eventType: 'Сообщение', pic: '../../assets/photo (2).PNG',time: Utils.getDateInCalendar(1565351610),
             event: {type: "ЗАЯВКА (НОВАЯ)", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
-        {user: 'ИВАНОВ Иван Иванович', company: 'MaklerOnline', eventType: 'Сообщение', human_type: 'Потенциальный клиент', pic: '../../assets/photo (2).PNG', time: Utils.getDateInCalendar(1563004572),
+        {parentName: "IP-Телефония", user: 'ИВАНОВ Иван Иванович', company: 'MaklerOnline', eventType: 'Сообщение', human_type: 'Потенциальный клиент', pic: '../../assets/photo (2).PNG', time: Utils.getDateInCalendar(1563004572),
             event: {type: "ЗАЯВКА (НОВАЯ)", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
-        {user: 'ИВАНОВ Иван Иванович', company: 'Центр оценки и продажи недвижимости', eventType: 'Сообщение', human_type: 'Потенциальный клиент', pic: '../../assets/photo (2).PNG', time: Utils.getDateInCalendar(1563020052),
+        {parentName: "Чат", user: 'ИВАНОВ Иван Иванович', company: 'Центр оценки и продажи недвижимости', eventType: 'Сообщение', human_type: 'Потенциальный клиент', pic: '../../assets/photo (2).PNG', time: Utils.getDateInCalendar(1563020052),
             event: {type: "ЗАЯВКА (НОВАЯ)", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
-        {user: 'ИВАНОВ Иван Иванович', company: 'MaklerOnline', eventType: 'Сообщение', human_type: '', pic: '../../assets/photo (2).PNG', time: Utils.getDateInCalendar(1563047832),
-            event: {type: "ЗАЯВКА (НОВАЯ)", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
-        ];
+          ];
     constructor(private _hubService: HubService) {
 
     }

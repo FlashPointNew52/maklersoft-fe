@@ -134,7 +134,7 @@ import {User} from '../entity/user';
     template: `
         <div class="notebook" [hidden]="this.hidden" [style.width.px]="this.hidden == true ? 0 : 400">
             
-            <div class="head-notebook" [class.diary]="mode == 'diary'">
+            <div class="head-notebook">
                 <div class="chat-word" *ngIf="mode == 'chat'">ЧАТ</div>
                 <div class="chat-word" *ngIf="mode == 'phone'">IP-ТЕЛЕФОНИЯ</div>
                 <div class="chat-word" *ngIf="mode == 'notes'">ЗАМЕТКИ</div>

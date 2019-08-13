@@ -221,6 +221,7 @@ input::placeholder{
 .pane {
     float: left;
     width: 370px;
+    left: 30px;
     height: calc(100% - 122px);
     border-right: 1px solid #d3d5d6;
     position: absolute;

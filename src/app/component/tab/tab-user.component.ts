@@ -141,8 +141,8 @@ import {ObjectBlock} from "../../class/objectBlock";
         <hr class='underline progress_bar' [style.width]="progressWidth+'vw'">
         <div class="pane">
             <div class="edit_ready">
-                <span class="link"  style="    z-index: 99;" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
-                <span class="link" *ngIf="editEnabled" (click)="save()">Готово</span>
+                <span class="link" style="z-index: 99;" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
+                <span class="link" style="z-index: 99;" *ngIf="editEnabled" (click)="save()">Готово</span>
             </div>
             <ui-tabs-menu>
                 <ui-tab [title]="'ГЛАВНАЯ'">
