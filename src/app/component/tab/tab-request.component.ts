@@ -200,7 +200,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                         <div class="show_block">
                             <span>Предложение</span>
                             <span class="view-value">{{conClass.typeOptions[contact.type]?.label}}</span>
-                        </div>
+                        </div> 
                         <div class="show_block">
                             <span>{{contact.type == 'person' ? 'ФИО' : 'Название организации'}}</span>
                             <span class="view-value link">{{ contact?.name}}</span>
@@ -447,7 +447,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                             <span>Рейтинг</span>
                             <span class="view-value">{{ request?.rate}}</span>
                         </div>
-                        <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="true" [update]="update"></input-area>
+                        
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <div class="show_block">
@@ -460,8 +460,8 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                         <input-line [name]="'Год постройки'" [value]="request?.buildYear" (newValue)="request.buildYear = $event"></input-line>
                         <input-line [name]="'Рейтинг'" [value]="request?.rate" (newValue)="request.rate = $event"></input-line>
-                        <input-area [name]="'Дополнительно'" [value]="request?.description" (newValue)="request.description = $event" [update]="update"></input-area>
                     </ng-container>
+                    <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="!editEnabled" (newValue)="request.description = $event" [update]="update"></input-area>
                 </ui-tab>
                 <ui-tab [title]="'УСЛОВИЯ'" *ngIf="request.offerTypeCode == 'rent'" (tabSelect)="update = {}">
                     <ng-container *ngIf="!editEnabled">
@@ -661,7 +661,6 @@ export class TabRequestComponent implements OnInit{
 
     hitsCount: number = 0;
 
-    offClass = Offer;
     conClass = Contact;
     reqClass  = Request;
     block = ObjectBlock;

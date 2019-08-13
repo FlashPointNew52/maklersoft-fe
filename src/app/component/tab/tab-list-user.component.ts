@@ -15,7 +15,7 @@ import {Person} from "../../entity/person";
 @Component({
     selector: 'tab-list-user',
     inputs: ['tab'],
-    styles: [`        
+    styles: [`
         .work-area {
             height: calc(100vh - 122px);
             padding: 30px 0;
@@ -47,7 +47,7 @@ import {Person} from "../../entity/person";
     `],
     template: `
         <div class = "round_menu">
-            <div class="button" [style.background-image]="'url(assets/plus.png)'" (click) ="addUser()">Добавить</div>
+            <div class="button" (click) ="addUser()">Добавить</div>
         </div>
         <div class="search-form">
             <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'100%'"
@@ -97,8 +97,8 @@ import {Person} from "../../entity/person";
 
         <hr class='underline'>
         <div class="head"><span>{{tab.header}}</span></div>
-        
-        
+
+
         <div class="work-area" (contextmenu)="contextMenu($event)" (offClick)="selectedUser = []" (scroll)="scroll($event)">
             <digest-user *ngFor="let u of users; let i = index"
                 [user]="u"

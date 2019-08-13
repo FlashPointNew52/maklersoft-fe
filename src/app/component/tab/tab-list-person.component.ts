@@ -14,38 +14,12 @@ import {SessionService} from "../../service/session.service";
     selector: 'tab-list-person',
     inputs: ['tab', 'dateType'],
     styles: [`
-        .search-form {
-            position: absolute;
-            width: calc(75% - 685px);
-            margin-left: 570px;
-            margin-top: 27px;
-            z-index: 1;
-        }
-
-        .tool-box {
-            height: 21px;
-            margin: 2px 12px;
-            padding-top: 1px;
-        }
-
-        .search-box {
-            display: flex;
-            position: relative;
-            height: 30px;
-            margin: 15px 12px 0px 12px;
-        }
-
-        .person-list{
-           display: flex;
-        }
-
         .work-area {
-            float: left;
-            height: calc(100vh - 175px);
+            height: calc(100vh - 122px);
             padding: 30px 0;
             min-width: 1150px;
             max-width: 1300px;
-            margin: 115px auto 0;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             overflow: auto;
@@ -57,162 +31,110 @@ import {SessionService} from "../../service/session.service";
             padding-top: 6px;
             box-sizing: border-box;
             cursor: pointer;
+            display: flex;
         }
 
         digest-person:hover{
-            background-color: #f3f3f3;
+            background-color: var(--bottom-border);
         }
 
         digest-person.selected{
-            background-color: #b5b5b5;
-        }
-
-        .inline-select {
-            display: inline-block;
-            height: 20px;
-            padding: 0 15px;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .button {
-            height: 44px;
-            width: 44px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 11px;
-            line-height: 110px;
-            background-size: 39px;
-            background-position: center;
-            background-color: #9e9e9e;
-            color: #9e9e9e;
-            border: 1px solid #42424200;
-            text-indent: -3px;
-        }
-
-        .button_active, .button:hover{
-            background-color: #424242;
-            color: #424242;
-            border: 1px solid #424242;
-        }
-
-        .input_line{
-            height: 23px;
-            background-color: rgb(247, 247, 247);
-            border: 1px solid rgba(204, 204, 204, 0.47);
+            background-color: var(--color-blue);
         }
 
     `],
     template: `
         <div class = "round_menu">
-            <div class="button" [style.background-image]="'url(assets/plus.png)'" (click) ="addPerson()">Добавить</div>
-            <div (click)="toggleSource('all')" class="button" [class.button_active]="this.source != 'local'" [style.background-image]="'url(assets/base_new.png)'">Общая</div>
-            <div (click)="toggleSource('local')"  class="button" [class.button_active]="this.source == 'local'" [style.background-image]="'url(assets/company_new.png)'">Компания</div>
+            <div class="button" (click)="addPerson()">Добавить</div>
+            <div class="button" (click)="toggleSource('all')"   [class.button_active]="this.source != 'local'">Общая</div>
+            <div class="button" (click)="toggleSource('local')" [class.button_active]="this.source == 'local'">Компания</div>
         </div>
         <div class="search-form">
-            <div class="search-box">
-                <input type="text" class="input_line" placeholder="" [style.width]="'100%'"
-                    [(ngModel)]="searchQuery" (keyup)="searchParamChanged()"
-                >
-                <span class="icon-search" style= "position: absolute; top: 7px; right: 10px"></span>
-            </div>
+            <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'100%'"
+                   [(ngModel)]="searchQuery" (keyup)="searchParamChanged()"
+            ><span class="find_icon_right"></span>
 
             <div class="tool-box">
-                <div style="width: 100%;float: left;">
-                    <div class="inline-select" *ngIf="source == 'local'">
-                        <ui-filter-select class="view-value edit-value"
-                            [options]="usrOptions"
-                            [value]="{'option' : filter.agentId}"
-                            (onChange)="setUsrId($event)"
-                        >
-                        </ui-filter-select>
-                    </div>
-                    <div class="inline-select" *ngIf="source != 'local'">
-                        <ui-filter-select class="view-value edit-value"
-                                          [options]="orgOptions"
-                                          [value]="{'option' : filter.organisationId}"
-                                          (onChange)="setType($event)"
-                        >
-                        </ui-filter-select>
-                    </div>
-                    <div class="inline-select" *ngIf="source == 'local'">
-                      <ui-filter-select class="view-value edit-value"
-                                        [options]="middlemanOptions"
-                                        [value]="{'option' : filter.isMiddleman}"
-                                        (onChange)="filter.isMiddleman = $event.option; searchParamChanged();"
-                      >
-                      </ui-filter-select>
-                    </div>
-                    <div class="inline-select" *ngIf="source == 'local'">
-                        <ui-filter-select class="view-value edit-value"
-                                          [options]="typeCodeOptions"
-                                          [value]="{'option' : filter.typeCode}"
-                                          (onChange)="filter.typeCode = $event.option; searchParamChanged();"
-                        >
-                        </ui-filter-select>
-                    </div>
-                    <div class="inline-select" *ngIf="source == 'local'">
-                      <ui-filter-select class="view-value edit-value"
-                                        [options]="stateCodeOptions"
-                                        [value]="{'option' : filter.stateCode}"
-                                        (onChange)="filter.stateCode = $event.option; searchParamChanged();"
-                      >
-                      </ui-filter-select>
-                    </div>
-
-
-                    <div class="inline-select" *ngIf="source == 'local'">
-                        <ui-filter-tag-select class="view-value edit-value"
-                            [value]="filter?.tag"
-                            (onChange)="filter.tag = $event; searchParamChanged();"
-                        >
-                        </ui-filter-tag-select>
-                    </div>
-                    <div class="inline-select">
-                        <ui-filter-select class="view-value edit-value"
-                            [options]="dateFilter"
-                            [value]="{'option' : filter.changeDate || filter.addDate}"
-                            (onChange)="setDateFilter($event)"
-                        >
-                        </ui-filter-select>
-                    </div>
-                    <div class="inline-select">
-                        <ui-filter-select class="view-value edit-value"
-                            [options]=" this.source == 'local' ? localSort : allSort"
-                            [value]="getSort()"
-                            (onChange)="setSort($event.option, $event.subvalue); searchParamChanged();"
-                        >
-                        </ui-filter-select>
-                    </div>
-                    <div style="float: right;font-size: 12px;color: #324158;margin-top: 3px;">
-                        Найдено: <span>{{hitsCount+" "}}</span>/<span>{{" "+ persons?.length }}</span>
-                    </div>
-                </div>
+                <filter-select *ngIf="source == 'local'"
+                    [name]="'Пользователь'"
+                    [options]="usrOptions"
+                    [value]="{'option' : filter.agentId}"
+                    (newValue)="setUsrId($event)"
+                >
+                </filter-select>
+                <filter-select *ngIf="source != 'local'"
+                    [name]="'Отдел'" [firstAsName]="true"
+                    [options]="orgOptions"
+                    [value]="{'option' : filter.organisationId}"
+                    (newValue)="setType($event)"
+                >
+                </filter-select>
+                <filter-select *ngIf="source == 'local'"
+                    [name]="'Посредничество'" [firstAsName]="true"
+                    [options]="middlemanOptions"
+                    [value]="{'option' : filter.isMiddleman}"
+                    (newValue)="filter.isMiddleman = $event; searchParamChanged();"
+                >
+                </filter-select>
+                <filter-select *ngIf="source == 'local'"
+                    [name]="'Тип контакта'" [firstAsName]="true"
+                    [options]="typeCodeOptions"
+                    [value]="{'option' : filter.typeCode}"
+                    (newValue)="filter.typeCode = $event; searchParamChanged();"
+                >
+                </filter-select>
+                <filter-select *ngIf="source == 'local'"
+                    [name]="'Стадия контакта'" [firstAsName]="true"
+                    [options]="stageCodeOptions"
+                    [value]="{'option' : filter.stageCode}"
+                    (newValue)="filter.stageCode = $event; searchParamChanged();"
+                >
+                </filter-select>
+                <filter-select-tag *ngIf="source == 'local'" [value]="filter?.tag" (newValue)="filter.tag = $event; searchParamChanged();"></filter-select-tag>
+                <filter-select
+                    [name]="'Период'" [firstAsName]="true"
+                    [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: '1', label: '1 день'},
+                                  {value: '3', label: '3 дня'},
+                                  {value: '7', label: 'Неделя'},
+                                  {value: '17', label: '2 недели'},
+                                  {value: '30', label: 'Месяц'},
+                                  {value: '90', label: '3 месяца'}
+                              ]"
+                    [value]="{'option' : filter.changeDate}"
+                    (newValue)="filter.changeDate = $event; searchParamChanged();"
+                >
+                </filter-select>
+                <filter-select
+                    [name]="'Сортировка'" [firstAsName]="true"
+                    [options]="sortOptions"
+                    [value]="getSort()"
+                    (newValue)="setSort($event.option, $event.subvalue); searchParamChanged();"
+                >
+                </filter-select>
+                <div class="found">Найдено: {{hitsCount+" "}}/{{" "+persons?.length }}</div>
             </div>
-
         </div>
 
         <hr class='underline'>
+        <div class="head"><span>{{tab.header}}</span></div>
 
-        <div class="person-list"
-        >
-            <div class="pane" style = "width: 370px;height: 115px;">
-                <div class="head"><span>{{tab.header}}</span></div>
-            </div>
-            <div class="work-area" (contextmenu)="contextMenu($event)" (offClick)="selectedPerson = []" (scroll)="scroll($event)">
-                <digest-person *ngFor="let p of persons; let i = index"
-                    [person]="p"
-                    (click)="clickPerson($event, p, i)"
-                    (dblclick)="openPerson(p)"
-                    [class.selected]="selectedPerson.indexOf(p) > -1"
-                    [class.alreadyAdd]="p.userRef && source != 'local'"
-                    [dateType] = "sort.changeDate ? 'changeDate' : sort.assignDate ? 'assignDate' : 'addDate'"
-                    [dataType]="source == 'local' ? 'person': 'user'"
-                    (contextmenu)="clickPerson($event, p, null)"
-                >
-                </digest-person>
-            </div>
+        <div class="work-area" (contextmenu)="contextMenu($event)" (offClick)="selectedPerson = []" (scroll)="scroll($event)">
+            <digest-person *ngFor="let p of persons; let i = index"
+                [person]="p"
+                (click)="clickPerson($event, p, i)"
+                (dblclick)="openPerson(p)"
+                [class.selected]="selectedPerson.indexOf(p) > -1"
+                [class.alreadyAdd]="p.userRef && source != 'local'"
+                [dateType] = "sort.changeDate ? 'changeDate' : sort.assignDate ? 'assignDate' : 'addDate'"
+                [dataType]="source == 'local' ? 'person': 'user'"
+                (contextmenu)="clickPerson($event, p, null)"
+            >
+            </digest-person>
         </div>
+
+
     `
 })
 
@@ -236,24 +158,7 @@ export class TabListPersonComponent implements OnInit {
     };
     localSort = Person.localSort;
     allSort = Person.allSort;
-    dateFilter = [{value: 'all', label: 'Все', class: "entry", items: []},
-                  {value: 'addDate', label: 'Добавлено', class: "submenu", items: [
-                      {value: '1', label: '1 день', class: "entry", items: []},
-                      {value: '3', label: '3 дня', class: "entry", items: []},
-                      {value: '7', label: 'Неделя', class: "entry", items: []},
-                      {value: '17', label: '2 недели', class: "entry", items: []},
-                      {value: '30', label: 'Месяц', class: "entry", items: []},
-                      {value: '90', label: '3 месяца', class: "entry", items: []}
-                  ]},
-                  {value: 'changeDate', label: 'Изменено', class: "submenu", items: [
-                      {value: '1', label: '1 день', class: "entry", items: []},
-                      {value: '3', label: '3 дня', class: "entry", items: []},
-                      {value: '7', label: 'Неделя', class: "entry", items: []},
-                      {value: '17', label: '2 недели', class: "entry", items: []},
-                      {value: '30', label: 'Месяц', class: "entry", items: []},
-                      {value: '90', label: '3 месяца', class: "entry", items: []}
-                  ]}
-    ];
+
     middlemanOptions = [{value: 'all', label: 'Все'}];
     typeCodeOptions = [{value: 'all', label: 'Все'}];
     stateCodeOptions = [{value: 'all', label: 'Все'}];

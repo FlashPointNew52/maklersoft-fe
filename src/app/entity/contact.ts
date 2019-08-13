@@ -86,10 +86,10 @@ export class Contact {
     };
 
     public static typeCodeOptions = {
-      unknown: {label: 'Не определено', items: []},
-      client: {label: 'Клиент', items: []},
-      partner: {label: 'Партнер', items: []},
-      competitor: {label: 'Конкурент', items: []}
+        unknown: {label: 'Не определено', items: []},
+        client: {label: 'Клиент', items: []},
+        partner: {label: 'Партнер', items: []},
+        competitor: {label: 'Конкурент', items: []}
     };
 
     public static stageCodeOptions = {

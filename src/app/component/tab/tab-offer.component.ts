@@ -25,8 +25,8 @@ import {Person} from "../../entity/person";
 import {Organisation} from "../../entity/organisation";
 import {UploadService} from "../../service/upload.service";
 import {AddressBlock} from "../../class/addressBlock";
-import {MaskService} from "ngx-mask";
 import {Contact} from "../../entity/contact";
+
 @Component({
     selector: 'tab-offer',
     inputs: ['tab'],
@@ -81,7 +81,7 @@ import {Contact} from "../../entity/contact";
         .rating{
             flex-wrap: wrap;
         }
- 
+
         .rating > span{
             width: 200px;
         }
@@ -99,7 +99,7 @@ import {Contact} from "../../entity/contact";
         .digest-list digest-offer:last-of-type{
             border-bottom: 1px solid var(--bottom-border);
         }
-        
+
     /*.suggestions {
         min-width: 160px;
         margin-top: 27px;
@@ -1149,14 +1149,14 @@ import {Contact} from "../../entity/contact";
                     <div (click)="workAreaMode = 'advert'" [class.selected]="workAreaMode == 'advert'">Реклама</div>
                     <div (click)="workAreaMode = 'egrn'" [class.selected]="workAreaMode == 'egrn'">Выписка из ЕГРН</div>
                     <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на ипотеку</div>
-                    <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">Заметки</div> 
+                    <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">Заметки</div>
                     <div (click)="openNotebook('diary', $event)" [class.selected]="workAreaMode == 'diary'">Ежедневник</div>
                     <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
                     <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">IP-телефония</div>
                     <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка</div>
                     <div (click)="workAreaMode = 'report'" [class.selected]="workAreaMode == 'report'">Отчет</div>
                     <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История</div>
-                    <div class="delete" (click)="$event">Удалить предложение</div> 
+                    <div class="delete" (click)="$event">Удалить предложение</div>
                 </div>
             </div>
         </ui-tabs-menu>
@@ -1190,7 +1190,7 @@ import {Contact} from "../../entity/contact";
             <yamap-view *ngSwitchCase="'map'"
                         [selected_offers]="selectedOffers"
             >
-            </yamap-view>  
+            </yamap-view>
             <adv-view *ngSwitchCase="'advert'"></adv-view>
             <files-view (progressLoad)="displayProgress($event)" [full]="paneHidden" [type]="'image'" [files]="offer.photos" [object_id]="offer.id" [editMode]="editEnabled" *ngSwitchCase="'photo' || 'doc'"></files-view>
         </ng-container>

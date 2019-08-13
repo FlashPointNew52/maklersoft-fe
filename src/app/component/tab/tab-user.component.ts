@@ -62,15 +62,6 @@ import {ObjectBlock} from "../../class/objectBlock";
             line-height: 16px;
         }
 
-        .property_face > ui-view-value {
-            font-style: italic;
-            letter-spacing: 0;
-            margin-top: 7px;
-            height: 12px;
-            line-height: 12px;
-            width: 220px;
-        }
-
         .edit_ready {
             height: 12px;
             margin-top: 15px;
@@ -127,7 +118,7 @@ import {ObjectBlock} from "../../class/objectBlock";
             height: calc(50% - 117px);
             border-bottom: 1px solid #bdc0c1;
         }
-        .ui-view-value{
+        .position{
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
@@ -138,19 +129,16 @@ import {ObjectBlock} from "../../class/objectBlock";
         <div class="property_face">
             <ui-tag [value]="user.tag"></ui-tag>
             <div class="photo" [style.background-image]= "user?.photoMini ? 'url('+ user?.photoMini +')' : null">
-                <ui-upload-file *ngIf="editEnabled" [type]="'image'" (addNewFile) = "addFile($event)" [obj_id]="user.id"
+                <ui-upload-file *ngIf="editEnabled" [type]="'image'" (addNewFile) = "addFile($event)"
                     (progressState) = "displayProgress($event)" [obj_type] = "'users'">
                 </ui-upload-file>
             </div>
             <div class="last_name">{{utils.getSurname(user.name) || "Неизвестно"}}</div>
             <div class="first_name">{{utils.getFirstName(user.name) || "Неизвестно"}}</div>
-            <div class="ui-view-value" [ngStyle]="positionOptions">
-                {{ userClass.positionOptionsByDepart[user.department][user.position]?.label }}
-            </div>
-
+            <div class="position">{{ userClass.positionOptionsByDepart[user.department][user.position]?.label }}</div>
         </div>
         <hr class='underline'>
-        <hr class='underline progress_bar' [style.width]="progressWidth+'vw'"> 
+        <hr class='underline progress_bar' [style.width]="progressWidth+'vw'">
         <div class="pane">
             <div class="edit_ready">
                 <span class="link"  style="    z-index: 99;" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
@@ -492,9 +480,6 @@ export class TabUserComponent implements OnInit, AfterViewInit {
     utils = Utils;
     userClass = User;
 
-    positionOptions = User.positionOptionsByDepart;
-    typeCodeOptions = User.typeMarketCodeOptions;
-
     offers: Offer[];
     requests: Request[];
 
@@ -562,7 +547,7 @@ export class TabUserComponent implements OnInit, AfterViewInit {
             }
         });
     }
-    
+
 
     toggleEdit() {
         this.editEnabled = !this.editEnabled;
