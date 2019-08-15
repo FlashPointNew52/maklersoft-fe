@@ -145,7 +145,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                 <span class="link" style="z-index: 99;" *ngIf="editEnabled" (click)="save()">Готово</span>
             </div>
             <ui-tabs-menu>
-                <ui-tab [title]="'ГЛАВНАЯ'">
+                <ui-tab [title]="'ГЛАВНАЯ'" class="without_buttons">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Дата создания</span>
@@ -380,7 +380,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                     </ng-container>
                     <input-area [name]="'Дополнительно'" [value]="user?.description" [disabled]="!editEnabled" (newValue)="user.description = $event" [update]="update"></input-area>
                 </ui-tab>
-                <ui-tab [title]="'ОБЩАЯ'">
+                <ui-tab [title]="'ОБЩАЯ'" class="without_buttons">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Офис</span>
@@ -432,7 +432,7 @@ import {ObjectBlock} from "../../class/objectBlock";
 
                     </ng-container>
                 </ui-tab>
-                <ui-tab [title]="'ОБУЧЕНИЕ'">
+                <ui-tab [title]="'ОБУЧЕНИЕ'" class="without_buttons">
                 </ui-tab>
                 <div more class="more">ЕЩЁ...
                     <div>

@@ -33,7 +33,7 @@ import {Utils} from "../../class/utils";
             top: -2px;
             align-items: center;
             display: flex;
-            padding-left: 25px;
+            padding-left: 20px;
             height: 50px;
             width: 90px;
             background-color: white;
@@ -57,11 +57,11 @@ import {Utils} from "../../class/utils";
             align-items: center;
             font-size: 14px;
             justify-content: center;
-            border: 1px solid var(--color-dark-blue);
-            color: var(--color-dark-blue);
+            border: 1px solid #141413;
+            color: #141413;
         }
         .buttons-block > div:hover, .buttons-block > .active{
-            background-color: var(--color-dark-blue);
+            background-color: #141413;
             color: white;
         }
         .buttons-block > div:first-child{
@@ -90,52 +90,89 @@ import {Utils} from "../../class/utils";
             right: 25px;
             height: 18px;
             width: 18px;
-            top: 108px;
+            top: 115px;
         }
         .pane-head{
             height: 30px;
             display: flex;
-            justify-content: center;
+            align-items: center;
             padding: 0 15px;
         } 
-        .head-time{
-            width: 100%;
-            height: 30px;
+        .head-time > .time{
             color: #7D7D7A;
         }
+        
         .parentName{
             text-transform: uppercase;
             color: #4D4D49;
             font-weight: bold;
+            flex-grow: 1;
         }
         .contact-block{
             display: flex;
             width: 100%;
-            background-color: var(--color-notif);
-            border: 1px solid var(--notif-border);
-            padding: 30px 20px;
+            background-color: #F2F0E9;
+            border: 1px solid #EEEBDD;
             border-radius: 5px;
         }
         .contact-block > div:first-child > img{
-            height: 46px;
-            width: 46px;
-            border-radius: 23px;
+            height: 43px;
+            width: 43px;
+            border-radius: 22px;
             margin-right: 10px;
+        }
+        .name, .job{
+            color: #2B2B2A;
         }
         .name{
             font-weight: bold;
         }
-        .event-block{
+        .flex-col.event-block{
             padding: 10px 20px 0 20px;
         }
+        .ev-block{
+            display: flex;
+            padding: 7px 15px 15px 15px;
+        }
+        .ev-block > img{
+            height: 46px;
+            width: 46px;
+            border-radius: 23px;
+            margin-right: 15px;  
+        }
         .event{
-            margin-top: 15px;
+            margin-top: 5px;
+            color: #2B2B2A; 
         }
         .out-scroll{
             height: calc(100vh - 136px);
             width: 100%;
             overflow-y: auto;
             padding-bottom: 30px;
+        }
+        .more-button {
+            display: none;
+            width: 100px;
+            align-items: center;
+            height: 15px;
+            justify-content: flex-end;
+        }
+        .point {
+            width: 3px;
+            height: 3px;
+            background-color: #32323d;
+            border-radius: 50%;
+            margin-right: 3px;
+        }
+
+        .point:last-child {
+            margin-left: 0;
+        }
+        .contact-block:hover > .more-button{
+            display: flex;
+        }
+        .contact-block:hover > .time{ 
+            display: none;
         }
     `],
     template: `
@@ -155,22 +192,22 @@ import {Utils} from "../../class/utils";
                     <div class="contact-block flex-col">
                         <div class="pane-head">
                             <div class="parentName">{{event.parentName}}</div>
-                            <div class="head-time">{{event.time}}</div>
+                            <div class="head-time"><div class="time">{{event.time}}</div>
+                                <div class="more-button list" (offClick)="_hubService.shared_var['cm_hidden'] = true" (click)="tableContextMenu($event)">
+                                    <div class="point"></div>
+                                    <div class="point"></div>
+                                    <div class="point"></div>
+                                </div>
+                            </div>
+                            
                         </div>
-                        <div style="display: flex">
+                        <div class="ev-block">
                             <img [src]="event.pic" alt="изображение контакта">
                             <div class="flex-col">
                                 <div class="name">{{event.user}}</div>
-                                <div class="job">{{event.company}}</div>
                                 <div class="job">{{event.human_type}}</div>
+                                <div class="event">{{event.event.type}}</div>
                             </div>
-                        </div>
-                        <div class="flex-col event">
-                            <div>{{event.event.type}}</div>
-                            <div>{{event.event.address}}</div>
-                            <div>{{event.event.request}}</div>
-                            <div>{{event.event.price}}</div>
-                            <div>{{event.event.props}}</div>
                         </div>
                     </div>
                 </div>
@@ -185,12 +222,12 @@ export class NotificationViewComponent implements AfterViewInit, OnChanges{
     button_active = 'all';
     @Output() closeEvent: EventEmitter<any> = new EventEmitter();
     events = [
-        {parentName: "Ежедневник", user: 'ИВАНОВ Иван Иванович', company: 'Центр оценки и продажи недвижимости', human_type: 'Постоянный клиент', eventType: 'Сообщение', pic: '../../assets/photo (2).PNG',time: Utils.getDateInCalendar(1565351610),
-            event: {type: "ЗАЯВКА (НОВАЯ)", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
-        {parentName: "IP-Телефония", user: 'ИВАНОВ Иван Иванович', company: 'MaklerOnline', eventType: 'Сообщение', human_type: 'Потенциальный клиент', pic: '../../assets/photo (2).PNG', time: Utils.getDateInCalendar(1563004572),
-            event: {type: "ЗАЯВКА (НОВАЯ)", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
-        {parentName: "Чат", user: 'ИВАНОВ Иван Иванович', company: 'Центр оценки и продажи недвижимости', eventType: 'Сообщение', human_type: 'Потенциальный клиент', pic: '../../assets/photo (2).PNG', time: Utils.getDateInCalendar(1563020052),
-            event: {type: "ЗАЯВКА (НОВАЯ)", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
+        {parentName: "Ежедневник", user: 'ИВАНОВ Иван Иванович', company: 'Центр оценки и продажи недвижимости', human_type: 'Постоянный клиент', eventType: 'Сообщение', pic: '../../assets/photo (2).PNG',time: Utils.getDateForNotification(1565351610),
+            event: {type: "Добавлено сообщение", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
+        {parentName: "IP-Телефония", user: 'ИВАНОВ Иван Иванович', company: 'MaklerOnline', eventType: 'Сообщение', human_type: 'Потенциальный клиент', pic: '../../assets/photo (2).PNG', time: Utils.getDateForNotification(1563004572),
+            event: {type: "Добавлена заявка", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
+        {parentName: "Чат", user: 'ИВАНОВ Иван Иванович', company: 'Центр оценки и продажи недвижимости', eventType: 'Сообщение', human_type: 'Потенциальный клиент', pic: '../../assets/photo (2).PNG', time: Utils.getDateForNotification(1563020052),
+            event: {type: "Добавлена задача", address: "Хабаровск", request: "Квартира 3 комнатная", price: "Бюджет до 35 000 руб", props: "Кухонная мебель, Гостинная мебель"}},
           ];
     constructor(private _hubService: HubService) {
 
@@ -260,19 +297,47 @@ export class NotificationViewComponent implements AfterViewInit, OnChanges{
             scrollable: false,
             items: [
                 {
-                    class: "entry", disabled: false, icon: "", label: 'Телефон', callback: () => {
+                    class: "entry", disabled: false, icon: "", label: 'Инфо', callback: () => {
                     }
                 },
                 {
-                    class: "entry", disabled: false, icon: "", label: 'E-mail', callback: () => {
+                    class: "entry", disabled: false, icon: "", label: 'Добавить заметку', callback: () => {
                     }
                 },
                 {
-                    class: "entry", disabled: false, icon: "", label: 'Web-сайт', callback: () => {
+                    class: "entry", disabled: false, icon: "", label: 'Добавить задачу', callback: () => {
                     }
                 },
                 {
-                    class: "entry", disabled: false, icon: "", label: 'Соцсети', callback: () => {
+                    class: "entry", disabled: false, icon: "", label: 'IP-телефония', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Назначить на...', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Добавить в чат', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Добавить в контакты', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Добавить в организации', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Создать заявку', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: 'Создать предложение', callback: () => {
+                    }
+                },
+                {
+                    class: "entry", sub_class: 'del', disabled: false, icon: "", label: 'Удалить', callback: () => {
                     }
                 },
             ]

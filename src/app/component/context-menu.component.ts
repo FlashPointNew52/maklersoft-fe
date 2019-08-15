@@ -15,7 +15,7 @@ import {
             font-size: 12px;
             position: absolute;
             z-index: 9999;
-            width: 170px;
+            width: 180px;
             padding: 26px 0;
             border: 0px solid;
             background-color: rgba(255, 255, 255, 1);

@@ -76,7 +76,7 @@ import {User} from '../entity/user';
       }
 
       .tab-button {
-        width: 58px;
+        width: 50px;
         height: 30px;
         text-align: center;
         line-height: 30px;
@@ -84,12 +84,12 @@ import {User} from '../entity/user';
           color: #32323D;
           font-size: 12px;
           position: relative;
-          right: calc(-100% + 205px);
+          right: calc(-50% + 20px);
         top: 10px;
       }
 
       .tab-button.diary{
-          right: calc(-100% + 80px);
+          right: calc(-100% + 75px);
       }
       notebook-task {
         display: flex;
@@ -131,18 +131,19 @@ import {User} from '../entity/user';
             width: 105px;
         }
     `],
-    template: `
+    template: ` 
         <div class="notebook" [hidden]="this.hidden" [style.width.px]="this.hidden == true ? 0 : 400">
             
-            <div class="head-notebook">
+            <div class="head-notebook"> 
                 <div class="chat-word" *ngIf="mode == 'chat'">ЧАТ</div>
                 <div class="chat-word" *ngIf="mode == 'phone'">IP-ТЕЛЕФОНИЯ</div>
-                <div class="chat-word" *ngIf="mode == 'notes'">ЗАМЕТКИ</div>
+                <div class="chat-word" *ngIf="mode == 'daily'">ЕЖЕДНЕВНИК</div>
                 <div class="curr_date" *ngIf="mode == 'chat'" >Сегодня, {{curr_date}}</div>
-                <div class="tab-button" [class.diary]="mode == 'diary'" (click)="toggleNotebook()">Закрыть</div>
+                <div class="tab-button" [class.diary]="mode == 'notification' || mode == 'daily'" (click)="toggleNotebook()">Закрыть</div>
             </div>
             <chat-view *ngIf="mode == 'chat'" [mode]="hidden"></chat-view>
-            <notification-view *ngIf="mode == 'diary'"></notification-view>
+            <notification-view *ngIf="mode == 'notification'"></notification-view>
+            <daily-planner-view *ngIf="mode == 'daily'"></daily-planner-view>
             <!--<div class="event-tab" *ngIf="show==1 || show==2">-->
                 <!--<div class="head"></div>-->
                 <!--<notebook-task-describe [task] = "data" [mode]="state" (update) = "update_tab_daily($event)"></notebook-task-describe>-->

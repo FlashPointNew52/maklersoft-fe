@@ -3,6 +3,7 @@ import {ConfigService} from "./service/config.service";
 import {SessionService} from "./service/session.service";
 import {UserService} from "./service/user.service";
 import {Observable} from "rxjs";
+import * as moment from "./component/notebook/chat-view.component";
 
 
 @Component({
@@ -273,7 +274,7 @@ import {Observable} from "rxjs";
                 </div>
                 <div class="fields" *ngIf="typeWindow == 1">
                     <input [(ngModel)]="phone" mask="+0 (000) 000-00-00" placeholder="НОМЕР ТЕЛЕФОНА">
-                    <input [(ngModel)]="password" placeholder="ПАРОЛЬ">
+                    <input [(ngModel)]="password" placeholder="ПАРОЛЬ" (keydown)="checkKeyPress($event)">
                     <div class="link_button" (click)="typeWindow = 2">Забыли пароль?</div>
                     <input class="submit" type="submit" value="ВОЙТИ В СИСТЕМУ" (click)="_login()" style="margin-top: 35px">
                 </div>
@@ -328,7 +329,13 @@ export class LoginScreenComponent implements OnInit{
         }
         this.checkSession();
     }
-
+    checkKeyPress(event) {
+        let key = event.key;
+        if (key == "Enter") {
+            event.preventDefault();
+            this._login();
+        }
+    }
     _login() {
         localStorage.setItem('currentUser', JSON.stringify({phone: this.phone }));
         this._sessionService.login(this.phone, this.password).subscribe(result => {
