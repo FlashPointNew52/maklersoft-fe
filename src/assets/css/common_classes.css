@@ -349,7 +349,9 @@ ui-tabs-menu ui-tab{
     display: block;
     overflow: auto;
 }
-
+ui-tabs-menu ui-tab.without_buttons{
+    max-height: calc(100% - 85px);
+}
 ui-tabs-menu > ui-tab:not(:empty):after {
     content: "";
     height: 12px;

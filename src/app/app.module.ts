@@ -12,6 +12,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material';
 import {MatMomentDateModule} from '@angular/material-moment-adapter';
 import {ChatViewComponent} from "./component/notebook/chat-view.component";
+import {DailyPlannerViewComponent} from "./component/view/daily-planner-view.component";
 import {NotificationViewComponent} from "./component/view/notification-view.component";
 //import {YaCoreModule } from './component/ya-map-component/core.module';
 import {ContextMenuComponent} from "./component/context-menu.component";
@@ -111,7 +112,7 @@ import {ModalWindowComponent} from "./component/modal-window.component";
 import {AddressInputComponent} from "./component/ui-elements/address-input";
 
 const appRoutes: Routes = [
-    { path: 'admin', loadChildren: 'app/admin.module#AdminModule' },
+    { path: 'admin', loadChildren: 'src/app/admin.module#AdminModule' },
     { path: 'main', component: MainComponent },
     { path: '',
         redirectTo: '/main',
@@ -122,6 +123,7 @@ const appRoutes: Routes = [
 
 @NgModule({
     declarations: [
+        DailyPlannerViewComponent,
         ChatViewComponent,
         NotificationViewComponent,
         AppComponent,
