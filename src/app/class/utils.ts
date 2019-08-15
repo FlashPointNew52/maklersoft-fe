@@ -15,10 +15,42 @@ export class Utils{
     ){
         moment.locale("ru");
     }
-
+    public static getDateForNotification(date: number) {
+        return moment(date * 1000).calendar(null, {
+            sameDay: '[Сегодня],' + moment(date* 1000).format("D") + ' ' + this.getMonth(date) +', LT',
+            nextDay: '[Завтра],' + moment(date* 1000).format("D") + ' ' + this.getMonth(date) +', LT',
+            nextNextDay: '[Послезавтра],' + moment(date* 1000).format("D") + ' ' + this.getMonth(date) +', LT',
+            nextWeek: moment(date* 1000).format("D") + ' ' + this.getMonth(date) +', LT',
+            lastDay: '[Вчера],' + moment(date* 1000).format("D") + ' ' + this.getMonth(date) +', LT',
+            lastWeek:  now => {
+                if (moment(date* 1000).startOf('day').diff(moment(now).startOf('day'), 'day', true) == -2) {
+                    return '[Позавчера],' + moment(date* 1000).format("D") + ' ' + this.getMonth(date) +', LT';
+                } else {
+                    return moment(date * 1000).format("D") + ' ' + this.getMonth(date) +', LT';
+                }
+            },
+            sameElse: moment(date* 1000).format("D") + ' ' + this.getMonth(date) +', LT'
+        });
+    }
+    public static getMonth(date: number) {
+        switch (moment(date* 1000).format("M")) {
+            case "1": return "Января";
+            case "2": return "Февраля";
+            case "3": return "Апреля";
+            case "4": return "Марта";
+            case "5": return "Мая";
+            case "6": return "Июня";
+            case "7": return "Июля";
+            case "8": return "Августа";
+            case "9": return "Сентября";
+            case "10": return "Октября";
+            case "11": return "Ноября";
+            case "12": return "Декабря";
+        }
+    }
     public static getDateInCalendar(date: number){
         return moment(date * 1000).calendar(null, {
-                sameDay: '[Сегодня в] LT',
+                sameDay: '[Сегодня] LT',
                 nextDay: '[Завтра в] LT',
                 nextNextDay: '[Послезавтра в] LT',
                 nextWeek: 'DD.MM.YYYY',
@@ -47,6 +79,9 @@ export class Utils{
     }
     public static getCurrentTime(number: number) {
         return moment(number).get('hour') + ':' + moment(number).get('minute');
+    }
+    public static getFullCurrentTime(number: number) {
+        return moment(number).get('hour') + ':' + moment(number).get('minute')+ ':' + moment(number).get('second');
     }
     public static getNumWithWhitespace(str){
         if(!str) return "";

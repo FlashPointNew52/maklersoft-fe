@@ -1150,7 +1150,7 @@ import {Contact} from "../../entity/contact";
                     <div (click)="workAreaMode = 'egrn'" [class.selected]="workAreaMode == 'egrn'">Выписка из ЕГРН</div>
                     <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на ипотеку</div>
                     <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">Заметки</div>
-                    <div (click)="openNotebook('diary', $event)" [class.selected]="workAreaMode == 'diary'">Ежедневник</div>
+                    <div (click)="openNotebook('daily', $event)" [class.selected]="workAreaMode == 'daily'">Ежедневник</div>
                     <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
                     <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">IP-телефония</div>
                     <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка</div>

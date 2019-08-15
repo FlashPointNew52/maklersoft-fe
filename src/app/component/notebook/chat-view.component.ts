@@ -96,7 +96,7 @@ import * as moment from 'moment/moment';
             min-height: 104px !important;
             height: 104px !important;
             border-bottom: 1px solid var(--selected-digest);
-            padding: 25px 30px 0 30px;
+            padding: 25px 30px 0 20px;
         }  
         .contact-block.selected{
             background-color: #d3d5d6 !important;
@@ -218,7 +218,7 @@ import * as moment from 'moment/moment';
             top: -2px;
             align-items: center;
             display: flex;
-            padding-left: 25px;
+            padding-left: 20px;
             height: 50px;
             width: 90px;
             background-color: white;
