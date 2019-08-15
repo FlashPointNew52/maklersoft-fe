@@ -193,7 +193,7 @@ import {Utils} from "../../class/utils";
                 >
                 </yamap-view>
                 <adv-view *ngSwitchCase="'advert'" [count]="selectedOffers.length"></adv-view>
-                <files-view [full]="paneHidden" [type]="'image'" [object_id]="cur_id" [editMode]="false" *ngSwitchCase="'photo' || 'doc'"></files-view>
+                <files-view [full]="paneHidden" [type]="'image'" [editMode]="false" *ngSwitchCase="'photo' || 'doc'"></files-view>
             </ng-container>
         </div>
     `

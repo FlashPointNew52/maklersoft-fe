@@ -106,10 +106,10 @@ import {Contact} from "../../entity/contact";
             <div style="width: 118px; margin-right: 35px;">
               <span
                   class="type">{{dataType == 'user' && person?.accountId == _sessionService.getUser().accountId ? 'Наша компания' :
-                  (conClass.typeCodeOptions[person?.typeCode] || 'Неизвестно')}}</span>
+                  (conClass.typeCodeOptions[person?.typeCode]?.label || 'Неизвестно')}}</span>
             </div>
             <div style="width: 200px">
-                <span class="type">{{conClass.stageCodeOptions[person?.stageCode] || 'Неизвестно'}}</span>
+                <span class="type">{{conClass.stageCodeOptions[person?.stageCode]?.label || 'Неизвестно'}}</span>
             </div>
             <div style="width: 185px; margin-right: 15px;">
                 <span class="mail link">{{getMail(0) || ""}}</span>

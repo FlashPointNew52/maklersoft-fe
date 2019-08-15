@@ -23,9 +23,9 @@ import {User} from '../../entity/user';
 
 import {Person} from "../../entity/person";
 import {Organisation} from "../../entity/organisation";
-import {UploadService} from "../../service/upload.service";
 import {AddressBlock} from "../../class/addressBlock";
 import {Contact} from "../../entity/contact";
+
 
 @Component({
     selector: 'tab-offer',
@@ -49,7 +49,6 @@ import {Contact} from "../../entity/contact";
         .property_face .title{
             float: left;
             width: 95px;
-
         }
 
         .work-area {
@@ -208,7 +207,7 @@ import {Contact} from "../../entity/contact";
     </div>
 
     <hr class='underline'>
-    <hr class='underline progress_bar' [style.width]="progressWidth+'vw'">
+    <hr class='underline progress_bar' [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
 
     <div class="pane" [style.left.px]="paneHidden ? -339 : null">
         <div class = "source_menu">
@@ -1032,7 +1031,7 @@ import {Contact} from "../../entity/contact";
                         </div>
                     </ng-container>
                 </ng-container>
-<!--                // TODO: переместить label внутрь компонента-->
+<!--                TODO: переместить label внутрь компонента-->
                 <div class="show_block rating">
                     <span class="view-label">Месторасположение</span>
                     <star-mark [value]="this.offer.locRating?.map['remoteness']" (estimate)="this.offer.locRating.map['remoteness']=$event"
@@ -1192,7 +1191,10 @@ import {Contact} from "../../entity/contact";
             >
             </yamap-view>
             <adv-view *ngSwitchCase="'advert'"></adv-view>
-            <files-view (add)="addFile($event, 'photo')" (progressLoad)="displayProgress($event)" [full]="paneHidden" [type]="'image'" [files]="offer.photos" [editMode]="editEnabled" *ngSwitchCase="'photo' || 'doc'"></files-view>
+            <files-view *ngSwitchCase="'photo'" [files]="offer.photos" [full]="paneHidden" [type]="'image'" [editMode]="editEnabled"
+                        (add)="addFile($event, 'photo')" (delete)="offer.photos = $event" (progressLoad)="displayProgress($event)"></files-view>
+            <files-view *ngSwitchCase="'doc'" [files]="offer.documents" [full]="paneHidden" [type]="'doc'" [editMode]="editEnabled"
+                        (add)="addFile($event, 'doc')" (delete)="offer.documents = $event" (progressLoad)="displayProgress($event)"></files-view>
         </ng-container>
     </div>
 
@@ -1510,30 +1512,15 @@ export class TabOfferComponent implements OnInit {
     }
 
     displayProgress(event){
-        clearInterval(this.progressTimer);
         this.progressWidth = event;
-        if(event < 100){
-            this.progressTimer = setInterval(()=>{
-                if (this.progressWidth >= 80) {
-                    clearInterval(this.progressTimer);
-                } else {
-                    this.progressWidth++;
-                }
-            }, 10);
-        } else {
-            this.progressWidth = 100;
-            setTimeout(()=>{this.progressWidth = 0;}, 1000);
-        }
+        if(event == 100) setTimeout(()=>{this.progressWidth = 0;}, 3000);
     }
 
     addFile(event, array){
-        console.log('tab-offer');
-        console.log(event);
-
         if(array == 'photo')
-            this.offer.photos ? this.offer.photos.push(event) : this.offer.photos = [event];
+            this.offer.photos.length > 0 ? this.offer.photos = [].concat(this.offer.photos).concat(event) : this.offer.photos = event;
         else if(array == 'doc')
-            this.offer.documents ? this.offer.documents.push(event) : this.offer.documents = [event];
+            this.offer.documents.length > 0 ? this.offer.documents.push(event) : this.offer.documents = event;
     }
 
   contextMenu(e) {
@@ -1752,7 +1739,7 @@ export class TabOfferComponent implements OnInit {
 
     }
 
-    public openRequest(){
+    public openRequest(req){
 
     }
 }

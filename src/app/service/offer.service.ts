@@ -93,8 +93,6 @@ export class OfferService {
             raw => {
                   let data = JSON.parse(JSON.stringify(raw));
                     let o: Offer = data.result;
-
-                    // TODO: pass copy????
                     ret_subj.next(o);
                     ret_subj.complete();
 

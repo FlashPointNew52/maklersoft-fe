@@ -13,7 +13,6 @@ import {MatNativeDateModule} from '@angular/material';
 import {MatMomentDateModule} from '@angular/material-moment-adapter';
 import {ChatViewComponent} from "./component/notebook/chat-view.component";
 import {NotificationViewComponent} from "./component/view/notification-view.component";
-import { TextareaAutosizeModule } from 'ngx-textarea-autosize';
 //import {YaCoreModule } from './component/ya-map-component/core.module';
 import {ContextMenuComponent} from "./component/context-menu.component";
 import {NotebookComponent} from "./component/notebook.component";

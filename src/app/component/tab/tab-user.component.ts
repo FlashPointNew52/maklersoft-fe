@@ -138,7 +138,7 @@ import {ObjectBlock} from "../../class/objectBlock";
             <div class="position">{{ userClass.positionOptionsByDepart[user.department][user.position]?.label }}</div>
         </div>
         <hr class='underline'>
-        <hr class='underline progress_bar' [style.width]="progressWidth+'vw'">
+        <hr class='underline progress_bar' [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
         <div class="pane">
             <div class="edit_ready">
                 <span class="link" style="z-index: 99;" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
@@ -616,20 +616,8 @@ export class TabUserComponent implements OnInit, AfterViewInit {
         this.user.photoMini = event[0].href;
     }
 
-    public displayProgress(event) {
-        clearInterval(this.progressTimer);
+    displayProgress(event){
         this.progressWidth = event;
-        if(event < 100){
-            this.progressTimer = setInterval(()=>{
-                if (this.progressWidth >= 80) {
-                    clearInterval(this.progressTimer);
-                } else {
-                    this.progressWidth++;
-                }
-            }, 10);
-        } else {
-            this.progressWidth = 100;
-            setTimeout(()=>{this.progressWidth = 0;}, 1000);
-        }
+        if(event == 100) setTimeout(()=>{this.progressWidth = 0;}, 3000);
     }
 }

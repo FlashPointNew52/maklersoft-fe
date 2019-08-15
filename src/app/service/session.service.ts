@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {AsyncSubject,  Observable ,  BehaviorSubject } from "rxjs";
-import {HttpClient} from '@angular/common/http';
-import {ConfigService} from './config.service';
-import {map} from 'rxjs/operators';
+import {Injectable} from "@angular/core";
+import {AsyncSubject, Observable, BehaviorSubject} from "rxjs";
+import {HttpClient} from "@angular/common/http";
+import {ConfigService} from "./config.service";
+import {map} from "rxjs/operators";
 import {Account} from "../entity/account";
 import {User} from "../entity/user";
 import {HubService} from "./hub.service";
@@ -11,7 +11,7 @@ import {HubService} from "./hub.service";
 @Injectable()
 export class SessionService {
 
-    RS: String;
+    RS: string;
 
     authorized: Observable<boolean>;
     msg: Observable<string>;
@@ -21,7 +21,6 @@ export class SessionService {
     _authorized: BehaviorSubject<boolean>;
     _msg: BehaviorSubject<string>;
     _user: BehaviorSubject<User>;
-    _account: BehaviorSubject<Account>;
 
     private dataStore = {
         authorized: false,
@@ -34,23 +33,20 @@ export class SessionService {
                 private _http: HttpClient,
                 private _hubService: HubService
     ) {
-        this.RS = this._configService.getConfig().RESTServer + '/session/';
+        this.RS = this._configService.getConfig().RESTServer + "/session/";
 
         this.dataStore.authorized = false;
         this.dataStore.user = null;
         this.dataStore.account = null;
 
-        this._authorized = <BehaviorSubject<boolean>>new BehaviorSubject(false);
+        this._authorized = new BehaviorSubject(false) as BehaviorSubject<boolean>;
         this.authorized = this._authorized.asObservable();
 
-        this._msg = <BehaviorSubject<string>>new BehaviorSubject("");
+        this._msg = new BehaviorSubject("") as BehaviorSubject<string>;
         this.msg = this._msg.asObservable();
 
-        this._user = <BehaviorSubject<User>>new BehaviorSubject(null);
+        this._user = new BehaviorSubject(null) as BehaviorSubject<User>;
         this.user = this._user.asObservable();
-
-        this._account = <BehaviorSubject<Account>>new BehaviorSubject(null);
-        this.account = this._account.asObservable();
 
     }
 
@@ -58,26 +54,21 @@ export class SessionService {
         return this.dataStore.user;
     }
 
-    isAuthorized() {
-        this._authorized.next(this.dataStore.authorized);
-        return this._authorized.asObservable();
-    }
-
     getAccount() {
         return this.dataStore.account;
     }
 
     login(phone: string, password: string) {
-        let _endpointUrl = this.RS + 'login';
+        let _endpointUrl = this.RS + "login";
 
         let data_str = JSON.stringify({
-            phone: phone,
-            password: password
+            phone,
+            password
         });
-        let ret_subj = <AsyncSubject<string>>new AsyncSubject();
-        this._http.post(_endpointUrl, data_str, { withCredentials: true }).pipe(
-        map((res: Response) => res)).subscribe(raw => {
-          let data = JSON.parse(JSON.stringify(raw));
+        let ret_subj = new AsyncSubject() as AsyncSubject<string>;
+        this._http.post(_endpointUrl, data_str, {withCredentials: true}).pipe(
+            map((res: Response) => res)).subscribe(raw => {
+            let data = JSON.parse(JSON.stringify(raw));
             if (data.result == "OK") {
                 this.dataStore.authorized = true;
                 this._authorized.next(this.dataStore.authorized);
@@ -92,202 +83,164 @@ export class SessionService {
                 this._authorized.next(this.dataStore.authorized);
 
                 this.dataStore.msg = data.msg;
-                if(data.msg == "302:Wrong password")
-                    ret_subj.next("Не правильный пароль");
-                else if(data.msg == "301:User not found")
-                    ret_subj.next("Пользователь не найден");
-                else if(data.msg == "000:User is lock")
-                    ret_subj.next("Пользователь заблокирован, обратитесь к своему руководителю");
-                else ret_subj.next("Ошибка. Обратитесь в службу поддержки MaklerSoft");
+                if (data.msg == "302:Wrong password")
+                    this._hubService.getProperty("modal-window").showMessage("Не правильный пароль",  null);
+                else if (data.msg == "301:User not found")
+                    this._hubService.getProperty("modal-window").showMessage("Пользователь не найден",  null);
+                else if (data.msg == "000:User is lock")
+                    this._hubService.getProperty("modal-window").showMessage("Пользователь заблокирован, обратитесь к своему руководителю",  null);
+                else this._hubService.getProperty("modal-window").showMessage("Ошибка. Обратитесь в службу поддержки MaklerSoft",  null);
             }
             ret_subj.complete();
-        }, err => {
-            if(err.status == 500){
-                ret_subj.next("Системная ошибка. Обратитесь в службу поддержки");
-                ret_subj.complete();
-            } else if(err.status == 504){
-                ret_subj.next("Сервер временно не доступ, попробуйте повторить позже");
-                ret_subj.complete();
-            }
-        });
+        }, err => this.handle_errors(err));
         return ret_subj;
     }
 
     get_code(phone) {
 
-      let _resourceUrl = this.RS + 'check_phone';
+        let _resourceUrl = this.RS + "check_phone";
+        let ret_subj = new AsyncSubject() as AsyncSubject<string>;
+        let data_str = JSON.stringify({
+            phone
+        });
 
-      let ret_subj = <AsyncSubject<string>>new AsyncSubject();
+        this._http.post(_resourceUrl, data_str, {withCredentials: true}).pipe(
+            map((res: Response) => res)).subscribe(raw => {
+            let data = JSON.parse(JSON.stringify(raw));
+            if (data.result == "OK"){
 
-      let data_str = JSON.stringify({
-          phone: phone
-      });
+            }else if (data.result == "FAIL" && data.msg == "301:User not found")
+                this._hubService.getProperty("modal-window").showMessage("Пользователь с таким номером не найден",  null);
+            else if (data.result == "FAIL" && data.msg == "000:Send sms error")
+                this._hubService.getProperty("modal-window").showMessage("Ошибка при отправке sms. Повторите позднее",  null);
+            else
+                this._hubService.getProperty("modal-window").showMessage("Системная ошибка! Обратитесь в службу поддержки",  null);
+            ret_subj.complete();
+        }, err => this.handle_errors(err));
 
-      this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
-      map((res: Response) => res)).subscribe(raw => {
-          let msg: string;
-        let data = JSON.parse(JSON.stringify(raw));
-          if(data.result == "OK")
-              msg = null;
-          else if(data.result == "FAIL" && data.msg == "301:User not found")
-              msg = "Пользователь с таким номером не найден";
-          else if(data.result == "FAIL" && data.msg == "000:Send sms error")
-              msg = "Ошибка при отправке sms. Повторите позднее";
-          else
-              msg = "Системная ошибка! Обратитесь в службу поддержки";
-          ret_subj.next(msg);
-          ret_subj.complete();
-      },err => {
-          if(err.status == 500){
-              ret_subj.next("Системная ошибка. Обратитесь в службу поддержки");
-              ret_subj.complete();
-          } else if(err.status == 504){
-              ret_subj.next("Сервер временно не доступ, попробуйте повторить позже");
-              ret_subj.complete();
-          }
-          console.log(err);
-      });
-
-      return ret_subj;
+        return ret_subj;
     }
 
     check_code(phone, temp_code, password) {
-      let _resourceUrl = this.RS + 'change_pass';
-      let ret_subj = <AsyncSubject<string>>new AsyncSubject();
-      let data_str = JSON.stringify({
-          phone: phone,
-          temp_code: temp_code,
-          password: password
-      });
+        let _resourceUrl = this.RS + "change_pass";
+        let ret_subj = new AsyncSubject() as AsyncSubject<string>;
+        let data_str = JSON.stringify({
+            phone,
+            temp_code,
+            password
+        });
 
-      this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
-      map((res: Response) => res)).subscribe(raw => {
-          let msg: string;
-        let data = JSON.parse(JSON.stringify(raw));
-          if(data.result == "OK")
-                msg = null;
-          else if(data.result == "FAIL" && data.msg == "301:User not found")
-                msg = "Пользователь с таким телефоном не найлен";
-          else if(data.result == "FAIL" && data.msg == "000:Send sms error")
-                msg = "Ошибка отправки SMS";
-          else if(data.result == "FAIL" && data.msg == "000:Temp code wrong")
-                msg = "Неверный код восстановления";
-          else if(data.result == "FAIL" && data.msg == "000:Temp code not valid" )
-                msg = "У кода восстановления истекло время жизни. Вам отправлен новый код";
-          else if(data.result == "FAIL")
-                msg = "Системная ошибка! Обратитесь в службу поддержки";
-              ret_subj.next(msg);
-              ret_subj.complete();
-       },err => {
-            if(err.status == 500){
-                ret_subj.next("Системная ошибка. Обратитесь в службу поддержки");
+        this._http.post(_resourceUrl, data_str, {withCredentials: true}).pipe(
+            map((res: Response) => res)).subscribe(raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                if (data.result == "OK"){
+
+                }else if (data.result == "FAIL" && data.msg == "301:User not found")
+                    this._hubService.getProperty("modal-window").showMessage("Пользователь с таким телефоном не найлен",  null);
+                else if (data.result == "FAIL" && data.msg == "000:Send sms error")
+                    this._hubService.getProperty("modal-window").showMessage("Ошибка отправки SMS",  null);
+                else if (data.result == "FAIL" && data.msg == "000:Temp code wrong")
+                    this._hubService.getProperty("modal-window").showMessage("Неверный код восстановления",  null);
+                else if (data.result == "FAIL" && data.msg == "000:Temp code not valid")
+                    this._hubService.getProperty("modal-window").showMessage("У кода восстановления истекло время жизни. Вам отправлен новый код",  null);
+                else if (data.result == "FAIL")
+                    this._hubService.getProperty("modal-window").showMessage("Системная ошибка! Обратитесь в службу поддержки",  null);
                 ret_subj.complete();
-            } else if(err.status == 504){
-                ret_subj.next("Сервер временно не доступ, попробуйте повторить позже");
-                ret_subj.complete();
-            }
-       });
+            }, err => this.handle_errors(err)
+        );
 
         return ret_subj;
     }
 
     registrate(org_name, user_name, mail, phone) {
-        let _resourceUrl = this.RS + 'registrate';
-        let ret_subj = <AsyncSubject<string>>new AsyncSubject();
+        let _resourceUrl = this.RS + "registrate";
+        let ret_subj = new AsyncSubject() as AsyncSubject<string>;
         let data_str = JSON.stringify({
-            org_name: org_name,
-            user_name: user_name,
-            mail: mail,
-            phone: phone
+            org_name,
+            user_name,
+            mail,
+            phone
         });
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(map((res: Response) => res)).subscribe(
+        this._http.post(_resourceUrl, data_str, {withCredentials: true}).pipe(map((res: Response) => res)).subscribe(
             raw => {
-                let msg: string;
-              let data = JSON.parse(JSON.stringify(raw));
-                if(data.result == "OK")
-                    msg = null;
-                else if(data.result == "FAIL" && data.msg == "001:Wrong format phone")
-                    msg = "Неверный формат телефона";
-                else if(data.result == "FAIL" && data.msg == "200:No phones or emails")
-                    msg = "Не указаны телефон или емайл";
-                else if(data.result == "FAIL" && data.msg == "300:User with such email or phone already exists")
-                    msg = "Пользователь с таким телефоном или адресом уже существует. Воспользуйтесь восстановленим пароля";
+                let data = JSON.parse(JSON.stringify(raw));
+                if (data.result == "OK"){
+                } else if (data.result == "FAIL" && data.msg == "001:Wrong format phone")
+                    this._hubService.getProperty("modal-window").showMessage("Неверный формат телефона",  null);
+                else if (data.result == "FAIL" && data.msg == "200:No phones or emails")
+                    this._hubService.getProperty("modal-window").showMessage("Не указаны телефон или емайл",  null);
+                else if (data.result == "FAIL" && data.msg == "300:User with such email or phone already exists")
+                    this._hubService.getProperty("modal-window").showMessage("Пользователь с таким телефоном или адресом уже существует. Воспользуйтесь восстановленим пароля",  null);
                 else
-                    msg = "Системная ошибка! Обратитесь в службу поддержки";
-                ret_subj.next(msg);
+                    this._hubService.getProperty("modal-window").showMessage("Системная ошибка! Обратитесь в службу поддержки",  null);
                 ret_subj.complete();
             },
-            err => {
-                if(err.status == 500){
-                    ret_subj.next("Системная ошибка. Обратитесь в службу поддержки");
-                    ret_subj.complete();
-                } else if(err.status == 504){
-                    ret_subj.next("Сервер временно не доступ, попробуйте повторить позже");
-                    ret_subj.complete();
-                }
-            }
+            err => this.handle_errors(err)
         );
 
         return ret_subj;
     }
 
     logout() {
-        let _endpointUrl = this.RS + 'logout';
+        let _endpointUrl = this.RS + "logout";
 
-        this._http.post(_endpointUrl, "", { withCredentials: true }).pipe(
+        this._http.post(_endpointUrl, "", {withCredentials: true}).pipe(
             map((res: Response) => res))
             .subscribe(
-              () => {
+                () => {
                     this.dataStore.authorized = false;
                     this._authorized.next(this.dataStore.authorized);
 
                     this.dataStore.msg = "logged out";
                     this._msg.next(this.dataStore.msg);
-                }
+                },
+                err => this.handle_errors(err)
             );
 
     }
 
     check() {
-        let ret_subj = <AsyncSubject<boolean>>new AsyncSubject();
-        let _endpointUrl = this.RS + 'check';
+        let ret_subj = new AsyncSubject() as AsyncSubject<boolean>;
+        let _endpointUrl = this.RS + "check";
 
-        this._http.get(_endpointUrl, { withCredentials: true }).pipe(
+        this._http.get(_endpointUrl, {withCredentials: true}).pipe(
             map((res: Response) => res)).subscribe(
-                raw => {
-                  let data = JSON.parse(JSON.stringify(raw));
-                    if (data.result == "OK") {
-                        this.dataStore.authorized = true;
-                        this._authorized.next(this.dataStore.authorized);
+            raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                if (data.result == "OK") {
+                    this.dataStore.authorized = true;
+                    this._authorized.next(this.dataStore.authorized);
 
-                        this.dataStore.msg = "logged in";
-                        this._msg.next(this.dataStore.msg);
+                    this.dataStore.msg = "logged in";
+                    this._msg.next(this.dataStore.msg);
 
-                        this.dataStore.user = data.user;
-                        this._user.next(this.dataStore.user);
-                        ret_subj.next(true);
-                    } else {
-                        ret_subj.next(false);
-                        this.dataStore.authorized = false;
-                        this._authorized.next(this.dataStore.authorized);
+                    this.dataStore.user = data.user;
+                    this._user.next(this.dataStore.user);
+                    ret_subj.next(true);
+                } else {
+                    ret_subj.next(false);
+                    this.dataStore.authorized = false;
+                    this._authorized.next(this.dataStore.authorized);
 
-                    }
-                    ret_subj.complete();
-                },
-                err => console.log(err)
+                }
+                ret_subj.complete();
+            },
+            err => console.log(err)
         );
         return ret_subj;
     }
 
-    handle_errors(err){
+    handle_errors(err) {
         let needSupport = false;
         let errMsg = "Ошибка " + err.status + ": " + err.statusText + "\n";
-        if(err.status == 401 && err.statusText == "Unauthorized"){
+        if (err.status == 401 && err.statusText == "Unauthorized") {
             this.dataStore.authorized = false;
             this._authorized.next(this.dataStore.authorized);
             this.dataStore.msg = "logged out";
             errMsg = err.error;
+        } else if(err.status == 0){
+            errMsg = "Сервер временно не доступен, попробуйте позже";
         } else{
             try {
                 let data = JSON.parse(err.error);
@@ -295,22 +248,22 @@ export class SessionService {
                 err.message = data.message;
                 err.error = data.error;
                 needSupport = data.type == 0;
-            }catch (e) {
+            } catch (e) {
                 errMsg += err.error;
                 err.message = err.error;
                 err.error = "";
                 needSupport = true;
             }
         }
-        this._hubService.getProperty("modal-window").showMessage( errMsg, needSupport? err : null);
+        this._hubService.getProperty("modal-window").showMessage(errMsg, needSupport ? err : null);
     }
 
-    sendMsg(err){
+    sendMsg(err) {
         let data_str = JSON.stringify(err);
 
-        let ret_subj = <AsyncSubject<any>>new AsyncSubject();
+        let ret_subj = new AsyncSubject() as AsyncSubject<any>;
 
-        this._http.post( this._configService.getConfig().RESTServer + '/service/v1/report/err', data_str, { withCredentials: true }).pipe(
+        this._http.post(this._configService.getConfig().RESTServer + "/service/v1/report/err", data_str, {withCredentials: true}).pipe(
             map((res: Response) => res)).subscribe(
             raw => {
                 let data = JSON.parse(JSON.stringify(raw));

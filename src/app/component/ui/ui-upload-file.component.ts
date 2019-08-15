@@ -4,6 +4,7 @@ import {UserService} from '../../service/user.service';
 import {UploadService} from '../../service/upload.service';
 import {SessionService} from '../../service/session.service';
 import {HubService} from '../../service/hub.service';
+import {HttpEventType, HttpProgressEvent} from "@angular/common/http";
 
 
 @Component({
@@ -96,24 +97,10 @@ import {HubService} from '../../service/hub.service';
             transition: all 300ms ease-in;
             z-index: -1;
         }
-
-        .add-block img.loaded {
-            opacity: 1;
-        }
-
-        .image_contain{
-            width: calc(100% - 10px);
-            height: calc(100% - 75px);
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            align-items: center;
-        }
-
+        
         .image_contain>.image{
             width: 175px;
             height: 130px;
-            /* border: 2px solid silver; */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -180,15 +167,6 @@ import {HubService} from '../../service/hub.service';
             from { background-position: 0px 0px; }
             to { background-position: -100px 0px; }
         }
-
-        .load_buttom{
-            width: 118px;
-            height: 30px;
-            background-color: #008cdb;
-            color: white;
-            line-height: 30px;
-            text-align: center;
-        }
     `]
 })
 
@@ -204,7 +182,7 @@ export class UIUploadFile implements OnInit{
     dragging: boolean = false;
     loaded: boolean = false;
     imageLoaded: boolean = false;
-    format:string;
+    format: string;
     pattern: RegExp;
     multiple: boolean;
 
@@ -216,7 +194,7 @@ export class UIUploadFile implements OnInit{
         private _userService: UserService,
         private _uploadService: UploadService,
         private _sessionService: SessionService
-    ) { };
+    ) { }
 
     ngOnInit(){
         if(this.type == 'image'){
@@ -254,10 +232,6 @@ export class UIUploadFile implements OnInit{
         let pattern = this.pattern;
         let reader = new FileReader();
 
-        reader.onloadstart = (() => {
-            this.progressState.emit(0);
-        });
-
         reader.onload = (() =>{
             for(let file of files){
                 if (!file.type.match(pattern))  {
@@ -270,12 +244,16 @@ export class UIUploadFile implements OnInit{
                 }
             }
 
-            this._uploadService.uploadFiles(files).subscribe(data => {
-                if(data.progress)
-                    this.progressState.emit(data.progress);
-                else if(data.files)
-                    this.addNewFile.emit(data.files);
-            });
+            this._uploadService.uploadFiles(files).subscribe(
+                data => {
+                    if (data.type === HttpEventType.UploadProgress) {
+                        let progress = data as HttpProgressEvent;
+                        this.progressState.emit(Math.floor(progress.loaded / progress.total*100));
+                    } else if(data.type === HttpEventType.Response){
+                        this.addNewFile.emit((data.body as any).files);
+                    }
+                },
+                err => this._sessionService.handle_errors(err));
         });
 
         reader.readAsDataURL(files[0]);

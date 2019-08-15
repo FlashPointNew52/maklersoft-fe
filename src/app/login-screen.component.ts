@@ -1,81 +1,34 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit} from "@angular/core";
 import {ConfigService} from "./service/config.service";
 import {SessionService} from "./service/session.service";
 import {UserService} from "./service/user.service";
 import {Observable} from "rxjs";
+import {HubService} from "./service/hub.service";
 
 
 @Component({
-    selector: 'login-screen',
-    styles: [`   
-        :host{
+    selector: "login-screen",
+    styles: [`
+        :host {
             position: absolute;
             z-index: 9998;
         }
-        
-        .log_screen { 
-              width: 100vw;
-              height: 100vh;
-              z-index: 9999;
-              position: fixed; 
-              background-color: #f7f7f7;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-        }
-        
-        .log_screen[hidden] {
-            display: none;
-        }
-        
-        .message_window{
-            position: absolute;
+
+        .log_screen {
             width: 100vw;
             height: 100vh;
             z-index: 9999;
-        }
-        
-        .message_window > div{
-            width: 475px;
-            min-height: 154px;
-            background-color: white;
-            margin: calc(50vh - 77px) auto 0;
-            box-shadow: 0 1px 50px 2px rgba(206,208,209,0.6);
+            position: fixed;
+            background-color: #f7f7f7;
             display: flex;
-            flex-direction: column;
-            position: relative;
+            align-items: center;
+            justify-content: center;
         }
-        
-        .message_window > div > .label{
-            color: #252F32;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 20px 25px 7px;
-            font-family: SFNS;
+
+        .log_screen[hidden] {
+            display: none;
         }
-        
-        .message_window > div > .cross{
-            position: absolute;
-            right: 11px;
-            top: 11px;
-            width: 13px;
-            height: 13px;
-            background-image: url(../assets/cross.png);
-        background-size: contain;
-        }
-        
-        .message_window > div > hr{
-            margin: 0;
-            border-top: 1px solid #6a0316;
-        }
-        
-        .message_window > div > .message{
-            margin: 30px 75px;
-            color: #252F32;
-            font-size: 12px;
-            line-height: 11px;
-        }
-        
+
         .log_screen > .label {
             color: #252F32;
             font-size: 28px;
@@ -85,7 +38,7 @@ import {Observable} from "rxjs";
             font-family: SFNS;
             font-weight: bold;
         }
-        
+
         .log_screen > hr {
             margin: 0;
             padding: 0;
@@ -95,7 +48,7 @@ import {Observable} from "rxjs";
             position: absolute;
             border-top: 1px solid #bdc0c1;
         }
-        
+
         .main_form {
             width: 400px;
             max-height: 500px;
@@ -105,7 +58,7 @@ import {Observable} from "rxjs";
             border-radius: 0;
             box-shadow: 0 1px 50px 2px rgba(211, 213, 214, 0.6);
         }
-        
+
         .motto {
             display: flex;
             flex-direction: column;
@@ -113,19 +66,19 @@ import {Observable} from "rxjs";
             height: 35px;
             margin: 28px 0 0 31px;
         }
-        
+
         .motto span:first-child {
             color: #252F32;
             font-size: 12px;
         }
-        
+
         .motto span:last-child {
             font-size: 10px;
             color: #677578;
             text-align: end;
             font-style: italic;
         }
-        
+
         .motto span:last-child:before {
             content: "";
             border-bottom: 1px solid;
@@ -133,22 +86,22 @@ import {Observable} from "rxjs";
             display: inline-block;
             margin: 0 6px 2px 0;
         }
-        
+
         .select_type {
             margin-top: 39px;
             text-align: center;
             color: #ced0d1;
             font-size: 16px;
         }
-        
+
         .select_type span {
             cursor: pointer;
         }
-        
+
         .select_type .selected, .select_type span:hover {
             color: #252F32;
         }
-        
+
         .main_form .fields {
             width: 100%;
             padding: 20px 50px 0;
@@ -158,7 +111,7 @@ import {Observable} from "rxjs";
             flex-wrap: wrap;
             justify-content: center;
         }
-        
+
         .main_form .fields input {
             border: 1px solid #ced0d1;
             color: #252F32;
@@ -168,13 +121,13 @@ import {Observable} from "rxjs";
             margin-bottom: 17px;
             width: 100%;
         }
-        
+
         .main_form .fields > div {
             width: 100%;
             height: 30px;
             display: inline-flex;
         }
-        
+
         .main_form .fields > span {
             width: 50%;
             height: 30px;
@@ -186,13 +139,13 @@ import {Observable} from "rxjs";
             margin-bottom: 20px;
             justify-content: center;
         }
-        
-        .main_form .fields > span input{
+
+        .main_form .fields > span input {
             margin: 0 0 0 15px;
             width: 20px;
         }
-        
-        .main_form .fields > .link_button{
+
+        .main_form .fields > .link_button {
             margin-top: -10px;
             height: 16px;
             color: #677578;
@@ -202,7 +155,7 @@ import {Observable} from "rxjs";
             margin-bottom: 15px;
             cursor: pointer;
         }
-        
+
         .main_form .fields > div input {
             margin: 0 30px 0 0;
             width: 15px;
@@ -211,19 +164,19 @@ import {Observable} from "rxjs";
             border-radius: 0;
             flex: 0 0 15px;
         }
-        
+
         .main_form .fields > div span {
             color: #677578;
             font-size: 12px;
             line-height: 14px;
         }
-        
+
         .main_form .fields > div div {
             color: #677578;
             font-size: 12px;
             line-height: 14px;
         }
-        
+
         .main_form .fields .submit {
             width: 290px;
             height: 35px;
@@ -232,23 +185,16 @@ import {Observable} from "rxjs";
             cursor: pointer;
             font-size: 12px;
             color: #fff;
-        }  
+        }
+
         .main_form .fields .submit:hover {
             background-color: #2b2d44;
         }
 
     `],
     template: `
-        <div [hidden] = "authorized | async" class="log_screen">
-            <div class="message_window" [hidden] = "message.length == 0">
-                <div>
-                    <span class="label">maklersoft</span>
-                    <span class="cross" (click)="message=''"></span>
-                    <hr>
-                    <div class="message">{{message}}</div>
-                </div>
-            </div>
-            <span class = "label">maklersoft</span>
+        <div [hidden]="authorized | async" class="log_screen">
+            <span class="label">maklersoft</span>
             <hr>
             <div class="main_form">
                 <div class="motto">
@@ -256,10 +202,11 @@ import {Observable} from "rxjs";
                     <span>  Команда MaklerSoft</span>
                 </div>
                 <div class="select_type" *ngIf="typeWindow != 2">
-                    <span (click)="typeWindow = 0" [class.selected] = "typeWindow == 0">РЕГИСТРАЦИЯ</span>
+                    <span (click)="typeWindow = 0" [class.selected]="typeWindow == 0">РЕГИСТРАЦИЯ</span>
                     |
-                    <span (click)="typeWindow = 1" [class.selected] = "typeWindow == 1">ВХОД В СИСТЕМУ</span></div>
-                <div class="select_type" *ngIf="typeWindow == 2"><span class="selected">ВОССТАНОВЛЕНИЕ ПАРОЛЯ</span></div>
+                    <span (click)="typeWindow = 1" [class.selected]="typeWindow == 1">ВХОД В СИСТЕМУ</span></div>
+                <div class="select_type" *ngIf="typeWindow == 2"><span class="selected">ВОССТАНОВЛЕНИЕ ПАРОЛЯ</span>
+                </div>
                 <div class="fields" *ngIf="typeWindow == 0">
                     <input [(ngModel)]="org_name" placeholder="НАЗВАНИЕ ОРГАНИЗАЦИИ">
                     <input [(ngModel)]="user_name" placeholder="ФИО">
@@ -275,16 +222,21 @@ import {Observable} from "rxjs";
                     <input [(ngModel)]="phone" mask="+0 (000) 000-00-00" placeholder="НОМЕР ТЕЛЕФОНА">
                     <input [(ngModel)]="password" placeholder="ПАРОЛЬ">
                     <div class="link_button" (click)="typeWindow = 2">Забыли пароль?</div>
-                    <input class="submit" type="submit" value="ВОЙТИ В СИСТЕМУ" (click)="_login()" style="margin-top: 35px">
+                    <input class="submit" type="submit" value="ВОЙТИ В СИСТЕМУ" (click)="_login()"
+                           style="margin-top: 35px">
                 </div>
                 <div class="fields" *ngIf="typeWindow == 2">
-                    <input [(ngModel)]="phone"  mask="+0 (000) 000-00-00" [attr.placeholder]="'НОМЕР ТЕЛЕФОНА'" [attr.disabled]="isFindPhone ? '' : null">
+                    <input [(ngModel)]="phone" mask="+0 (000) 000-00-00" [attr.placeholder]="'НОМЕР ТЕЛЕФОНА'"
+                           [attr.disabled]="isFindPhone ? '' : null">
                     <input [(ngModel)]="temp_code" placeholder="КОД ВОССТАНОВЛЕНИЯ" *ngIf="isFindPhone">
                     <input [(ngModel)]="password" type="password" placeholder="НОВЫЙ ПАРОЛЬ" *ngIf="isFindPhone">
-                    <input [(ngModel)]="confirm_password" type="password" placeholder="ПОДТВЕРДИТЬ ПАРОЛЬ" *ngIf="isFindPhone">
+                    <input [(ngModel)]="confirm_password" type="password" placeholder="ПОДТВЕРДИТЬ ПАРОЛЬ"
+                           *ngIf="isFindPhone">
                     <div class="link_button" (click)="cancel()">Отменить</div>
-                    <input class="submit" type="submit" value="ПРОВЕРИТЬ" (click)="get_code()" *ngIf="!isFindPhone" style="margin-top: 5px">
-                    <input class="submit" type="submit" value="ИЗМЕНИТЬ ПАРОЛЬ" (click)="check_code()" *ngIf="isFindPhone" style="margin-top: 5px">
+                    <input class="submit" type="submit" value="ПРОВЕРИТЬ" (click)="get_code()" *ngIf="!isFindPhone"
+                           style="margin-top: 5px">
+                    <input class="submit" type="submit" value="ИЗМЕНИТЬ ПАРОЛЬ" (click)="check_code()"
+                           *ngIf="isFindPhone" style="margin-top: 5px">
                 </div>
             </div>
             <hr style="bottom: 100px; top: auto;">
@@ -293,7 +245,7 @@ import {Observable} from "rxjs";
     `
 })
 
-export class LoginScreenComponent implements OnInit{
+export class LoginScreenComponent implements OnInit {
 
     public authorized: Observable<boolean>;
 
@@ -301,9 +253,9 @@ export class LoginScreenComponent implements OnInit{
     public temp_code: string;
     public confirm_password: string;
 
-    org_name: string="";
+    org_name: string = "";
     user_name: string = "";
-    phone: string = "";
+    phone: string = "7";
     mail: string = "";
     agreement: boolean = false;
     isFindPhone: boolean = false;
@@ -312,16 +264,17 @@ export class LoginScreenComponent implements OnInit{
 
     constructor(private _sessionService: SessionService,
                 private _configService: ConfigService,
-                private _userService: UserService
+                private _userService: UserService,
+                private _hubService: HubService
     ) {
         this.authorized = _sessionService.authorized;
-        this.phone = "";
+        this.phone = "7";
         this.password = "";
     }
 
 
     ngOnInit() {
-        let cuStr = localStorage.getItem('currentUser');
+        let cuStr = localStorage.getItem("currentUser");
         if (cuStr) {
             let cu = JSON.parse(cuStr);
             this.phone = cu.phone;
@@ -330,13 +283,10 @@ export class LoginScreenComponent implements OnInit{
     }
 
     _login() {
-        localStorage.setItem('currentUser', JSON.stringify({phone: this.phone }));
+        localStorage.setItem("currentUser", JSON.stringify({phone: this.phone}));
         this._sessionService.login(this.phone, this.password).subscribe(result => {
-            if(result != "OK")
-                this.message = result;
-            else {
+            if (result == "OK")
                 this._userService.cacheUserAndOrg();
-            }
         });
     }
 
@@ -346,76 +296,72 @@ export class LoginScreenComponent implements OnInit{
 
     checkSession() {
         this._sessionService.check().subscribe(res => {
-            if(res)
-              this._userService.cacheUserAndOrg();
+            if (res)
+                this._userService.cacheUserAndOrg();
         });
     }
 
     get_code() {
         this._sessionService.get_code(this.phone).subscribe(result => {
-            if(result == null) {
-                  this.isFindPhone = true;
-                  this.password = "";
-            } else
-                  this.message = result;
+            if (result == null) {
+                this.isFindPhone = true;
+                this.password = "";
+            }
         });
     }
 
-    cancel(){
+    cancel() {
         this.typeWindow = 1;
         this.isFindPhone = false;
     }
 
-    check_code(){
-      if(!this.temp_code || this.temp_code.length < 1) {
-        alert("Не указан код восстановления");
-        return;
-      }
-      if(!this.password || this.password.length < 6) {
-          alert("Длина пароля должна быть не менее 6 символов");
-          return;
-      }
-      if(this.password != this.confirm_password){
-          alert("Пароли не совпадают");
-          return;
-      }
-      this._sessionService.check_code(this.phone, this.temp_code, this.password).subscribe(result => {
-          if(result == null){
-              this.message = "Пароль успешно изменен";
-              this.temp_code = "";
-              this.confirm_password = "";
-              this.typeWindow = 1;
-              this.isFindPhone = false;
-              this.password = "";
-          } else
-            this.message = result;
-      });
+    check_code() {
+        if (!this.temp_code || this.temp_code.length < 1) {
+            this._hubService.getProperty("modal-window").showMessage("Не указан код восстановления", null);
+            return;
+        }
+        if (!this.password || this.password.length < 6) {
+            this._hubService.getProperty("modal-window").showMessage("Длина пароля должна быть не менее 6 символов", null);
+            return;
+        }
+        if (this.password != this.confirm_password) {
+            this._hubService.getProperty("modal-window").showMessage("Пароли не совпадают", null);
+            return;
+        }
+        this._sessionService.check_code(this.phone, this.temp_code, this.password).subscribe(result => {
+            if (result == null) {
+                this._hubService.getProperty("modal-window").showMessage("Пароль успешно изменен", null);
+                this.temp_code = "";
+                this.confirm_password = "";
+                this.typeWindow = 1;
+                this.isFindPhone = false;
+                this.password = "";
+            }
+        });
 
     }
 
-    registr(){
-        if(!this.org_name || !this.user_name || !this.mail || !this.phone || this.org_name.length < 1 || this.user_name.length < 1 ||
-            this.mail.length < 5 || this.phone.length < 10 )
-        {
-            this.message = "Не все поля заполнены";
+    registr() {
+        if (!this.org_name || !this.user_name || !this.mail || !this.phone || this.org_name.length < 1 || this.user_name.length < 1 ||
+            this.mail.length < 5 || this.phone.length < 10) {
+            this._hubService.getProperty("modal-window").showMessage("Не все поля заполнены", null);
             return;
         }
 
-        if(this.user_name.split(" ").length < 3){
-            this.message = "Не указано Фамилия, Имя или Отчество";
+        if (this.user_name.split(" ").length < 3) {
+            this._hubService.getProperty("modal-window").showMessage("Не указано Фамилия, Имя или Отчество", null);
             return;
         }
 
-        if(!this.agreement) {
-            this.message = "Необходимо принять соглашение";
+        if (!this.agreement) {
+            this._hubService.getProperty("modal-window").showMessage("Необходимо принять соглашение", null);
             return;
         }
-        this._sessionService.registrate(this.org_name, this.user_name, this.mail, this.phone).subscribe(res =>{
-            if(res == null){
-                this.message = "Регистрация прошла успешно! Для входа используйте пароль, отправленный Вам в SMS и на почтовый адрес.";
+        this._sessionService.registrate(this.org_name, this.user_name, this.mail, this.phone).subscribe(res => {
+            if (res == null) {
+                this._hubService.getProperty("modal-window").showMessage("Регистрация прошла успешно! Для входа используйте пароль, отправленный Вам в SMS и на почтовый адрес.", null);
                 this.typeWindow = 1;
-            } else
-                this.message = res;
+            }
         });
     }
 }

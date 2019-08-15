@@ -12,7 +12,7 @@ import {UploadFile} from "../../class/uploadFile";
 
 @Component({
     selector: 'files-view',
-    inputs: ['files', 'type', 'editMode', 'object_id', 'full'],
+    inputs: ['files', 'type', 'editMode', 'full'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     styles: [`
         .files_header{
@@ -254,7 +254,6 @@ import {UploadFile} from "../../class/uploadFile";
         .photo{
             width: 100%;
             height: 175px;
-            background-image: url("../../../assets/ddd.png");
             background-size: cover;
             background-position: center;
         }
@@ -459,30 +458,27 @@ import {UploadFile} from "../../class/uploadFile";
                     ></ui-upload-file>
                 </li>
           
-                    <li *ngFor="let photo of files, let i = index" class="photo-style" [class.open]="editMode">
-                        <div class="photo" [style.background-image]="photo.href ? 'url(' + photo?.href + ')' : ''"></div>
-                        <div class="tools">
-<!--                            <div style= "background-image: url('../../../assets/photo_icon/arrow.png');transform: rotate(180deg);" (click) = "move_up(i)"></div>-->
-<!--                            <div style= "background-image: url('../../../assets/photo_icon/arrow.png')" (click) = "move_bottom(i)"></div>-->
-                            <div style= "background-image: url('../../../assets/photo_icon/cross.png');" (click) = "file_delete(i)"></div>
-<!--                            <div style= "background-image: url('../../../assets/photo_icon/check.png')" (click) = "file_main(i)"></div>-->
-<!--                            <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "file_show(i)"></div>-->
-                        </div>  
-                    </li>
-     
-                    <div *ngFor="let obj of new_struct, let i = index" class="edit-photos" [class.open]="!editMode">
-                        <div class="title-block">{{obj?.convert}} <div class="add_author">{{obj?.author}}</div></div>
-                        <ul>
-                            <li *ngFor="let url of obj.urls, let j = index" class="photo-style" [class.open]="!editMode">
-                                <div class="photo" [style.background-image]="'url(' + url + ')'"></div>
-                                <div class="tools">
-                                    <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "galleryOpenFunc(url)"></div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                <li *ngFor="let photo of files, let i = index" class="photo-style" [class.open]="editMode">
+                    <div class="photo" [style.background-image]="photo.href ? 'url(' + photo?.href + ')' : ''"></div>
+                    <div class="tools">
+                        <div style= "background-image: url('../../../assets/photo_icon/cross.png');" (click) = "file_delete(i)"></div>
+                    </div>  
+                </li>
+ 
+                <div *ngFor="let obj of new_struct, let i = index" class="edit-photos" [class.open]="!editMode">
+                    <div class="title-block">{{obj?.convert}} <div class="add_author">{{obj?.author}}</div></div>
+                    <ul>
+                        <li *ngFor="let url of obj.urls, let j = index" class="photo-style" [class.open]="!editMode">
+                            <div class="photo" [style.background-image]="'url(' + url + ')'"></div>
+                            <div class="tools">
+                                <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "galleryOpenFunc(url)"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </ul>
         </div>
+        <!-- TODO: убрать просмотр фотографии в глобальный компонент -->
         <div class="gallery" [class.full]="full" [class.open]="galleryOpen">
             <div class="gal-top"> 
                 <div class="arrow-block" (click)="prev_photo()"><div class="arrow-left"></div></div>
@@ -507,43 +503,44 @@ export class FilesView implements OnInit, OnChanges {
     public type: string = 'image';
     public editMode: boolean = false;
     public full: boolean = false;
-    public object_id: Number;
     cur_photo : any;
     widthReview = 214;
     count = 1;
     position = 0;
     cur_index: any;
     users: any= {};
-    new_struct = [{"date": Number, "urls": [], "convert": "", "author": ""}];
+    new_struct = [];
+
+    //days = [];
+    //displayFiles: UploadFile[] = [];
 
     @Output() add: EventEmitter<any> = new EventEmitter();
+    @Output() delete: EventEmitter<any> = new EventEmitter();
     @Output() fileIndexClick: EventEmitter<any> = new EventEmitter();
     @Output() progressLoad: EventEmitter<any> = new EventEmitter();
 
-    constructor(
-        private _sessionService: SessionService,
-        private _configService: ConfigService,
-        private _userService: UserService,
-        private ref: ChangeDetectorRef
+    constructor(private _uploadService: UploadService,
+                private _sessionService: SessionService,
+                private _configService: ConfigService,
+                private _userService: UserService,
+                private ref: ChangeDetectorRef
     ){
         moment.locale("ru");
     }
 
     ngOnInit(){
-        // if(this.type != 'image'){
-        //     this.getAddUser();
-        // }
-        this.sortPhotos(this.files);
-        console.log(this.files);
+        //this.displayFiles = [].concat(this.files);
+        //this.sortFiles(this.files);
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        // if(this.type != 'image'){
-        //     this.getAddUser();
-        //     console.log('Update');
-        // }
-        this.sortPhotos(this.files);
+        if(changes.files && changes.files.currentValue && changes.files.currentValue !== changes.files.previousValue) {
+           // this.displayFiles = [].concat(changes.files.currentValue);
+            this.sortFiles(changes.files.currentValue);
+        }
+
     }
+
     galleryOpenFunc( url){
         this.galleryOpen = true;
         this.cur_photo = url;
@@ -560,6 +557,7 @@ export class FilesView implements OnInit, OnChanges {
         this.position = Math.max(this.position - this.widthReview * this.count, -this.widthReview * (listElems.length - this.count - 3)) * this.cur_index - 1;
         list.style.setProperty('margin-left', this.position + 'px');
     }
+
     prev_photo() {
         if (this.cur_index != 0) {
             this.cur_index--;
@@ -570,6 +568,7 @@ export class FilesView implements OnInit, OnChanges {
         this.position = Math.min(this.position + this.widthReview * this.count, 0);
         list.style.setProperty('margin-left', this.position + 'px');
     }
+
     next_photo() {
         if (this.cur_index != this.files.length - 1) {
             this.cur_index++;
@@ -581,7 +580,21 @@ export class FilesView implements OnInit, OnChanges {
         this.position = Math.max(this.position - this.widthReview * this.count, -this.widthReview * (listElems.length - this.count - 3));
         list.style.setProperty('margin-left', this.position + 'px');
     }
-    sortPhotos(photo_arr: any[]){
+
+    sortFiles(photo_arr: any[]){
+        /*this.files.sort((val1, val2) => {
+            if(val1.addDate > val2.addDate) return 1;
+            if(val1.addDate < val2.addDate) return -1;
+            return 0;
+        });
+        this.days = [];
+        //заполним массив дней уникальными значениями
+        this.files.forEach((file) => {
+            let floatDate = Utils.getDateInCalendar(file.addDate);
+            if(!this.days.includes(floatDate))
+                this.days.push(floatDate);
+        });*/
+        this.new_struct = [{date: -1, urls: [], convert: "", author: ""}];
         let check: boolean;
         for (let i = 0; i < photo_arr.length; i++) {
             check = false;
@@ -592,11 +605,12 @@ export class FilesView implements OnInit, OnChanges {
                 }
             }
             if (!check) {
-                this.new_struct.push({"date":photo_arr[i].addDate, "urls": [photo_arr[i].href], "convert": Utils.getDateInCalendar(photo_arr[i].addDate), "author": photo_arr[i].userName});
+                this.new_struct.push({date:photo_arr[i].addDate, urls: [photo_arr[i].href], convert: Utils.getDateInCalendar(photo_arr[i].addDate), author: photo_arr[i].userName});
             }
         }
         this.new_struct.splice(0,1);
     }
+
     addFile(ev){
         this.add.emit(ev);
     }
@@ -606,7 +620,11 @@ export class FilesView implements OnInit, OnChanges {
     }
 
     file_delete(i){
-        this.files.splice(i, 1);
+        this._uploadService.delete(this.files[i].href).subscribe(result => {
+            this.files.splice(i, 1);
+            this.delete.emit(this.files);
+        });
+
     }
 
     file_main(i){

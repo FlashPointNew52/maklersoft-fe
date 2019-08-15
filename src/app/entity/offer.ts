@@ -66,7 +66,7 @@ export class Offer {
 
     location: GeoPoint;             //координаты
 
-    photos   : UploadFile[];         //url фото
+    photos: UploadFile[];         //url фото
     documents: UploadFile[];         //url документов
     
     sourceCode: string;             //источник объекта
@@ -144,6 +144,8 @@ export class Offer {
         this.bathroom = "other";
         this.roomScheme = "other";
         this.condition = "other";
+        this.photos = [];
+        this.documents = [];
         this.contractBlock = new ContractBlock();
         this.addressBlock = new AddressBlock();
         this.phoneBlock = new PhoneBlock();

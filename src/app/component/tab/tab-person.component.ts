@@ -123,8 +123,9 @@ import {Contact} from "../../entity/contact";
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
+            height: 13px;
         }
-    `], 
+    `],
     template: `
     <div class="property_face">
         <ui-tag [value]="person.tag"></ui-tag>
@@ -139,7 +140,7 @@ import {Contact} from "../../entity/contact";
         <div class="position">{{conClass.typeCodeOptions[person.typeCode]?.label}}</div>
     </div>
     <hr class='underline'>
-    <hr class='underline progress_bar' [style.width]="0+'vw'">
+    <hr class='underline progress_bar' [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
     <div class="pane">
         <div class="edit_ready">
             <span class="link" *ngIf="!editEnabled && canEditable" style="z-index: 99;" (click)="toggleEdit()">Изменить</span>
@@ -188,10 +189,6 @@ import {Contact} from "../../entity/contact";
                     <div class="show_block" *ngIf="person?.phoneBlock?.ip">
                         <span>Внутренний телефон</span>
                         <span class="view-value link">{{ person?.phoneBlock?.ip}}</span>
-                    </div>
-                    <div class="show_block">
-                        <span>Ответственный</span>
-                        <span class="view-value link">{{ person.agent?.name}}</span>
                     </div>
                     <div class="show_block" *ngIf="person?.messengerBlock?.whatsapp">
                         <span>WhatsApp</span>
@@ -322,6 +319,95 @@ import {Contact} from "../../entity/contact";
                       >{{ person.organisation?.name || 'Неизвестно'}}</span>
                     </li> -->
                 </ng-container>
+                <ng-container *ngIf="editEnabled">
+                    <input-line [name]="'ФИО'" [value]="person?.name"
+                           (newValue)="person.name = $event"
+                    ></input-line>
+                    <multiselect-menu
+                        [name]="'Телефон'" [block]="person?.phoneBlock" [addName]="'Добавить телефон'"
+                        [params]="{ 'main': {label: 'Личный', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
+                                    'cellphone' : {label: 'Личный', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
+                                    'office': {label: 'Рабочий', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
+                                    'fax': {label: 'Рабочий', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
+                                    'ip': {label: 'Внутренний', placeholder: 'Телефон'},
+                                    'home': {label: 'Домашний', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
+                                    'other': {label: 'Другой', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'}
+                                }"
+                        (newData)="findContact($event)"
+                    ></multiselect-menu>
+                    <multiselect-menu
+                        [name]="'Мессенджеры'" [block]="person?.messengerBlock" [addName]="'Добавить мессенджер'"
+                        [params]="{ 'whatsapp': {label: 'WhatsApp', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
+                                    'viber' : {label: 'Viber', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
+                                    'telegram': {label: 'Telegram', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'}
+                                }"
+                        (newData)="person.messengerBlock = $event"
+                    ></multiselect-menu>
+                    <multiselect-menu
+                        [name]="'E-mail'" [block]="person?.emailBlock" [addName]="'Добавить email'"
+                        [params]="{ 'main': {label: 'Основной', placeholder: 'E-mail'},
+                                    'work' : {label: 'Рабочий', placeholder: 'E-mail'},
+                                    'other': {label: 'Другой', placeholder: 'E-mail'}
+                                }"
+                        (newData)="person.emailBlock = $event"
+                    ></multiselect-menu>
+                    <multiselect-menu
+                        [name]="'Web-сайт'" [block]="person?.siteBlock" [addName]="'Добавить сайт'"
+                        [params]="{ 'main': {label: 'Основной', placeholder: 'Сайт'},
+                                    'work' : {label: 'Рабочий', placeholder: 'Сайт'},
+                                    'other': {label: 'Другой', placeholder: 'Сайт'}
+                                }"
+                        (newData)="person.siteBlock = $event"
+                    ></multiselect-menu>
+                    <multiselect-menu
+                        [name]="'Соцсети'" [block]="person?.socialBlock" [addName]="'Добавить соцсеть'"
+                        [params]="{ 'vk': {label: 'Вконтакте', placeholder: 'Адрес страницы'},
+                                    'ok' : {label: 'Одноклассники', placeholder: 'Адрес страницы'},
+                                    'facebook': {label: 'Facebook', placeholder: 'Адрес страницы'},
+                                    'instagram': {label: 'Instagram', placeholder: 'Адрес страницы'},
+                                    'twitter': {label: 'Twitter', placeholder: 'Адрес страницы'}
+                                }"
+                        (newData)="person.socialBlock = $event"
+                    ></multiselect-menu>
+                    <address-input [block]="person?.addressBlock" [addressType]="'apartment'" [name]= "'Адрес'"
+                                   (newData)="person.addressBlock = $event.address"
+                    ></address-input>
+                    <sliding-menu [name] = "'Источник'" [options]="conClass.sourceCodeOptions"
+                                  [value]="person?.sourceCode"
+                                  (result)= "person.sourceCode = $event"
+                    ></sliding-menu>
+                    <sliding-menu [name] = "'Статус'" [options]="conClass.middlemanOptions"
+                                  [value]="person.isMiddleman ? 'middleman' : 'owner'"
+                                  (result)= "person.isMiddleman = $event == 'middleman'"
+                    ></sliding-menu>
+                    <sliding-menu [name] = "'Тип контакта'" [options]="conClass.typeCodeOptions"
+                                  [value]="person?.typeCode"
+                                  (result) = "person.typeCode = $event"
+                    ></sliding-menu>
+                    <sliding-menu [name] = "'Лояльность'" [options]="conClass.loyaltyOptions"
+                                  [value]="person?.loyalty"
+                                  (result) = "person.loyalty = $event"
+                    ></sliding-menu>
+                    <sliding-menu [name] = "'Стадия контакта'" [options]="conClass.stageCodeOptions"
+                                  [value]="person?.stageCode"
+                                  (result) = "person.stageCode = $event"
+                    ></sliding-menu>
+                    <sliding-menu [name] = "'Ответственный'" [options]="agentOpts"
+                                  [value]="person?.agentId"
+                                  (result) = "agentChanged($event)"
+                    ></sliding-menu>
+                    <multiselect-menu
+                        [name]="'Договор'" [block]="person?.contractBlock" [addName]="'Добавить данные'"
+                        [params]="{ 'number': {label: 'Номер', placeholder: 'Номер договора'},
+                                    'begin' : {label: 'Дата начала', placeholder: 'Дата'},
+                                    'end': {label: 'Дата конца', placeholder: 'Дата'},
+                                    'continued': {label: 'Продлен', placeholder: 'Продление'},
+                                    'terminated': {label: 'Расторгнут', placeholder: 'Расторжение'}
+                                }"
+                        (newData)="person.contractBlock = $event"
+                    ></multiselect-menu>
+                    <sliding-tag [value]="person?.tag" (newValue)="person.tag = $event"></sliding-tag>
+                </ng-container>
                 <input-area [name]="'Дополнительно'" [value]="person?.description" [disabled]="!editEnabled" (newValue)="person.description = $event" [update]="update"></input-area>
             </ui-tab>
             <ui-tab [title]="'ПРЕДЛОЖЕНИЯ'"></ui-tab>
@@ -329,129 +415,21 @@ import {Contact} from "../../entity/contact";
             <div more class="more">ЕЩЁ...</div>
         </ui-tabs-menu>
     </div>
-      <!-- <div>
-        <div class="pane">
-        <div class="property" style="overflow-x: hidden;">
-            <div class="property_body editable" *ngIf="editEnabled">
-                <ul>
-                  <div (click)="show_hide($event)">КОНТАКТНАЯ ИНФОРМАЦИЯ</div>
-                  <li class="multiselect" (click)="showMenu($event)"><span class="view-label">Телефон контакта</span>
-                    <span class="view-value unknown" *ngIf="get_length(person?.phoneBlock)==0">{{ "Неизвестно"}}</span>
-                    <ui-multiselect style="display: none;"
-                                    [params]="{'main': {label: 'Личный', placeholder: 'Введите номер телефона'},
-                                              'cellphone' : {label: 'Личный', placeholder: 'Введите номер телефона'},
-                                              'office': {label: 'Рабочий', placeholder: 'Введите номер телефона'},
-                                              'fax': {label: 'Рабочий', placeholder: 'Введите номер телефона'},
-                                              'ip': {label: 'Внутренний', placeholder: 'Введите номер телефона'},
-                                              'home': {label: 'Домашний', placeholder: 'Введите номер телефона'},
-                                              'other': {label: 'Другой', placeholder: 'Введите номер телефона'}
-                                    }"
-                                    [masks]="phoneMasks" [field]="person?.phoneBlock" [width]="'53%'" [prefix]="'+7'"
-                                    (onChange)="person.phoneBlock = $event"></ui-multiselect>
-                  </li>
-                  <li>
-                    <ui-input-line [placeholder]="'ФИО:'" [value]="person?.name || ''"
-                                   (onChange)="person.name = $event"></ui-input-line>
-                  </li>
-                  <li style="height: auto;"><span class="view-label sliding-label">Статус</span>
-                    <ui-slidingMenu [options]="middlemanOptions" [value]="person?.isMiddleman ? 'middleman' : 'owner'"
-                                    (onChange)="person.isMiddleman = $event.selected.value == 'owner' ? false : true"></ui-slidingMenu>
-                  </li>
-                  <li *ngIf="person?.isMiddleman">
-                    <ui-input-line [placeholder]="'Организация:'" [value]="person?.organisation?.name || ''"
-                                   (onChange)="person.organisation = $event" [queryTipe]="'organisation'"
-                                   [filter]="{ourCompany:0}"
-                    ></ui-input-line>
-                  </li>
-                  <li style="height: auto;"><span class="view-label sliding-label">Тип контакта</span>
-                    <ui-slidingMenu [options]="typeCodeOptions" [value]="person?.typeCode"
-                                    (onChange)="person.typeCode = $event.selected.value"></ui-slidingMenu>
-                  </li>
-                  <li style="height: auto;"><span class="view-label sliding-label">Лояльность</span>
-                    <ui-slidingMenu [options]="stateCodeOptions" [value]="person?.stateCode"
-                                    (onChange)="person.stateCode = $event.selected.value"></ui-slidingMenu>
-                  </li>
-                  <li style="height: auto;"><span class="view-label sliding-label">Ответственный</span>
-                    <ui-slidingMenu [options]="agentOpts" [value]="person?.agentId"
-                                    (onChange)="agentChanged($event)"></ui-slidingMenu>
-                  </li>
-                  <li class="multiselect" (click)="showMenu($event)"><span class="view-label">E-mail</span> <span
-                    class="view-value unknown" *ngIf="get_length(person?.emailBlock)==0">{{ "Неизвестно"}}</span>
-                    <ui-multiselect style="display: none;"
-                                    [params]="{\n                                        'work' : {label: 'Рабочий', placeholder: 'Введите E-mail'},\n                                        'main' : {label: 'Основной', placeholder: 'Введите E-mail'},\n                                        'other' : {label: 'Другой', placeholder: 'Введите E-mail'}\n                                    }"
-                                    [field]="person?.emailBlock" [width]="'36%'"
-                                    (onChange)="person.emailBlock = $event"></ui-multiselect>
-                  </li>
-                  <li class="multiselect" (click)="showMenu($event)"><span class="view-label">Web-сайт</span> <span
-                    class="view-value unknown" *ngIf="get_length(person?.siteBlock)==0">{{ "Неизвестно"}}</span>
-                    <ui-multiselect style="display: none;"
-                                    [params]="{\n                                        'work' : {label: 'Рабочий', placeholder: 'Введите название сайта'},\n                                        'main' : {label: 'Основной', placeholder: 'Введите название сайта'},\n                                        'other' : {label: 'Другой', placeholder: 'Введите название сайта'}\n                                    }"
-                                    [field]="person?.siteBlock" [width]="'36%'"
-                                    (onChange)="person.siteBlock = $event"></ui-multiselect>
-                  </li>
-                  <li class="multiselect" (click)="showMenu($event)"><span class="view-label">Соцсети</span> <span
-                    class="view-value unknown" *ngIf="get_length(person?.socialBlock)==0">{{ "Неизвестно"}}</span>
-                    <ui-multiselect style="display: none;"
-                                    [params]="{
-                                            'vk' : {label: 'Вконтакте', placeholder: 'Введите адрес страницы'},
-                                            'ok' : {label: 'Одноклассники', placeholder: 'Введите адрес страницы'},
-                                            'facebook' : {label: 'Facebook', placeholder: 'Введите адрес страницы'},
-                                            'google' : {label: 'Google+', placeholder: 'Введите адрес страницы'},
-                                            'twitter' : {label: 'Twitter', placeholder: 'Введите адрес страницы'}
-                                        }"
-                                    [field]="person?.socialBlock" [width]="'36%'"
-                                    (onChange)="person.socialBlock = $event"></ui-multiselect>
-                  </li>
-                  <li class="multiselect" (click)="showMenu($event)"><span class="view-label">Мессенджеры</span> <span
-                    class="view-value unknown" *ngIf="get_length(person?.messengerBlock)==0">{{ "Неизвестно"}}</span>
-                    <ui-multiselect style="display: none;"
-                                    [params]="{
-                                            'whatsapp' : {label: 'WhatsApp', placeholder: 'Введите номер телефона'},
-                                            'telegram' : {label: 'Telegram', placeholder: 'Введите номер телефона'},
-                                            'viber' : {label: 'Viber', placeholder: 'Введите номер телефона'}
-                                        }"
-                                    [field]="person?.messengerBlock" [width]="'36%'"
-                                    (onChange)="person.messengerBlock = $event"></ui-multiselect>
-                  </li>
-                </ul>
-                <ul>
-                  <div (click)="show_hide($event)">СОПРОВОДИТЕЛЬНАЯ ИНФОРМАЦИЯ</div>
-                  <li class="multiselect" (click)="showMenu($event)"><span class="view-label">Договор</span> <span
-                    class="view-value unknown" *ngIf="get_length(person.contractBlock)==0">Неизвестно</span>
-                    <ui-multiselect [style.display]="get_length(person.contractBlock) == 0 ? 'none' : ''"
-                                    [params]="{\n                                        'number': {label: 'Номер', placeholder: 'Введите номер договора'},\n                                        'begin': {label: 'Начало', placeholder: 'Введите название сайта'},\n                                        'end': {label: 'Окончание', placeholder: 'Введите название сайта'},\n                                        'contined': {label: 'Продлён', placeholder: 'Введите название сайта'},\n                                        'terminated': {label: 'Расторгнут', placeholder: 'Введите название сайта'}\n                                    }"
-                                    [field]="person.contractBlock" [width]="'43%'"
-                                    (onChange)="person.contractBlock = $event"></ui-multiselect>
-                  </li>
-
-                  <li style="height: auto;"><span class="view-label sliding-label">Источник</span>
-                    <ui-slidingMenu [options]="sourceCodeOptions" [value]="person.sourceCode"
-                                    (onChange)="person.sourceCode = $event.selected.value"></ui-slidingMenu>
-                  </li>
-                </ul>
-                <ul>
-                  <div (click)="show_hide($event)">ТЭГИ</div>
-                  <li style="height: auto; padding: 0;">
-                    <ui-tag-block [value]="person?.tag" (valueChange)="person.tag = $event"></ui-tag-block>
-                  </li>
-                </ul>
-            </div>
-        </div>
-      </div> -->
-      <div class="work-area">
-          <div class="rating_block">
+    <div class="work-area">
+        <div class="rating_block">
             <rating-view [obj]="person" [type]="canEditable == true ? 'person' : 'user'"></rating-view>
-          </div>
-          <div class="comment_block">
+        </div>
+        <div class="comment_block">
             <comments-view [obj]="person" [type]="canEditable == true ? 'person' : 'user'"></comments-view>
-          </div>
-      </div>    `
+        </div>
+    </div>    `
 })
 
 export class TabPersonComponent implements OnInit, AfterViewInit {
     public tab: Tab;
     canEditable: boolean = true;
 
+    progressWidth: number = 0;
     person: Person = new Person();
     conClass = Contact;
     block = ObjectBlock;
@@ -592,7 +570,9 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
         this.person.photoMini = event;
     }
 
-    displayProgress(event) {
+    displayProgress(event){
+        this.progressWidth = event;
+        if(event == 100) setTimeout(()=>{this.progressWidth = 0;}, 1300);
     }
 
     contextMenu(e) {
@@ -699,4 +679,5 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
             if (data.id) this._hubService.getProperty("modal-window").showMessage("Контакт с таким номером телефона уже существует");
         });
     }
+
 }

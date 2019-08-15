@@ -219,7 +219,6 @@ export class NotebookComponent implements OnInit{
     emitWidth() {
         var w = 1;
         if (!this.hidden) {
-            // TODO: wtf 371?!
             w += 371;
             if (!this.eventHidden) {
                 w += 371;

@@ -166,8 +166,6 @@ export class UserService {
                 raw => {
                   let data = JSON.parse(JSON.stringify(raw));
                     let u: User = data.result;
-
-                    // TODO: pass copy????
                     ret_subj.next(u);
                     ret_subj.complete();
                 },
@@ -192,8 +190,6 @@ export class UserService {
             raw => {
               let data = JSON.parse(JSON.stringify(raw));
                 let u: User = data.result;
-
-                // TODO: pass copy????
                 ret_subj.next(u);
                 ret_subj.complete();
             },

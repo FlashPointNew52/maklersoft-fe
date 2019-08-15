@@ -41,7 +41,6 @@ import {SessionService} from "../../service/session.service";
         digest-person.selected{
             background-color: var(--color-blue);
         }
-
     `],
     template: `
         <div class = "round_menu">
