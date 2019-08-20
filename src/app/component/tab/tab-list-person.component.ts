@@ -125,6 +125,7 @@ import {SessionService} from "../../service/session.service";
                 (click)="clickPerson($event, p, i)"
                 (dblclick)="openPerson(p)"
                 [class.selected]="selectedPerson.indexOf(p) > -1"
+                           [selected]="selectedPerson.indexOf(p) > -1"
                 [class.alreadyAdd]="p.userRef && source != 'local'"
                 [dateType] = "sort.changeDate ? 'changeDate' : sort.assignDate ? 'assignDate' : 'addDate'"
                 [dataType]="source == 'local' ? 'person': 'user'"

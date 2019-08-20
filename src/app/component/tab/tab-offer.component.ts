@@ -1191,11 +1191,11 @@ import {Contact} from "../../entity/contact";
             >
             </yamap-view>
             <adv-view *ngSwitchCase="'advert'"></adv-view>
-            <files-view *ngSwitchCase="'photo'" [files]="offer.photos" [full]="paneHidden" [type]="'image'" [editMode]="editEnabled"
+            <files-view *ngSwitchCase="'photo'" [files]="offer.photos" [full]="paneHidden" [type]="'photo'" [editMode]="editEnabled"
                         (add)="addFile($event, 'photo')" (delete)="offer.photos = $event" (progressLoad)="displayProgress($event)"></files-view>
             <files-view *ngSwitchCase="'doc'" [files]="offer.documents" [full]="paneHidden" [type]="'doc'" [editMode]="editEnabled"
                         (add)="addFile($event, 'doc')" (delete)="offer.documents = $event" (progressLoad)="displayProgress($event)"></files-view>
-        </ng-container>
+        </ng-container> 
     </div>
 
 <!--        <div class="work-area">-->
@@ -1519,7 +1519,7 @@ export class TabOfferComponent implements OnInit {
         if(array == 'photo')
             this.offer.photos.length > 0 ? this.offer.photos = [].concat(this.offer.photos).concat(event) : this.offer.photos = event;
         else if(array == 'doc')
-            this.offer.documents.length > 0 ? this.offer.documents.push(event) : this.offer.documents = event;
+            this.offer.documents.length > 0 ? this.offer.documents = [].concat(this.offer.documents).concat(event) : this.offer.documents = event;
     }
 
   contextMenu(e) {

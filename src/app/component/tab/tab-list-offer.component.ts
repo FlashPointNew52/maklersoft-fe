@@ -158,24 +158,24 @@ import {Utils} from "../../class/utils";
         <hr class='underline'>
         <div class="head"><span>{{tab.header}}</span></div>
 
-        <div class="pane" [style.left.px]="paneHidden ? 30 : -340">
+        <div class="pane" [style.left.px]="paneHidden ?  -340 : 30 "> 
             <div class = "source_menu">
-                <div class="add"  (click)="addOffer()">ДОБАВИТЬ</div>
-                <div (click)="toggleSource('import')" class="average" [class.active]="this.source != 1">ИМПОРТ</div>
-                <div (click)="toggleSource('local')"  [class.active]="this.source == 1">ОБЩАЯ БАЗА</div>
+                <div class="add"  (click)="addOffer(); workAreaMode = 'map'">ДОБАВИТЬ</div>
+                <div (click)="toggleSource('import'); workAreaMode = 'map'" class="average" [class.active]="this.source != 1">ИМПОРТ</div>
+                <div (click)="toggleSource('local'); workAreaMode = 'map'"  [class.active]="this.source == 1">ОБЩАЯ БАЗА</div>
             </div>
             <div class="fixed-button" (click)="toggleLeftPane()">
                 <div class="arrow" [ngClass]="{'arrow-right': paneHidden, 'arrow-left': !paneHidden}"></div>
             </div>
-            <div class="digest-list border" (contextmenu)="showContextMenu($event)" (offClick)="this._hubService.shared_var['cm_hidden'] = true"> 
+            <div class="digest-list border" (contextmenu)="showContextMenu($event); contextCheck()" (offClick)="this._hubService.shared_var['cm_hidden'] = true"> 
                 <digest-offer *ngFor="let offer of offers; let i = index" [offer]="offer"
                                 [active]="selectedOffers.indexOf(offer) > -1"
-                                [class.selected]="selectedOffers.indexOf(offer) > -1"
+                                [class.selected]="selectedOffers.indexOf(offer) > -1" 
                                 [class.alreadyAdd]="offer.offerRef && source == 0"
                                 [dateType] = "sort.changeDate ? 'changeDate' : sort.assignDate ? 'assignDate' : 'addDate'"
-                                (click)="select($event, offer, i)"
-                                (contextmenu)="select($event, offer, i)"
-                                (dblclick)="dblClick(offer)"
+                                (click)="select($event, offer, i); workAreaMode = 'map'"
+                                (contextmenu)="select($event, offer, i); contextCheck()"
+                                (dblclick)="dblClick(offer)" 
                               
                 ></digest-offer>
             </div>
@@ -193,7 +193,7 @@ import {Utils} from "../../class/utils";
                 >
                 </yamap-view>
                 <adv-view *ngSwitchCase="'advert'" [count]="selectedOffers.length"></adv-view>
-                <files-view [full]="paneHidden" [type]="'image'" [editMode]="false" *ngSwitchCase="'photo' || 'doc'"></files-view>
+                <files-view [full]="paneHidden" [files]="selectedOffers[0].photos" [type]="'photo'" [editMode]="false" *ngSwitchCase="'photo'"></files-view>
             </ng-container>
         </div>
     `
@@ -223,7 +223,7 @@ export class TabListOfferComponent implements OnInit{
     importSort = Offer.importSort;
     localSort = Offer.localSort;
 
-    paneHidden: boolean = true;
+    paneHidden: boolean = false;
 
     mapDrawAllowed = false;
 
@@ -280,7 +280,11 @@ export class TabListOfferComponent implements OnInit{
         this.page = 0;
         this.listOffers(1);
     }
-
+    contextCheck() {
+        if (this.workAreaMode != 'map') {
+            this.workAreaMode = 'map';
+        }
+    }
     listOffers(down: number, event: any = null) {
             this.canLoad = down;
             this._offerService.list(this.page, this.perPage, this.source, this.filter, this.sort, this.searchQuery, this.searchArea).subscribe(
@@ -447,6 +451,17 @@ export class TabListOfferComponent implements OnInit{
                     callback: () => {
                         this.cur_id = this.selectedOffers[0].id;
                         this.workAreaMode = 'photo';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Перейти на карту",
+                    callback: () => {
+                        this.cur_id = this.selectedOffers[0].id;
+                        this.workAreaMode = 'map';
+                        let off = this.selectedOffers[0];
+                        this.selectedOffers = [];
+                        setTimeout(() => {
+                            this.selectedOffers = [off]
+                        }, 100);
                     }
                 },
                 {class: "delimiter"},

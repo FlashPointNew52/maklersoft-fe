@@ -16,7 +16,7 @@ import {Contact} from "../../entity/contact";
 
 @Component({
     selector: "digest-person",
-    inputs: ["person", "dateType", "dataType"],
+    inputs: ["person", "dateType", "dataType", "selected"],
     styles: [`
         .billet {
             height: 45px;
@@ -80,54 +80,58 @@ import {Contact} from "../../entity/contact";
 
         .organisation {
 
+        } 
+        .name.selected, .name.selected > span, .date.selected, .city.selected, .rate.selected, .type.selected, .link.selected, .user.selected, .phone.selected, .organisation.selected {
+            color: white !important;
         }
-
     `],
     template: `
+        <div style="min-width: 4px; margin-right: 11px;    height: calc(100% + 6px);
+    position: relative;
+    top: -6px;">
+            <ui-tag [value]="person.tag"></ui-tag>
+        </div>
         <div class="billet">
-            <div style="width: 4px; margin-right: 11px;">
-                <ui-tag [value]="person.tag"></ui-tag>
-            </div>
             <div style="width: 350px">
                 <div
-                    class="date">{{dateType == 'addDate' ? "Добавлено: " : dateType == 'changeDate' ? "Изменено: " : "Назначено: "}}
+                    class="date" [class.selected]="selected">{{dateType == 'addDate' ? "Добавлено: " : dateType == 'changeDate' ? "Изменено: " : "Назначено: "}}
                     {{ utils.getDateInCalendar(person[dateType] || person.changeDate || person.addDate) }}</div>
-                <div class="name">
+                <div class="name" [class.selected]="selected">
                     <span>{{utils.getSurname(person.name) || "Неизвестно"}}</span> {{utils.getFirstName(person.name) }}
                 </div>
-                <div class="city">{{getAddress()}}</div>
+                <div class="city" [class.selected]="selected">{{getAddress()}}</div>
             </div>
             <div style="width: 35px; margin-right: 35px;">
-                <span class="rate">{{(person?.rate || '0') | number: '1.0-1' }}</span>
+                <span class="rate" [class.selected]="selected">{{(person?.rate || '0') | number: '1.0-1' }}</span>
             </div>
             <div *ngIf="dataType == 'person'" style="width: 90px; margin-right: 35px;">
-                <span class="type">{{person.isMiddleman ? "Посредник" : "Принципал"}}</span>
+                <span class="type" [class.selected]="selected">{{person.isMiddleman ? "Посредник" : "Принципал"}}</span>
             </div>
             <div style="width: 118px; margin-right: 35px;">
               <span
-                  class="type">{{dataType == 'user' && person?.accountId == _sessionService.getUser().accountId ? 'Наша компания' :
+                  class="type" [class.selected]="selected">{{dataType == 'user' && person?.accountId == _sessionService.getUser().accountId ? 'Наша компания' :
                   (conClass.typeCodeOptions[person?.typeCode]?.label || 'Неизвестно')}}</span>
             </div>
             <div style="width: 200px">
-                <span class="type">{{conClass.stageCodeOptions[person?.stageCode]?.label || 'Неизвестно'}}</span>
+                <span class="type" [class.selected]="selected">{{conClass.stageCodeOptions[person?.stageCode]?.label || 'Неизвестно'}}</span>
             </div>
             <div style="width: 185px; margin-right: 15px;">
-                <span class="mail link">{{getMail(0) || ""}}</span>
-                <span class="mail link">{{getMail(1) || ""}}</span>
+                <span class="mail link" [class.selected]="selected">{{getMail(0) || ""}}</span>
+                <span class="mail link" [class.selected]="selected">{{getMail(1) || ""}}</span>
             </div>
             <div style="width: 240px; margin-right: 15px;">
                 <div *ngIf="person.agentId" class="user">
-                    <span class="link" (click)="openUser()">{{person?.agent?.name}}</span>
+                    <span class="link" [class.selected]="selected" (click)="openUser()">{{person?.agent?.name}}</span>
                 </div>
                 <div class="phones" *ngIf="!person.agentId" class="user">
                     <span
-                        class="phone">{{phones[0] ? ("+7" + phones[0].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
+                        class="phone" [class.selected]="selected">{{phones[0] ? ("+7" + phones[0].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
                     <span
-                        class="phone">{{phones[1] ? ("+7" + phones[1].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
+                        class="phone" [class.selected]="selected">{{phones[1] ? ("+7" + phones[1].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
                 </div>
             </div>
             <div style="width: 255px;">
-                <span class="organisation" [class.link]="person.organisationId"
+                <span class="organisation" [class.link]="person.organisationId" [class.selected]="selected"
                       (click)="openOrganisation()">{{person.organisation?.name || (person.isMiddleman ? 'Не известно' : " ")}}</span>
             </div>
         </div>
@@ -136,6 +140,7 @@ import {Contact} from "../../entity/contact";
 
 export class DigestPersonComponent implements OnInit {
     public person: Person;
+    public selected: boolean;
     public dateType: string = "addDate";
     public dataType: string = "local";
     organisation: Organisation = new Organisation();

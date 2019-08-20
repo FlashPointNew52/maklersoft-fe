@@ -273,8 +273,8 @@ import {UploadFile} from "../../class/uploadFile";
             justify-content: center;
         }
         .tools div{
-            height: 60px;
-            width: 60px;
+            height: 45px;
+            width: 45px;
             border-radius: 35px;
             background-color: rgba(0, 0, 0, 0.7);
             margin: 5px;
@@ -333,11 +333,11 @@ import {UploadFile} from "../../class/uploadFile";
         .gallery.open{
             display: block;
         }
-        .gal-top{
+        .gal-top{ 
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 560px;
+            height: calc(100vh - 122px - 155px - 16px);
             width: 100%;
             padding: 20px 0;
         }
@@ -443,10 +443,28 @@ import {UploadFile} from "../../class/uploadFile";
             width: 100%;
             left: 0;
         }
+        .doc{
+            background-size: 62px 62px;
+            background-repeat: no-repeat;
+            background-position: unset;
+            background-position-x: 20px;
+            background-position-y: 20px;
+        }
+        .doc-bord{
+            border: 1px solid #D3D5d6;
+        }
+        .filename{
+            position: relative;
+            top: 65px;
+            left: 95px;
+            color: #252F32;
+            max-width: 260px;
+        }
     `],
     template: `
         <div class="block-title" >
-            <div>ФОТО ПРЕДЛОЖЕНИЯ</div><div>({{files?.length}})</div>
+            <div *ngIf="type == 'photo'">ФОТО ПРЕДЛОЖЕНИЯ</div><div *ngIf="type == 'doc'">ДОКУМЕНТЫ ПРЕДЛОЖЕНИЯ</div><div>({{files?.length}})</div>
+            
         </div>
         <div class="files_body_new" [class.full]="full">
             <ul>
@@ -458,26 +476,39 @@ import {UploadFile} from "../../class/uploadFile";
                     ></ui-upload-file>
                 </li>
           
-                <li *ngFor="let photo of files, let i = index" class="photo-style" [class.open]="editMode">
-                    <div class="photo" [style.background-image]="photo.href ? 'url(' + photo?.href + ')' : ''"></div>
+                <li *ngFor="let file of files, let i = index" class="photo-style" [class.open]="editMode" [class.doc-bord]="type == 'doc'">
+                    <div class="photo" *ngIf="type == 'photo'" [style.background-image]="file.href ? 'url(' + file?.href + ')' : ''"></div>
+                    <div class="photo doc" *ngIf="type == 'doc'" [style.background-image]="file.ext ? 'url(assets/' + file?.ext + '.png)' : ''"><a class="filename">{{file?.name}}</a></div>
                     <div class="tools">
+                        <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "galleryOpenFunc(file.href)"></div>
+                        <div style= "background-image: url('../../../assets/photo_icon/check.png');" ></div>
                         <div style= "background-image: url('../../../assets/photo_icon/cross.png');" (click) = "file_delete(i)"></div>
+                        
                     </div>  
-                </li>
+                </li> 
  
                 <div *ngFor="let obj of new_struct, let i = index" class="edit-photos" [class.open]="!editMode">
                     <div class="title-block">{{obj?.convert}} <div class="add_author">{{obj?.author}}</div></div>
                     <ul>
-                        <li *ngFor="let url of obj.urls, let j = index" class="photo-style" [class.open]="!editMode">
-                            <div class="photo" [style.background-image]="'url(' + url + ')'"></div>
-                            <div class="tools">
-                                <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "galleryOpenFunc(url)"></div>
-                            </div>
+                        <li *ngFor="let url of obj.urls, let j = index" class="photo-style" [class.open]="!editMode"  [class.doc-bord]="type == 'doc'">
+                            <ng-container *ngIf="type == 'photo'">
+                                <div class="photo" [style.background-image]="'url(' + url?.href + ')'"></div> 
+                                <div class="tools">
+                                    <div style= "background-image: url('../../../assets/photo_icon/zoom.png');height: 50px; width: 50px" (click) = "galleryOpenFunc(url.href)"></div>
+                                </div>
+                            </ng-container> 
+                            
+                            <ng-container *ngIf="type == 'doc'"> 
+                                <div class="photo doc" [style.background-image]="'url(assets/' + url?.ext + '.png)'"><a class="filename">{{url?.name}}</a></div>
+                                <div class="tools">
+                                    <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "printInfo(url)"></div>
+                                </div>
+                            </ng-container>
                         </li>
-                    </ul>
-                </div>
+                    </ul> 
+                </div> 
             </ul>
-        </div>
+        </div> 
         <!-- TODO: убрать просмотр фотографии в глобальный компонент -->
         <div class="gallery" [class.full]="full" [class.open]="galleryOpen">
             <div class="gal-top"> 
@@ -500,7 +531,7 @@ import {UploadFile} from "../../class/uploadFile";
 export class FilesView implements OnInit, OnChanges {
     public files: UploadFile[] = [];
     public galleryOpen: boolean = false;
-    public type: string = 'image';
+    public type: string;
     public editMode: boolean = false;
     public full: boolean = false;
     cur_photo : any;
@@ -536,11 +567,18 @@ export class FilesView implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges) {
         if(changes.files && changes.files.currentValue && changes.files.currentValue !== changes.files.previousValue) {
            // this.displayFiles = [].concat(changes.files.currentValue);
+
             this.sortFiles(changes.files.currentValue);
         }
 
     }
-
+    info(file){
+       console.log(file)
+    }
+    printInfo(obj){
+        console.log(obj);
+        window.open(obj.href);
+    }
     galleryOpenFunc( url){
         this.galleryOpen = true;
         this.cur_photo = url;
@@ -594,21 +632,22 @@ export class FilesView implements OnInit, OnChanges {
             if(!this.days.includes(floatDate))
                 this.days.push(floatDate);
         });*/
-        this.new_struct = [{date: -1, urls: [], convert: "", author: ""}];
+        this.new_struct = [{date: -1, urls: [{href: "", ext: ""}], convert: "", author: "", ext: "", name: ""}];
         let check: boolean;
         for (let i = 0; i < photo_arr.length; i++) {
             check = false;
             for (let j = 0; j < this.new_struct.length; j++) {
-                if (this.new_struct[j].date == photo_arr[i].addDate && this.new_struct[j].author == photo_arr[i].userName){
-                    this.new_struct[j].urls.push(photo_arr[i].href);
+                if (Utils.getDateForPhoto(this.new_struct[j].date) == Utils.getDateForPhoto(photo_arr[i].addDate) && this.new_struct[j].author == photo_arr[i].userName){
+                    this.new_struct[j].urls.push({href: photo_arr[i].href, ext: photo_arr[i].ext, name: photo_arr[i].name});
                     check = true;
                 }
             }
             if (!check) {
-                this.new_struct.push({date:photo_arr[i].addDate, urls: [photo_arr[i].href], convert: Utils.getDateInCalendar(photo_arr[i].addDate), author: photo_arr[i].userName});
+                this.new_struct.unshift({date:photo_arr[i].addDate, urls: [{href: photo_arr[i].href, ext: photo_arr[i].ext, name: photo_arr[i].name}], convert: "Добавлено: " + Utils.getDateForPhoto(photo_arr[i].addDate), author: photo_arr[i].userName});
             }
         }
-        this.new_struct.splice(0,1);
+        this.new_struct.splice(this.new_struct.length - 1,1);
+        console.log(this.new_struct);
     }
 
     addFile(ev){
