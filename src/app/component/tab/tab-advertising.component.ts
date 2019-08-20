@@ -296,26 +296,6 @@ import {SessionService} from "../../service/session.service";
             height: calc(100% - 90px);
         }
 
-        .work_list .right_panel digest-pie-chart, .work_list .right_panel digest-column-chart{
-            flex: 1 1 30%;
-            height: calc(25% - 3px);
-            margin-bottom: 3px;
-            min-height: 150px;
-        }
-
-        .work_list .central_panel digest-pie-chart, .work_list .central_panel digest-column-chart{
-            margin: 0;
-            flex: 0 0 calc(50% - 3px);
-            min-height: 150px;
-            height: calc(25% - 3px);
-        }
-
-        .work_list1 digest-pie-chart, .work_list1 digest-column-chart{
-            flex: 0 1 33%;
-            height: calc(25% - 3px);
-            min-height: 150px;
-        }
-
         .work_list .left_panel table .text{
             text-transform: uppercase;
             color: #4c4c4c;
@@ -349,80 +329,19 @@ import {SessionService} from "../../service/session.service";
 
 
             <div class="inline-select">
-                <ui-select class="view-value edit-value"
-                    [options] = "[
-                        {value: 'sale', label: 'Мои предложения'},
-                        {value: 'rent', label: 'Не мои предложения'}
-                    ]"
-                    [value]="'sale'"
-                    [config]="{icon: 'icon-', draw_arrow: true}"
-                    (onChange)="null"
-                    >
-                </ui-select>
+                
             </div>
             <div class="inline-select">
-                    <ui-select class="view-value edit-value"
-                        [options] = "[
-                            {value: 0, label: 'Все'},
-                            {value: 1, label: 'Красный', icon: 'icon-circle tag-red'},
-                            {value: 2, label: 'Оранжевый', icon: 'icon-circle tag-orange'},
-                            {value: 3, label: 'Желтый', icon: 'icon-circle tag-yellow'},
-                            {value: 4, label: 'Зеленый', icon: 'icon-circle tag-green'},
-                            {value: 5, label: 'Голубой', icon: 'icon-circle tag-blue'},
-                            {value: 6, label: 'Лиловый', icon: 'icon-circle tag-violet'},
-                            {value: 7, label: 'Серый', icon: 'icon-circle tag-gray'}
-                        ]"
-                        [value]="0"
-                        [config]="{icon: 'icon-tag', draw_arrow: true}"
-                        (onChange)="null"
-                        >
-                    </ui-select>
+                    
                 </div>
                 <div class="inline-select">
-                    <ui-select class="view-value edit-value"
-                        [options] = "[
-                            {value: 1, label: '1 день'},
-                            {value: 2, label: '3 дня'},
-                            {value: 3, label: 'Неделя'},
-                            {value: 4, label: '2 недели'},
-                            {value: 5, label: 'Месяц'},
-                            {value: 6, label: '3 месяца'},
-                            {value: 7, label: 'Все'}
-                        ]"
-                        [value]="6"
-                        [config]="{icon: 'icon-month', drawArrow: true}"
-                        (onChange)="null"
-                    >
-                    </ui-select>
+                    
                 </div>
                 <div class="inline-select">
-                    <ui-select class="view-value edit-value"
-                        [options]="[
-                            {value: 'all', label: 'Все'},
-                            {value: 'raw', label: 'Не активен'},
-                            {value: 'active', label: 'Активен'},
-                            {value: 'price', label: 'Прайс'},
-                            {value: 'deal', label: 'Сделка'},
-                            {value: 'suspended', label: 'Приостановлен'},
-                            {value: 'archive', label: 'Архив'}
-                        ]"
-                        [value]="filter.stage"
-                        [config]="{icon: 'icon-square', drawArrow: true}"
-                        (onChange)="filter.stageCode = $event.selected.value; searchParamChanged($event);"
-                    >
-                    </ui-select>
+                    
                 </div>
                 <div class="inline-select">
-                    <ui-select class="view-value edit-value"
-                        [options] = "[
-                            {value: 'sale', label: 'Продажа'},
-                            {value: 'rent', label: 'Аренда'}
-                        ]"
-                        [value]="'sale'"
-                        [config]="{icon: 'icon-', draw_arrow: true}"
-                        (onChange)="null"
-                        >
-                    </ui-select>
+                    
                 </div>
             </div>
         </div>
@@ -458,66 +377,7 @@ import {SessionService} from "../../service/session.service";
             </div>
             <!------------------------------------------------------------------------------------------------------------------->
             <div class="central_panel">
-                <digest-pie-chart
-                    [header]="'Объекты по типу'"
-                    [data]="[
-                        ['Квартиры', 300],
-                        ['Малосемейки', 200],
-                        ['Комнаты', 170],
-                        ['Дома', 90],
-                        ['Коттеджи', 90]
-                    ]"
-                    [hard_data]="false"
-                    [result] = "['870']"
-                    [width] = "'369px'"
-                    [height] = "'174px'"
-                >
-                </digest-pie-chart>
-                <digest-pie-chart
-                    [header]="'Объекты по районам'"
-                    [data]="[
-                        ['Железнодорожный', 320],
-                        ['Кировский'      , 222],
-                        ['Краснофлотский' , 120],
-                        ['Индустриальный' , 69],
-                        ['Центральный'    , 150]
-                    ]"
-                    [hard_data]="false"
-                    [result] = "['1500']"
-                    [width] = "'310px'"
-                    [height] = "'174px'"
-                >
-                </digest-pie-chart>
-                <digest-column-chart
-                    [header]="'Заявки по районам'"
-                    [data]="[
-                        ['Железнодорожный', 73],
-                        ['Кировский'      , 58],
-                        ['Краснофлотский' , 43],
-                        ['Индустриальный' , 28],
-                        ['Центральный'    , 41]
-                    ]"
-                    [hard_data]="false"
-                    [result] = "['1500', 40]"
-                    [height] = "'176px'"
-                    [width] = "'369px'"
-                >
-                </digest-column-chart>
-                <digest-pie-chart
-                    [header]="'Заявки по типу'"
-                    [data]="[
-                        ['Квартиры', 15],
-                        ['Малосемейки', 24],
-                        ['Комнаты', 30],
-                        ['Дома', 8],
-                        ['Коттеджи', 10]
-                    ]"
-                    [hard_data]="false"
-                    [result] = "['95']"
-                    [width] = "'310px'"
-                    [height] = "'174px'"
-                >
-                </digest-pie-chart>
+                
                 <div class="map_container">
                     <!--<google-map class="map"-->
                         <!--[latitude]="48.490351" [longitude]= "135.070109" [zoom]="12"-->
@@ -539,21 +399,7 @@ import {SessionService} from "../../service/session.service";
             </div>
             <!------------------------------------------------------------------------------------------------------------------->
             <div class="right_panel" >
-                <digest-pie-chart
-                    [header]="'Реклама объектов'"
-                    [data]="[
-                        ['Авито', 800, +18.7],
-                        ['Фарпост', 400, -18.3],
-                        ['Презент', 350, +10.3]
-                    ]"
-                    [hard_data]="true"
-                    [result] = "['1500', 16.7]"
-                    [height] = "'160px'"
-                    [width] = "'338px'"
-                >
-                </digest-pie-chart>
-                <ui-advertising style="width: 100%;height: calc(75% - 3px); max-height: calc(100% - 163px); overflow: auto;">
-                </ui-advertising>
+                
             </div>
         </div>
 
@@ -563,95 +409,7 @@ import {SessionService} from "../../service/session.service";
 
         <div *ngIf="activeMenu == 1" class="work_list1">
             <div class="left_panel">
-                    <digest-pie-chart
-                        [header]="'Расходы по источникам'"
-                        [data]="[
-                            ['Авито', 8000, 18.7],
-                            ['Фарпост', 4000, -18.7],
-                            ['Презент', 3000, 18.7],
-                            ['Из рук в руки', 2000],
-                            ['ВНХ', 1000, -40.5]
-                        ]"
-                        [hard_data]="true"
-                        [result] = "['14000', -20.2]"
-                    >
-                    </digest-pie-chart>
-                    <digest-pie-chart
-                        [header]="'Объекты по районам'"
-                        [data]="[
-                            ['Железнодорожный', 320],
-                            ['Кировский'      , 222],
-                            ['Краснофлотский' , 120],
-                            ['Индустриальный' , 69],
-                            ['Центральный'    , 150]
-                        ]"
-                        [hard_data]="false"
-                        [result] = "['1500']"
-                    >
-                    </digest-pie-chart>
-
-                    <digest-column-chart
-                        [header]="'Объекты по типу'"
-                        [data]="[
-                            ['Комната', 48],
-                            ['Квартира', 34],
-                            ['Малосемейка', 18],
-                            ['Гостинка', 20],
-                            ['Коттедж', 25]
-                        ]"
-                        [hard_data]="false"
-                        [result] = "['1500', 40]"
-                    >
-                    </digest-column-chart>
-                    <digest-pie-chart
-                        [header]="'Заявки по источникам'"
-                        [data]="[
-                            ['Интернет', 329, 13.4],
-                            ['Печатное издание', 270, -14.8],
-                            ['Входящий звонок', 120, 15.3]
-                        ]"
-                        [hard_data]="true"
-                        [result] = "['759', -45.6]"
-                    >
-                    </digest-pie-chart>
-                    <digest-column-chart
-                        [header]="'Заявки по районам'"
-                        [data]="[
-                            ['Железнодорожный', 73],
-                            ['Кировский'      , 58],
-                            ['Краснофлотский' , 43],
-                            ['Индустриальный' , 28],
-                            ['Центральный'    , 41]
-                        ]"
-                        [hard_data]="false"
-                        [result] = "['1500', 40]"
-                    >
-                    </digest-column-chart>
-                    <digest-pie-chart
-                        [header]="'Заявки по типу'"
-                        [data]="[
-                            ['Квартиры', 15, 3.4],
-                            ['Малосемейки', 24, 4.8],
-                            ['Комнаты', 30, -5.3],
-                            ['Дома', 8, -3.2],
-                            ['Коммерческая', 2, 10.1]
-                        ]"
-                        [hard_data]="true"
-                        [result] = "['95', 5.6]"
-                    >
-                    </digest-pie-chart>
-                    <digest-area-chart style="width: 100%; height: calc(50% - 3px); max-height: calc(100% - 306px);"
-                        [header]="'Реклама в динамике'"
-                        [data]="[
-                            ['Интернет', 329, 13.4],
-                            ['Печатное издание', 270, -14.8],
-                            ['Входящий звонок', 120, 15.3]
-                        ]"
-                        [hard_data]="true"
-                        [result] = "['759', -45.6]"
-                        [width] = "'100%'"
-                    >
-                    </digest-area-chart>
+                    
             </div>
             <!------------------------------------------------------------------------------------------------------------------->
 

@@ -25,21 +25,12 @@ import {ObjectBlock} from "../../class/objectBlock";
     inputs: ['tab'],
     styles: [`
         .property_face > span:last-child{
-           /* display: block;*/
-           /* height: 12px;  */
-           /* line-height: 12px;*/
-           /* margin-bottom: 6px;*/
             font-size: 12px;
             color: var(--color-inactive);
             font-style: normal;
             text-transform: uppercase;
         }
-             
-
-        .property_face .title{
-            float: left;
-            width: 95px;
-        }
+        
 
         .work-area {
             float: left;
@@ -176,6 +167,7 @@ import {ObjectBlock} from "../../class/objectBlock";
         </div>
 
         <hr class='underline'>
+        <hr class='underline progress_bar' [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
 
         <div class="pane" [style.left.px]="paneHidden ? -339 : null">
             <div class = "source_menu"> 
@@ -271,7 +263,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                         <div class="show_block">
                             <span>Соцсети</span>
-                            <ui-view-social [block]="contact?.socialBlock"></ui-view-social>
+                            <view-social [block]="contact?.socialBlock"></view-social>
                         </div>
                         <div class="show_block">
                             <span>Источник</span>
@@ -641,6 +633,8 @@ import {ObjectBlock} from "../../class/objectBlock";
                     [searchArea] = "request.searchArea" [offers] = "offers"
                 >
                 </yamap-view>
+                <files-view *ngSwitchCase="'doc'" [files]="request.documents" [full]="paneHidden" [type]="'doc'" [editMode]="editEnabled"
+                            (add)="addFile($event, 'doc')" (delete)="request.documents = $event" (progressLoad)="displayProgress($event)"></files-view>
             </ng-container>
         </div>
     `
@@ -650,6 +644,7 @@ export class TabRequestComponent implements OnInit{
     public tab: Tab;
     public request: Request = new Request();
     mode: number = 0;
+    progressWidth: number = 0;
     workAreaMode: string = 'map';
     canEditable: boolean = true;
     page: number = 0;
@@ -831,7 +826,15 @@ export class TabRequestComponent implements OnInit{
         );
     }
 
+    displayProgress(event){
+        this.progressWidth = event;
+        if(event == 100) setTimeout(()=>{this.progressWidth = 0;}, 3000);
+    }
 
+    addFile(event, array){
+        if(array == 'doc')
+            this.request.documents.length > 0 ? this.request.documents.push(event) : this.request.documents = event;
+    }
 
     showContextMenu(e) {
         e.preventDefault();

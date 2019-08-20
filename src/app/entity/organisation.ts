@@ -7,7 +7,6 @@ export class Organisation extends Contact{
     contact: Person;
     contactId: number;
 
-    stateCode: string;
     goverType: string;
     main_office: Organisation;
     main_office_id: number;
@@ -16,44 +15,18 @@ export class Organisation extends Contact{
     orgRef: number;
 
 
-    public Organisation (name?) {
+    public Organisation(name?) {
         Contact.apply(this, arguments);
         this.stateCode = "undefined";
         this.typeCode = "unknown";
         this.isMiddleman = false;
     }
 
-    public copyFields(org: Organisation){
-
-        this.id = org.id;
-        this.accountId = org.accountId;
-        this.name = org.name;
-        this.description = org.description;
-        this.addDate = org.addDate;
-        this.changeDate = org.changeDate;
-        this.typeCode = org.typeCode;
-        this.addressBlock = org.addressBlock;
-        this.phoneBlock = org.phoneBlock;
-        this.emailBlock = org.emailBlock;
-        this.siteBlock = org.siteBlock;
-        this.contactId = org.contactId;
-        this.stateCode = org.stateCode;
-        this.sourceCode = org.sourceCode;
-        this.agentId = org.agentId;
-    }
-
-    public static goverTypeOptions = [
-        {value: 'main', label: 'Основной офис'},
-        {value: 'filial', label: 'Филиал'},
-        {value: 'subsidiary', label: 'Дочернее предприятие'},
-        {value: 'franchise', label: 'Франшиза'}
-    ];
-
-    public static goverTypeOptionsHash = {
-        main : 'Основной офис',
-        filial: 'Филиал',
-        subsidiary: 'Дочернее предприятие',
-        franchise: 'Франшиза'
+    public static goverTypeOptions = {
+        main: {label: 'Основной офис'},
+        filial: {label: 'Филиал'},
+        subsidiary: {label: 'Дочернее предприятие'},
+        franchise: {label: 'Франшиза'}
     };
 
     public static allSort = [

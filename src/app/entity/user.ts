@@ -6,8 +6,6 @@ export class User extends Contact{
     department: string;
     specialization: string;
     category: string;
-    photo: string;
-    photoMini: string;
 
     public User() {
         Contact.apply(this, arguments);

@@ -3,6 +3,7 @@ import {Person} from "./person";
 import {ContractBlock} from "../class/contractBlock";
 import {ConditionsBlock} from "../class/conditionsBlock";
 import {Organisation} from "./organisation";
+import {UploadFile} from "../class/uploadFile";
 
 export class ValueRange {
     fixVal: any;
@@ -78,6 +79,7 @@ export class Request {
     searchArea: any[];
     description: string;
 
+    documents: UploadFile[];
 
     constructor() {
         this.offerTypeCode = "sale";
@@ -87,6 +89,7 @@ export class Request {
         this.budget = this.roomsCount = this.roomsCount = this.floor = this.square = new ValueRange();
         this.contractBlock = new ContractBlock();
         this.conditions = new ConditionsBlock();
+        this.documents = [];
     }
 
     public static offerTypeCodeOptions = {
