@@ -44,7 +44,7 @@ import {Tags} from "../../class/tags";
         }
 
         .hidden_menu .selected, .hidden_menu > div:hover{
-            background-color: var(--hover-menu);
+            background-color: var(--bottom-border);
         }
         
         .tag{

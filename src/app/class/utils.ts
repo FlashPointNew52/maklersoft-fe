@@ -69,6 +69,20 @@ export class Utils{
     public static getDateForGraph(number: number) {
         return moment(number).format("D MMMM");
     }
+    public static getDateForPhoto(date: number) {
+        return moment(date * 1000).calendar(null, {
+            sameDay: '[Сегодня], ' + moment(date* 1000).format("D MMMM, YYYY"),
+            lastDay: '[Вчера], ' + moment(date* 1000).format("D MMMM, YYYY"),
+            lastWeek:  now => {
+                if (moment(date* 1000).startOf('day').diff(moment(now).startOf('day'), 'day', true) == -2) {
+                    return '[Позавчера], ' + moment(date* 1000).format("D MMMM, YYYY");
+                } else {
+                    return moment(date* 1000).format("D MMMM, YYYY");
+                }
+            },
+            sameElse: moment(date* 1000).format("D MMMM, YYYY")
+        });
+    }
     public static getTitleDateForGraph(number: number) {
         return moment(number).format("D MMMM, YYYY");
     }

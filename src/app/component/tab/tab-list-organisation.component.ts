@@ -122,6 +122,7 @@ import {SessionService} from "../../service/session.service";
                                  (click)="clickOrganisation($event, org, i)"
                                  (dblclick)="openOrganisation(org)"
                                  [class.selected]="selectedOrg.indexOf(org) > -1"
+                                 [selected]="selectedOrg.indexOf(org) > -1"
                                  [class.alreadyAdd]="org.orgRef && source != 'local'"
                                  [dateType]="sort.changeDate ? 'changeDate' : sort.assignDate ? 'assignDate' : 'addDate'"
                                  (contextmenu)="clickOrganisation($event, org)"
