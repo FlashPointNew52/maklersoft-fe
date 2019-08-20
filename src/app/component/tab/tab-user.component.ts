@@ -22,109 +22,107 @@ import {ObjectBlock} from "../../class/objectBlock";
 @Component({
     selector: 'tab-user',
     inputs: ['tab'],
-    styles: [`
-        .property_face {
-            flex-wrap: wrap;
-            align-content: flex-start;
-            padding: 30px 0 30px 25px;
-            justify-content: flex-start;
-        }
+    styles: [`          .property_face {
+        flex-wrap: wrap;
+        align-content: flex-start;
+        padding: 30px 0 30px 25px;
+        justify-content: flex-start;
+    }
 
-        .property_face ui-tag{
-            position: absolute;
-            width: 5px;
-            height: 100%;
-            top: 0;
-            left: 0;
-        }
+    .property_face ui-tag {
+        position: absolute;
+        width: 5px;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
 
-        .property_face > .photo {
-            width: 60px;
-            height: 60px;
-            background: #f8f8f8 url(/assets/photo.png);
-            background-size: cover;
-            margin: 0 20px 0 0;
-            background-position: center;
-         }
+    .property_face > .photo {
+        width: 60px;
+        height: 60px;
+        margin: 0 20px 0 0;
+        background: #f8f8f8 url(/assets/photo.png) center;
+        background-size: cover;
+    }
 
-        .property_face > .last_name {
-            font-size: 16px;
-            text-transform: uppercase;
-            height: 16px;
-            line-height: 16px;
-            font-weight: bold;
-            margin-bottom: 3px;
-        }
+    .property_face > .last_name {
+        font-size: 16px;
+        text-transform: uppercase;
+        height: 16px;
+        line-height: 16px;
+        font-weight: bold;
+        margin-bottom: 3px;
+    }
 
-        .property_face > .first_name {
-            font-size: 16px;
-            height: 16px;
-            line-height: 16px;
-        }
+    .property_face > .first_name {
+        font-size: 16px;
+        height: 16px;
+        line-height: 16px;
+    }
 
-        .edit_ready {
-            height: 12px;
-            margin-top: 15px;
-            padding-right: 24px;
-        }
+    .edit_ready {
+        height: 12px;
+        margin-top: 15px;
+        padding-right: 24px;
+    }
 
-        ui-tabs-menu{
-            margin-top: -10px;
-        }
+    ui-tabs-menu {
+        margin-top: -10px;
+    }
 
-        .work-area {
-            float: right;
-            height: calc(100vh - 115px);
-            width: calc(100vw - 400px);
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            align-content: start;
-        }
+    .work-area {
+        float: right;
+        height: calc(100vh - 115px);
+        width: calc(100vw - 400px);
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-content: start;
+    }
 
-        .rating_block {
-            height: 235px;
-            overflow: hidden;
-            width: 45%;
-            border: 1px solid #bdc0c1;
-            border-top: 0;
-            border-left: 0;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: start;
-            justify-content: space-between;
-        }
+    .rating_block {
+        height: 235px;
+        overflow: hidden;
+        width: 45%;
+        border: 1px solid #bdc0c1;
+        border-top: 0;
+        border-left: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: start;
+        justify-content: space-between;
+    }
 
-        .comment_block {
-            height: calc(100% - 236px);
-            overflow: auto;
-            width: 45%;
-            border-right: 1px solid #bdc0c1;
-        }
+    .comment_block {
+        height: calc(100% - 236px);
+        overflow: auto;
+        width: 45%;
+        border-right: 1px solid #bdc0c1;
+    }
 
-        .graf_block {
-            width: 55%;
-            height: 100%;
-        }
+    .graf_block {
+        width: 55%;
+        height: 100%;
+    }
 
-        .graf_block .graf1 {
-            width: 100%;
-            height: 235px;
-            border-bottom: 1px solid #bdc0c1;
-        }
+    .graf_block .graf1 {
+        width: 100%;
+        height: 235px;
+        border-bottom: 1px solid #bdc0c1;
+    }
 
-        .graf_block .graf2, .graf_block .graf3 {
-            width: 100%;
-            height: calc(50% - 117px);
-            border-bottom: 1px solid #bdc0c1;
-        }
-        .position{
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            width: 100%;
-        }
-    `],
+    .graf_block .graf2, .graf_block .graf3 {
+        width: 100%;
+        height: calc(50% - 117px);
+        border-bottom: 1px solid #bdc0c1;
+    }
+
+    .position {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+    }      `],
     template: `
         <div class="property_face">
             <ui-tag [value]="user.tag"></ui-tag>
@@ -229,7 +227,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                         <div class="show_block">
                             <span>Соцсети</span>
-                            <ui-view-social [block]="user?.socialBlock"></ui-view-social>
+                            <view-social [block]="user?.socialBlock"></view-social>
                         </div>
                         <div class="show_block" *ngIf="user.addressBlock?.region">
                             <span>Регион</span>

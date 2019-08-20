@@ -3,8 +3,6 @@ import {Contact} from "./contact";
 
 export class Person extends Contact{
     isMiddleman: boolean;
-    photo: string;
-    photoMini: string;
     userRef: number;
 
     public Person(){

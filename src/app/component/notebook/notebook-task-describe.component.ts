@@ -89,41 +89,15 @@ import 'moment/locale/ru.js';
             <div class="edit_mode" *ngIf="mode == 'new'">
                 <div class="view-group">
                     <span class="view-label">Ответственный:</span>
-                    <ui-slidingMenu class="view-value edit-value"
-                        [options] = "agentOpts"
-                        [value]="superior.id"
-                        (onChange)="agentChanged($event)"
-                        [toggle_style] = "{'background-color':'transparent'}"
-                    >
-                    </ui-slidingMenu>
+                   
                 </div>
                 <div class="view-group">
                     <span class="view-label pull-left">Приоритет:</span>
-                    <ui-slidingMenu class="view-value edit-value"
-                        [options] = "[
-                            {value: 2, label: 'Высокий'},
-                            {value: 1, label: 'Средний'},
-                            {value: 0, label: 'Низкий'}
-                        ]"
-                        [value]="task.priority"
-                        (onChange)="task.priority = $event.selected.value"
-                        [toggle_style] = "{'background-color':'transparent'}"
-                    >
-                    </ui-slidingMenu>
+                    
                 </div>
                 <div class="view-group">
                     <span class="view-label pull-left">Действие:</span>
-                    <ui-slidingMenu class="view-value edit-value"
-                        [options] = "[
-                            {value: 'CALL', label: 'Звонок'},
-                            {value: 'MEET', label: 'Встреча'},
-                            {value: 'OTHER', label: 'Прочее'}
-                        ]"
-                        [value]="task.type"
-                        (onChange)="task.type = $event.selected.value"
-                        [toggle_style] = "{'background-color':'transparent'}"
-                    >
-                    </ui-slidingMenu>
+                    
                 </div>
                 <div class="view-group" style='display: block;'>
                     <ui-input-line [placeholder] = "'Заголовок задачи: '" [value] = "task.title"
@@ -136,27 +110,12 @@ import 'moment/locale/ru.js';
                 <div class="view-group" style="height: 10px;"></div>
                 <div class='view_icon' [style.background-image]="'url(assets/user_icon/user.png)'"></div>
                 <div class="view-group" style='display: block;'>
-                    <ui-input-line [placeholder] = "'Описание: '" [value] = "task.discride"
-                        [width] = "'225px'" (onChange)= "task.discride = $event"
-                        [input_style]="{'background-color':'transparent'}"
-                        [label_style]="{'height':'10px', 'line-height':'16px'}"
-                    >
-                    </ui-input-line>
+                    
                 </div>
                 <div class="view-group" style="height: 10px;"></div>
                 <div class="view-group">
                     <span class="view-label pull-left">Маршрут:</span>
-                    <ui-slidingMenu class="view-value edit-value"
-                        [options] = "[
-                            {value: 'CAR', label: 'На автомобиле'},
-                            {value: 'BUS', label: 'Общественным транспортом'},
-                            {value: 'AFOOT', label: 'Пешком'}
-                        ]"
-                        [value]="task.route"
-                        (onChange)="task.route = $event.selected.value"
-                        [toggle_style] = "{'background-color':'transparent'}"
-                    >
-                    </ui-slidingMenu>
+                    
                 </div>
                 <div class="view-group" style='display: block; height: 323px;margin-top: 20px;'>
                     <!--<dp-day-calendar
@@ -191,31 +150,9 @@ import 'moment/locale/ru.js';
                 </div>
                 <div class="view-group">
                     <span class="view-label pull-left">Приоритет:</span>
-                    <ui-view-value
-                        [options] = "[
-                            {value: -1, label: 'Не указан'},
-                            {value: 2, label: 'Высокий'},
-                            {value: 1, label: 'Средний'},
-                            {value: 0, label: 'Низкий'}
-                        ]"
-                        [value]="task.priority"
-                        [Style] = "{'color': '#212121', 'line-height': '25px', 'margin-top': '0'}"
-                    >
-                    </ui-view-value>
                 </div>
                 <div class="view-group">
                     <span class="view-label pull-left">Действие:</span>
-                    <ui-view-value
-                        [options] = "[
-                            {value: 'NO', label: 'Не указано'},
-                            {value: 'CALL', label: 'Звонок'},
-                            {value: 'MEET', label: 'Встреча'},
-                            {value: 'OTHER', label: 'Прочее'}
-                        ]"
-                        [value]="task.type"
-                        [Style] = "{'color': '#212121', 'line-height': '25px', 'margin-top': '0'}"
-                    >
-                    </ui-view-value>
                 </div>
 
                 <div class="view-group">
@@ -230,17 +167,6 @@ import 'moment/locale/ru.js';
                 <div class="view-group" style="height: 10px;"></div>
                 <div class="view-group">
                     <span class="view-label pull-left">Маршрут:</span>
-                    <ui-view-value
-                        [options] = "[
-                            {value: 'NO', label: 'Не указан'},
-                            {value: 'CAR', label: 'На автомобиле'},
-                            {value: 'BUS', label: 'Общественным транспортом'},
-                            {value: 'AFOOT', label: 'Пешком'}
-                        ]"
-                        [value]="task.route"
-                        [Style] = "{'color': '#212121', 'line-height': '25px', 'margin-top': '0'}"
-                    >
-                    </ui-view-value>
                 </div>
                 <div class="view-group">
                     <span class="view-label">Приступить:</span>

@@ -7,6 +7,7 @@ import {Utils} from '../../class/utils';
 import {PhoneBlock} from '../../class/phoneBlock';
 import {AddressBlock} from '../../class/addressBlock';
 import {SiteBlock} from '../../class/siteBlock';
+import {Contact} from "../../entity/contact";
 
 @Component({
     selector: 'digest-organisation',
@@ -104,13 +105,14 @@ import {SiteBlock} from '../../class/siteBlock';
               <span class="type" [class.selected]="selected">{{organisation.isMiddleman ? "Посредник" : "Принципал"}}</span>
             </div>
             <div style= "width: 140px; margin-right: 35px;">
-              <span class="type" [class.selected]="selected">{{organisation.ourCompany && organisation.accountId == _sessionService.getUser().accountId ? "Наша компания" : (organisationTypeCode[organisation.typeCode] || 'Неизвестно')}}</span>
+              <span class="type" [class.selected]="selected">{{organisation.ourCompany && organisation.accountId == _sessionService.getUser().accountId ? "Наша компания" 
+                  : (conClass.typeCodeOptions[organisation.typeCode]?.label || 'Неизвестно')}}</span>
             </div>
             <div style= "width: 116px; margin-right: 35px;">
-              <span class="type" [class.selected]="selected">{{organisationStateCode[organisation.stateCode] || 'Неизвестно'}}</span>
+              <span class="type" [class.selected]="selected">{{conClass.stageCodeOptions[organisation.stageCode]?.label || 'Неизвестно'}}</span>
             </div>
             <div style= "width: 180px;margin-right: 35px;">
-                <span class="type" [class.selected]="selected">{{orgGoverCode[organisation.goverType] || 'Неизвестно'}}</span>
+                <span class="type" [class.selected]="selected">{{orgClass.goverTypeOptions[organisation.goverType]?.label || 'Неизвестно'}}</span>
             </div>
             <div style= "width: 185px; margin-right: 15px;">
                 <span class="mail link" [class.selected]="selected">{{getSite(0) || ""}}</span>
@@ -133,9 +135,8 @@ export class DigestOrganisationComponent implements OnInit {
     public organisation: Organisation;
     public dateType: string = "addDate";
     public selected: boolean;
-    orgGoverCode = Organisation.goverTypeOptionsHash;
-    organisationStateCode ;//= Organisation.stateCodeOptionsHash;
-    organisationTypeCode ;//= Organisation.typeCodeOptionsHash;
+    orgClass = Organisation;
+    conClass = Contact;
     utils = Utils;
     phones: any[] = [];
     constructor(private _hubService: HubService,

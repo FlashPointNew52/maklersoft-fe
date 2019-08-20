@@ -513,12 +513,6 @@ input-line, input-area{
     margin-bottom: 10px;
 }
 
-.property_body > ul > li ui-view-value {
-    overflow: hidden;
-    text-transform: none;
-    font-size: 12px;
-}
-
 .property_body > ul > li textarea {
     text-align: left;
     width: 100%;
@@ -625,42 +619,11 @@ input-line, input-area{
   z-index: 5;
 }
 
-.editable ul li ui-slidingMenu {
-  flex: 0 0 calc(100% + 48px + 56px);
-  position: relative;
-  left: calc(0px - 50% - 48px);
-  z-index: 5;
-  font-size: 12px;
-  text-transform: initial;
-}
-
-.editable ul li ui-switch-button {
-  align-self: center;
-  z-index: 10;
-}
-
 .editable ul li ui-input-line {
   height: 100%;
   width: 100%;
   line-height: normal;
   z-index: 15;
-}
-
-.editable ul li ui-multiselect {
-  line-height: normal;
-  width: 100%;
-  z-index: 10;
-  padding-left: 20px;
-  text-transform: initial;
-  z-index: 100;
-}
-
-.editable ul li ui-star-view {
-  z-index: 5;
-}
-
-.editable ul li ui-multiselect ui-input-line {
-  height: 42px;
 }
 
 .editable ul li ui-tag-block {
@@ -677,10 +640,6 @@ input-line, input-area{
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-}
-
-ui-filter-select.view-value{
-  text-align: left;
 }
 
 .unknown {
@@ -847,10 +806,6 @@ textarea:focus {
     z-index: 10;
     display: flex;
     justify-content: space-around;
-}
-
-.inline-select > ui-filter-tag-select{
-    text-align: left;
 }
 
 digest-person.alreadyAdd span, digest-person.alreadyAdd div, digest-person.alreadyAdd .link{

@@ -304,7 +304,7 @@ import {Contact} from "../../entity/contact";
                     </div>
                     <div class="show_block">
                         <span>Соцсети</span>
-                        <ui-view-social [block]="contact?.socialBlock"></ui-view-social>
+                        <view-social [block]="contact?.socialBlock"></view-social>
                     </div>
                     <div class="show_block">
                         <span>Источник</span>
@@ -820,7 +820,7 @@ import {Contact} from "../../entity/contact";
                         <switch-button [value]="offer?.guard" (newValue)="offer.guard = $event"></switch-button>
                     </div>
                     <address-input [block]="offer?.addressBlock" [addressType]="offer.categoryCode == 'commersial' ? 'office': 'apartment'"
-                                   (newData)="offer.addressBlock = $event.address; offer.location = $event.location; selectedOffers = [offer]"
+                                   (newData)="offer.addressBlock = $event.address; $event.location ? offer.location = $event.location : null; selectedOffers = [offer]"
                                    [name]= "'Адрес предложения'"
                     ></address-input>
                     <input-line [name]="'Жилищный комплекс'" [value]="offer?.housingComplex"
@@ -1219,6 +1219,7 @@ export class TabOfferComponent implements OnInit {
     public offer: Offer = new Offer();
     selectedOffers: Offer[] = [];
     mode: number = 0;
+    progressWidth: number = 0;
     workAreaMode: string = 'map';
     canEditable: boolean = true;
 
@@ -1240,13 +1241,11 @@ export class TabOfferComponent implements OnInit {
     @Output() block_changed: EventEmitter<any> = new EventEmitter();
     agentOpts: any[] = [{class:'entry', value: null, label: "Не назначено"}];
     similarOffers: Offer[] = [];
-    isNotContact: boolean = false;
     paneHidden: boolean = false;
     searchQuery: any;
     editEnabled: boolean = false;
 
-    progressWidth: number = 0;
-    progressTimer: number;
+
 
     filter: any = {
         agentId: 'all',

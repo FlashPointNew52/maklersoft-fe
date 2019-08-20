@@ -35,7 +35,8 @@ export class Contact {
     tag: string;
     rate: number;
     sourceCode: number;
-
+    photo: string;
+    photoMini: string;
     isMiddleman: boolean;
     type: string;
 
