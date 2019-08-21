@@ -60,12 +60,7 @@ import {Contact} from "../../entity/contact";
             height: 16px;
             line-height: 16px;
         }
-
-        .edit_ready {
-            height: 12px;
-            margin-top: 15px;
-            padding-right: 24px;
-        }
+        
 
         ui-tabs-menu {
             margin-top: -10px;
@@ -144,7 +139,7 @@ import {Contact} from "../../entity/contact";
             [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
         <div class="pane">
             <div class="edit_ready">
-                <span class="link" *ngIf="!editEnabled && canEditable" style="z-index: 99;" (click)="toggleEdit()">Изменить</span>
+                <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
                 <span class="link" *ngIf="editEnabled && canEditable" (click)="save()">Готово</span>
                 <div *ngIf="!canEditable" class="pointer_menu" (click)="contextMenu($event)">...</div>
             </div>
@@ -565,8 +560,8 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
         }
     }
 
-    agentChanged(e) {
-        this.person.agentId = e.selected.value;
+    agentChanged(event) {
+        this.person.agentId = event;
         if (this.person.agentId != null) {
             this._userService.get(this.person.agentId).subscribe(agent => {
                 this.person.agent = agent;

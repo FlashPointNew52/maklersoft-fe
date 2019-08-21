@@ -61,12 +61,6 @@ import {ObjectBlock} from "../../class/objectBlock";
             line-height: 16px;
         }
 
-        .edit_ready {
-            height: 12px;
-            margin-top: 15px;
-            padding-right: 24px;
-        }
-
         ui-tabs-menu {
             margin-top: -10px;
         }
@@ -146,7 +140,7 @@ import {ObjectBlock} from "../../class/objectBlock";
             [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
         <div class="pane">
             <div class="edit_ready">
-                <span class="link" *ngIf="!editEnabled && canEditable" style="z-index: 99;" (click)="toggleEdit()">Изменить</span>
+                <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
                 <span class="link" *ngIf="editEnabled && canEditable" (click)="save()">Готово</span>
                 <div *ngIf="!canEditable" class="pointer_menu" (click)="contextMenu($event)">...</div>
             </div>
@@ -575,12 +569,13 @@ export class TabOrganisationComponent implements OnInit, AfterViewInit {
         });
     }
 
-    agentChanged(e) {
-        /*if (e.selected.value != null) {
-            this._userService.get(e.selected.value).subscribe(agent => {
+    agentChanged(event) {
+        this.organisation.agentId = event;
+        if (this.organisation.agentId != null) {
+            this._userService.get(this.organisation.agentId).subscribe(agent => {
                 this.organisation.agent = agent;
             });
-        }*/
+        }
     }
 
     addFile(event){

@@ -60,12 +60,6 @@ import {ObjectBlock} from "../../class/objectBlock";
         line-height: 16px;
     }
 
-    .edit_ready {
-        height: 12px;
-        margin-top: 15px;
-        padding-right: 24px;
-    }
-
     ui-tabs-menu {
         margin-top: -10px;
     }
@@ -139,8 +133,8 @@ import {ObjectBlock} from "../../class/objectBlock";
         <hr class='underline progress_bar' [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
         <div class="pane">
             <div class="edit_ready">
-                <span class="link" style="z-index: 99;" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
-                <span class="link" style="z-index: 99;" *ngIf="editEnabled" (click)="save()">Готово</span>
+                <span class="link" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
+                <span class="link" *ngIf="editEnabled" (click)="save()">Готово</span>
             </div>
             <ui-tabs-menu>
                 <ui-tab [title]="'ГЛАВНАЯ'" class="without_buttons">
