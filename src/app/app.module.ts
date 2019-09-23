@@ -55,7 +55,6 @@ import {DigestPersonComponent} from "./component/digest/digest-person.component"
 import {UITag} from "./component/ui/ui-tag.component";
 import {UIUploadFile} from "./component/ui/ui-upload-file.component";
 import {OffClickDirective} from "./component/ui/off-click";
-import {ViewSocialsComponent} from "./component/ui-elements/view-socials";
 import {YamapView} from "./component/view/yamap-view.component";
 import {FilesView} from "./component/view/files-view.component";
 import {AdvView} from "./component/view/adv-view.component";
@@ -79,9 +78,10 @@ import {FilterSelectComponent} from "./component/ui-elements/filter-select";
 import {FilterSelectTagComponent} from "./component/ui-elements/filter-select-tag";
 import {ModalWindowComponent} from "./component/modal-window.component";
 import {AddressInputComponent} from "./component/ui-elements/address-input";
+import {ViewSocialsComponent} from "./component/ui-elements/view-socials";
 
 const appRoutes: Routes = [
-    {path: "admin", loadChildren: "app/admin.module#AdminModule"},
+    {path: "admin", loadChildren: "src/app/admin.module#AdminModule"},
     {path: "main", component: MainComponent},
     {
         path: "",
@@ -93,6 +93,7 @@ const appRoutes: Routes = [
 
 @NgModule({
     declarations: [
+        ViewSocialsComponent,
         DailyPlannerViewComponent,
         ChatViewComponent,
         NotificationViewComponent,
