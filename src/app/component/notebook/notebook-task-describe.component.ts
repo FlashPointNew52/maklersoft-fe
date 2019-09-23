@@ -100,12 +100,6 @@ import 'moment/locale/ru.js';
                     
                 </div>
                 <div class="view-group" style='display: block;'>
-                    <ui-input-line [placeholder] = "'Заголовок задачи: '" [value] = "task.title"
-                        [width] = "'225px'" (onChange)= "task.title = $event"
-                        [input_style]="{'background-color':'transparent'}"
-                        [label_style]="{'height':'10px', 'line-height':'16px'}"
-                    >
-                    </ui-input-line>
                 </div>
                 <div class="view-group" style="height: 10px;"></div>
                 <div class='view_icon' [style.background-image]="'url(assets/user_icon/user.png)'"></div>

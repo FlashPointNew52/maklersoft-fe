@@ -11,7 +11,7 @@ import {Output, EventEmitter} from '@angular/core';
             <span [class.inactive]="disabled">{{ options[value]?.label }}</span>
         </div>
         <div [hidden]="hidden" class="hidden_menu">
-            <div *ngFor="let opt of objectKeys(options)" [class.selected]="opt == value"
+            <div *ngFor="let opt of objectKeys(options)" [class.selected]="(opt == 'null' ? null : opt) == value"
                  (click)="select(opt)"
             >{{ options[opt]?.label }}</div>
         </div>

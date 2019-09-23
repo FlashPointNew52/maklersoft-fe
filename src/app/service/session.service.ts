@@ -99,7 +99,7 @@ export class SessionService {
     get_code(phone) {
 
         let _resourceUrl = this.RS + "check_phone";
-        let ret_subj = new AsyncSubject() as AsyncSubject<string>;
+        let ret_subj = new AsyncSubject() as AsyncSubject<boolean>;
         let data_str = JSON.stringify({
             phone
         });
@@ -108,7 +108,8 @@ export class SessionService {
             map((res: Response) => res)).subscribe(raw => {
             let data = JSON.parse(JSON.stringify(raw));
             if (data.result == "OK"){
-
+                this._hubService.getProperty("modal-window").showMessage("На ваш номер телефон выслан код",  null);
+                ret_subj.next(true);
             }else if (data.result == "FAIL" && data.msg == "301:User not found")
                 this._hubService.getProperty("modal-window").showMessage("Пользователь с таким номером не найден",  null);
             else if (data.result == "FAIL" && data.msg == "000:Send sms error")
@@ -123,7 +124,7 @@ export class SessionService {
 
     check_code(phone, temp_code, password) {
         let _resourceUrl = this.RS + "change_pass";
-        let ret_subj = new AsyncSubject() as AsyncSubject<string>;
+        let ret_subj = new AsyncSubject() as AsyncSubject<boolean>;
         let data_str = JSON.stringify({
             phone,
             temp_code,
@@ -134,7 +135,7 @@ export class SessionService {
             map((res: Response) => res)).subscribe(raw => {
                 let data = JSON.parse(JSON.stringify(raw));
                 if (data.result == "OK"){
-
+                    ret_subj.next(true);
                 }else if (data.result == "FAIL" && data.msg == "301:User not found")
                     this._hubService.getProperty("modal-window").showMessage("Пользователь с таким телефоном не найлен",  null);
                 else if (data.result == "FAIL" && data.msg == "000:Send sms error")
@@ -249,12 +250,21 @@ export class SessionService {
                 err.error = data.error;
                 needSupport = data.type == 0;
             } catch (e) {
-                errMsg += err.error;
-                err.message = err.error;
-                err.error = "";
-                needSupport = true;
+                if(typeof err.error == 'object'){
+                    errMsg += err.error.message;
+                    err.message = err.error.message;
+                    err.error = err.error.error;
+                    needSupport = err.error.type == 0;
+                } else{
+                    errMsg += err.error;
+                    err.message = err.error;
+                    err.error = "";
+                    needSupport = true;
+                }
+
             }
         }
+
         this._hubService.getProperty("modal-window").showMessage(errMsg, needSupport ? err : null);
     }
 

@@ -14,7 +14,6 @@ export class Organisation extends Contact{
     ourCompany: boolean;
     orgRef: number;
 
-
     public Organisation(name?) {
         Contact.apply(this, arguments);
         this.stateCode = "undefined";

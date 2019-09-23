@@ -9,6 +9,7 @@ import {Person} from '../../entity/person';
 
 import {UserService} from "../../service/user.service";
 import {SessionService} from "../../service/session.service";
+import {Contact} from "../../entity/contact";
 
 @Component({
     selector: 'tab-list-person',
@@ -61,11 +62,27 @@ import {SessionService} from "../../service/session.service";
                     (newValue)="setUsrId($event)"
                 >
                 </filter-select>
-                <filter-select *ngIf="source != 'local'"
-                    [name]="'Отдел'" [firstAsName]="true"
-                    [options]="orgOptions"
-                    [value]="{'option' : filter.organisationId}"
-                    (newValue)="setType($event)"
+                <filter-select *ngIf="source == 'local'"
+                               [name]="'Подразделение'"
+                               [options]="orgOptions"
+                               [value]="{'option' : filter.agentOrgId}"
+                               (newValue)="filter.agentOrgId = $event; searchParamChanged()"
+                >
+                </filter-select>
+                <filter-select *ngIf="source == 'local'"
+                               [name]="'Источник'"
+                               [options]="[
+                                  {value: 'all', label: 'Все'},
+                                  {value: 'internet', label: 'Интернет площадки'},
+                                  {value: 'print', label: 'Печатные издания'},
+                                  {value: 'social', label: 'Социальные сети'},
+                                  {value: 'messengers', label: 'Мессенджеры'},
+                                  {value: 'email', label: 'E-mail-рассылка'},
+                                  {value: 'recommendations', label: 'Рекомендации'},
+                                  {value: 'other', label: 'Другое'}
+                                ]"
+                               [value]="{option : filter.sourceCode}"
+                               (newValue)="filter.sourceCode = $event; searchParamChanged()"
                 >
                 </filter-select>
                 <filter-select *ngIf="source == 'local'"
@@ -151,7 +168,9 @@ export class TabListPersonComponent implements OnInit {
         tag: null,
         typeCode: 'all',
         changeDate: 'all',
-        stateCode: 'all'
+        stateCode: 'all',
+        sourceCode: "all",
+        agentIdOrg: "all"
     };
     sort: any = {
         addDate: 'DESC'
@@ -165,8 +184,7 @@ export class TabListPersonComponent implements OnInit {
     usrOptions = [{value: 'all', label: 'Все', class: "entry", items: []},
                   {value: 'my', label: 'Мои контакты', class: "entry", items: []}
     ];
-    orgOptions = [{value: 'all', label: 'Все', class: "entry", items: []},
-                  {value: 'company', label: 'Наша компания', class: "submenu", items: []}];
+    orgOptions = [{value: 'all', label: 'Все', class: "entry", items: []}];
     selectedPerson: Person[] = [];
 
     lastClckIdx: number = 0;
@@ -183,11 +201,11 @@ export class TabListPersonComponent implements OnInit {
     }
 
     ngOnInit() {
-        /*this.middlemanOptions = this.middlemanOptions.concat(Person.middlemanOptions);
+        /*this.middlemanOptions = this.middlemanOptions.concat(Contact.middlemanOptions);
         this.stateCodeOptions = this.stateCodeOptions.concat(Person.stateCodeOptions);
-        this.typeCodeOptions = this.typeCodeOptions.concat(Person.typeCodeOptions);
-        this.usrOptions = this.usrOptions.concat(this._userService.cacheOrgAndUser);
-        this.orgOptions[1].items = this._userService.cacheOrgs;*/
+        this.typeCodeOptions = this.typeCodeOptions.concat(Person.typeCodeOptions);*/
+        //this.usrOptions = this.usrOptions.concat(this._userService.cacheOrgAndUser);
+        this.orgOptions = this.orgOptions.concat(this._userService.cacheOrgs);
         this.listPersons();
     }
 
@@ -232,7 +250,8 @@ export class TabListPersonComponent implements OnInit {
     openPerson(pers: Person) {
         let tabSys = this._hubService.getProperty('tab_sys');
         let canEditable = this.source == 'local' && (this._sessionService.getUser().accountId == pers.accountId);
-        tabSys.addTab('person', {person: pers, canEditable: canEditable});
+        let tab =  tabSys.addTab('person', {person: pers, canEditable: canEditable});
+        this.eventTabs(tab);
     }
 
     searchParamChanged() {
@@ -309,7 +328,6 @@ export class TabListPersonComponent implements OnInit {
     }
 
     setType(event){
-        console.log(event);
         if(event.option == "company"){
             if(event.subvalue != null){
                 this.filter.organisationId = event.subvalue;
@@ -466,24 +484,58 @@ export class TabListPersonComponent implements OnInit {
                 this._personService.save(o);
             } else if(evt.event == "del_agent"){
                     o.agentId = null;
-                    o.agent = null;
-                    this._personService.save(o);
+                    this._personService.save(o).subscribe(person =>{
+                        this.persons[this.persons.indexOf(o)] = person;
+                        this.selectedPerson[this.selectedPerson.indexOf(o)] = person;
+                    });
               } else if(evt.event == "set_agent"){
                     o.agentId = evt.agentId;
-                    o.agent = null;
-                    this._personService.save(o);
+                    this._personService.save(o).subscribe(person =>{
+                        this.persons[this.persons.indexOf(o)] = person;
+                        this.selectedPerson[this.selectedPerson.indexOf(o)] = person;
+                    });
               } else if(evt.event == "del_obj"){
-
+                this._personService.delete(o).subscribe(
+                    data => {
+                        this.selectedPerson.splice(this.selectedPerson.indexOf(o), 1);
+                        this.persons.splice(this.persons.indexOf(o), 1);
+                    }
+                );
               } else if(evt.event == "check"){
 
               } else if(evt.event == "photo"){
 
               } else if(evt.event = "set_tag"){
                     o.tag = evt.tag;
-                    this._personService.save(o);
+                    this._personService.save(o).subscribe(person =>{
+                        this.persons[this.persons.indexOf(o)] = person;
+                        this.selectedPerson[this.selectedPerson.indexOf(o)] = person;
+                    });
               } else {
 
               }
+        });
+    }
+
+    private eventTabs(tab: any) {
+        tab.getEvent().subscribe(event =>{
+            if(event.type == "update"){
+                for(let i = 0; i < this.persons.length; ++i){
+                    if(this.persons[i].id == event.value.id){
+                        this.selectedPerson[this.selectedPerson.indexOf(this.persons[i])] = event.value;
+                        this.persons[i] = event.value;
+                        break;
+                    }
+                }
+            } else if(event.type == "delete"){
+                for(let i = 0; i < this.persons.length; ++i){
+                    if(this.persons[i].id == event.value){
+                        this.selectedPerson.splice(this.selectedPerson.indexOf(this.persons[i]), 1);
+                        this.persons.splice(i, 1);
+                        break;
+                    }
+                }
+            }
         });
     }
 }

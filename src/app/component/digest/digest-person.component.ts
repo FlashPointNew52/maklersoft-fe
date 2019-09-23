@@ -168,10 +168,10 @@ export class DigestPersonComponent implements OnInit {
     }
 
     getMail(i) {
-        let mails;
+        let mails = [];
         if (this.person.agentId == this._sessionService.getUser().id || !this.person.agentId)
             mails = EmailBlock.getAsArray(this.person.emailBlock);
-        else
+        else if(this.person.agent && this.person.agent.emailBlock)
             mails = EmailBlock.getAsArray(this.person.agent.emailBlock);
         return mails[i] || "";
     }

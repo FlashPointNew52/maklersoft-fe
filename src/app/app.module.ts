@@ -42,7 +42,6 @@ import {StarMarkComponent} from "./component/ui-elements/star-mark";
 import {SlidingMenuComponent} from "./component/ui-elements/sliding-menu";
 import {MultiSelectComponent} from "./component/ui-elements/multiselect";
 import {UISelect} from "./component/ui/ui-select.component";
-import {UIInputLine} from "./component/ui/ui-input-line.component";
 import {DigestOfferComponent} from "./component/digest/digest-offer.component";
 import {DigestCommentComponent} from "./component/digest/digest-comment.component";
 import {UITabsMenu} from "./component/ui/ui-tabs-menu.component";
@@ -67,7 +66,6 @@ import {FormatDatePipe} from "./pipe/format-date.pipe";
 import {StrNnPipe} from "./pipe/str-nn.pipe";
 
 import {phoneBlockAsStringPipe} from "./pipe/phone-block-as-string.pipe";
-import {UiSliderLineComponent} from "./component/ui/ui-slider-line.component";
 import {CommentsViewComponent} from "./component/view/comments-view.component";
 import {RatingViewComponent} from "./component/view/rating-view.component";
 import {SelectsComponent} from "./component/ui-elements/selects";
@@ -79,7 +77,6 @@ import {SlidingTagComponent} from "./component/ui-elements/sliding-tag";
 import {InputAreaComponent} from "./component/ui-elements/input-area";
 import {FilterSelectComponent} from "./component/ui-elements/filter-select";
 import {FilterSelectTagComponent} from "./component/ui-elements/filter-select-tag";
-import {TabSystemComponent} from "./component/tab-system.component";
 import {ModalWindowComponent} from "./component/modal-window.component";
 import {AddressInputComponent} from "./component/ui-elements/address-input";
 
@@ -104,7 +101,6 @@ const appRoutes: Routes = [
         StrNnPipe,
         phoneBlockAsStringPipe,
         TabConfigComponent,
-        TabSystemComponent,
         LoginScreenComponent,
         // AdminPageComponent,
 
@@ -141,13 +137,11 @@ const appRoutes: Routes = [
         FilesView,
         AdvView,
         UISelect,
-        UIInputLine,
         UITabsMenu,
         UITab,
         UITag,
         UITagBlock,
         UIUploadFile,
-        UiSliderLineComponent,
         ViewSocialsComponent,
         OffClickDirective,
         CommentsViewComponent,

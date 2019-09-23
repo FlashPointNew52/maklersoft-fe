@@ -17,7 +17,7 @@ import {Person} from "../../entity/person";
             background-color: white;
             font-size: 12px;
             position: relative;
-            padding: 16px 20px 13px 30px; 
+            padding: 16px 20px 13px 30px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -128,7 +128,7 @@ import {Person} from "../../entity/person";
         .row5 > .price > span:first-child{
             font-size: 14px;
         }
-      
+
     `],
     template: `
         <div class="billet" id="r{{offer.id}}">
@@ -137,11 +137,11 @@ import {Person} from "../../entity/person";
                 <div class="timestamp" > {{ utils.getDateInCalendar(offer[dateType] || offer.changeDate || offer.addDate) }} </div>
                 <a *ngIf="offer.agentId || offer.personId || offer.companyId" (click)="openContact()">
                     {{utils.trancateFio(offer.agent?.name || offer.person?.name || offer.company?.name) ||
-                    ((pb.getNotNullData(offer.phoneBlock) | mask: '+0 (000) 000-00-00') || "") }}
+                    (( "+7" + pb.getNotNullData(offer.phoneBlock) | mask: '+0 (000) 000-00-00') || "") }}
                 </a>
 
                 <span *ngIf="!(offer.agentId || offer.personId || offer.companyId)">
-                    {{ pb.getNotNullData(offer?.phoneBlock) || "" | mask: '+0 (000) 000-00-00'}}
+                    {{  "+7" + pb.getNotNullData(offer?.phoneBlock) || "" | mask: '+0 (000) 000-00-00'}}
                 </span>
 
             </div>
@@ -158,7 +158,7 @@ import {Person} from "../../entity/person";
                     {{ offer.addressBlock.street === undefined ? "" : offer.addressBlock.street }}
                     {{ offer.addressBlock.building === undefined ? "" : (" " + offer.addressBlock.building) }}
                     {{ offer.addressBlock.city === undefined ? " " : ", " + offer.addressBlock.city }}
-            </div> 
+            </div>
             <div class="row4" [class.active]="active">
                     {{ offer.addressBlock.admArea === undefined ? "" : offer.addressBlock.admArea }}
                     {{ offer.addressBlock.area === undefined ? "" : ", " + offer.addressBlock.area }}

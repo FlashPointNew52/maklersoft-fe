@@ -153,6 +153,7 @@ export class Offer {
         this.locRating = new Rating();
         this.locRating.map = {average : 0};
         this.conditions = new ConditionsBlock();
+        this.agentId = null;
     }
 
     public static offerTypeCodeOptions = {

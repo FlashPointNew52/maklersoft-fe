@@ -146,34 +146,40 @@ export class Utils{
     }
 
     public findContact(structure: any, contact: any){
-        let ret_subj = <AsyncSubject<Contact>>new AsyncSubject();
-        if(Object.keys(structure).length == 0 && contact.id){
+        let ret_subj = new AsyncSubject() as  AsyncSubject<Contact>;
+        if(Object.keys(structure).length == 0 && contact.id && contact.type){
             let type = contact.type;
             contact = new Contact();
             contact.type = type;
             ret_subj.next(contact);
             ret_subj.complete();
-        } else if (!contact.id) {
+        } else {
             let phones = PhoneBlock.removeSymb(structure);
             if(PhoneBlock.check(phones)) {
                 if(contact.type == "person") {
                     this._personService.findByPhone(phones).subscribe((data) => {
                         if (data != null) {
-                            contact = data;
-                            contact.type = 'person';
+                            if(data.id != contact.id){
+                                contact = data;
+                                contact.type = 'person';
+                            }
                         } else {
                             contact.phoneBlock = structure;
+                            contact.id = null;
                         }
                         ret_subj.next(contact);
                         ret_subj.complete();
                     });
-                } else{
+                } else if(contact.type == "organisation") {
                     this._organisationService.findByPhone(phones).subscribe((data)=>{
                         if(data != null){
-                            contact = data;
-                            contact.type = 'organisation';
+                            if(data.id != contact.id){
+                                contact = data;
+                                contact.type = 'organisation';
+                            }
                         } else{
                             contact.phoneBlock = structure;
+                            contact.id = null;
                         }
                         ret_subj.next(contact);
                         ret_subj.complete();

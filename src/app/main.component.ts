@@ -105,6 +105,7 @@ export class MainComponent {
             this.calcTabHeight();
             this.clearActive();
             newTab.active = true;
+            return newTab;
         }
     }
 
@@ -116,6 +117,7 @@ export class MainComponent {
 
     closeTab(tab: Tab) {
         let idx = this.tabs.indexOf(tab);
+        tab.sendEvent();
         this.tabs.splice(idx, 1);
 
         if (this.tabs.length == 0) {

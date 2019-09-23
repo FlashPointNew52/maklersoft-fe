@@ -13,6 +13,8 @@ import * as moment from "./component/notebook/chat-view.component";
         :host {
             position: absolute;
             z-index: 9998;
+            top: 0;
+            left: 0;
         }
 
         .log_screen {

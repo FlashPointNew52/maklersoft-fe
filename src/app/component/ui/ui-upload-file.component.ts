@@ -82,7 +82,7 @@ import {HttpEventType, HttpProgressEvent} from "@angular/common/http";
             left: 40px;
             transform: rotate(90deg);
             top: 50%;
-        } 
+        }
         .add-block input {
             display: none;
         }
@@ -97,7 +97,7 @@ import {HttpEventType, HttpProgressEvent} from "@angular/common/http";
             transition: all 300ms ease-in;
             z-index: -1;
         }
-        
+
         .image_contain>.image{
             width: 175px;
             height: 130px;
@@ -184,7 +184,7 @@ export class UIUploadFile implements OnInit{
     imageLoaded: boolean = false;
     format: string;
     pattern: RegExp;
-    multiple: boolean;
+    multiple: boolean = true;
 
     @Output() addNewFile: EventEmitter<any> = new EventEmitter();
     @Output() progressState: EventEmitter<any> = new EventEmitter();
@@ -200,11 +200,9 @@ export class UIUploadFile implements OnInit{
         if(this.type == 'image'){
             this.format='image/*';
             this.pattern=/image-*/;
-            this.multiple= true;
-        }else if(this.type == 'document'){
+        }else if(this.type == 'docs'){
             this.format='application/pdf, .doc, .docx, .xls, .xlsx, .txt, .rtf, .odt';
             this.pattern=/(application\/pdf)|(application\/vnd\.openxmlformats-officedocument)|(application\/vnd\.ms-excel)|(text\/plain)|(application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet)|(application\/vnd\.oasis\.opendocument\.text)|(application\/msword)/;
-            this.multiple= true;
         }
 
     }
@@ -251,6 +249,7 @@ export class UIUploadFile implements OnInit{
                         this.progressState.emit(Math.floor(progress.loaded / progress.total*100));
                     } else if(data.type === HttpEventType.Response){
                         this.addNewFile.emit((data.body as any).files);
+                        event = null;
                     }
                 },
                 err => this._sessionService.handle_errors(err));

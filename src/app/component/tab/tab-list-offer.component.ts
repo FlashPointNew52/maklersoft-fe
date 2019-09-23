@@ -21,7 +21,7 @@ import {Utils} from "../../class/utils";
 @Component({
     selector: 'tab-list-offer',
     inputs: ['tab'],
-    styles: [` 
+    styles: [`
         input::placeholder, .input_line::placeholder{
             color: var(--dark-grey) !important;
         }
@@ -158,7 +158,7 @@ import {Utils} from "../../class/utils";
         <hr class='underline'>
         <div class="head"><span>{{tab.header}}</span></div>
 
-        <div class="pane" [style.left.px]="paneHidden ?  -340 : 30 "> 
+        <div class="pane" [style.left.px]="paneHidden ?  -340 : 30 ">
             <div class = "source_menu">
                 <div class="add"  (click)="addOffer(); workAreaMode = 'map'">ДОБАВИТЬ</div>
                 <div (click)="toggleSource('import'); workAreaMode = 'map'" class="average" [class.active]="this.source != 1">ИМПОРТ</div>
@@ -167,16 +167,16 @@ import {Utils} from "../../class/utils";
             <div class="fixed-button" (click)="toggleLeftPane()">
                 <div class="arrow" [ngClass]="{'arrow-right': paneHidden, 'arrow-left': !paneHidden}"></div>
             </div>
-            <div class="digest-list border" (contextmenu)="showContextMenu($event); contextCheck()" (offClick)="this._hubService.shared_var['cm_hidden'] = true"> 
+            <div class="digest-list border" (contextmenu)="showContextMenu($event); contextCheck()" (offClick)="this._hubService.shared_var['cm_hidden'] = true">
                 <digest-offer *ngFor="let offer of offers; let i = index" [offer]="offer"
                                 [active]="selectedOffers.indexOf(offer) > -1"
-                                [class.selected]="selectedOffers.indexOf(offer) > -1" 
+                                [class.selected]="selectedOffers.indexOf(offer) > -1"
                                 [class.alreadyAdd]="offer.offerRef && source == 0"
                                 [dateType] = "sort.changeDate ? 'changeDate' : sort.assignDate ? 'assignDate' : 'addDate'"
                                 (click)="select($event, offer, i); workAreaMode = 'map'"
                                 (contextmenu)="select($event, offer, i); contextCheck()"
-                                (dblclick)="dblClick(offer)" 
-                              
+                                (dblclick)="dblClick(offer)"
+
                 ></digest-offer>
             </div>
         </div>
@@ -342,11 +342,11 @@ export class TabListOfferComponent implements OnInit{
         let c = this;
         //let users: User[] = this._userService.listCached("", 0, "");
         let uOpt = [{class:'entry', label: "На себя", disabled: false, callback: () => {
-            this.clickMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
+            this.clickContextMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
           }}];
         for (let op of this._userService.cacheUsers){
           op.callback = () => {
-            this.clickMenu({event: "set_agent", agentId: op.value});
+            this.clickContextMenu({event: "set_agent", agentId: op.value});
           };
           uOpt.push(op);
         }
@@ -435,7 +435,7 @@ export class TabListOfferComponent implements OnInit{
                 }},
                 {class: "entry", sub_class: 'del', disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: 'Удалить',
                     callback: () => {
-                        this.clickMenu({event: "del_obj"});
+                        this.clickContextMenu({event: "del_obj"});
                     }
                 },
                 {class: "delimiter"},
@@ -468,24 +468,24 @@ export class TabListOfferComponent implements OnInit{
                 {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
                     {class: "entry", disabled: this.source == OfferSource.LOCAL, label: "Как Предложение",
                         callback: () => {
-                            this.clickMenu({event: "add_to_local"});
+                            this.clickContextMenu({event: "add_to_local"});
                         }
                     },
                     {class: "entry", disabled: false, label: "Как Контакт",
                         callback: () => {
-                            this.clickMenu({event: "add_to_person"});
+                            this.clickContextMenu({event: "add_to_person"});
                         }
                     },
                     {class: "entry", disabled: false, label: "Как Контрагент",
                         callback: () => {
-                            this.clickMenu({event: "add_to_company"});
+                            this.clickContextMenu({event: "add_to_company"});
                         }
                     },
                 ]},
                 {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить", items: [
                     {class: "entry", disabled: false, label: "Не назначено",
                       callback: () => {
-                        this.clickMenu({event: "del_agent", agent: null});
+                        this.clickContextMenu({event: "del_agent", agent: null});
                       }
                     }
                 ].concat(uOpt)},
@@ -569,8 +569,7 @@ export class TabListOfferComponent implements OnInit{
                 {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить тег", items: [
                     {class: "tag", icon: "", label: "", offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null, tag,
                         callback: (new_tag) => {
-                          console.log(new_tag);
-                          this.clickMenu({event: "set_tag", tag: new_tag});
+                          this.clickContextMenu({event: "set_tag", tag: new_tag});
                     }}
                 ]}
 
@@ -640,7 +639,8 @@ export class TabListOfferComponent implements OnInit{
     openOffer(offer: Offer) {
         let tab_sys = this._hubService.getProperty('tab_sys');
         let canEditable = this.source == OfferSource.IMPORT ? false : (this._sessionService.getUser().accountId == offer.accountId);
-        tab_sys.addTab('offer', {offer, canEditable });
+        let tab = tab_sys.addTab('offer', {offer, canEditable });
+        this.eventTabs(tab);
     }
 
     scroll(e) {
@@ -734,7 +734,8 @@ export class TabListOfferComponent implements OnInit{
 
     addOffer() {
         let tab_sys = this._hubService.getProperty('tab_sys');
-        tab_sys.addTab('offer', {offer: new Offer(), canEditable: true});
+        let tab = tab_sys.addTab('offer', {offer: new Offer(), canEditable: true});
+        this.eventTabs(tab);
     }
 
     toggleSource(s: string) {
@@ -784,7 +785,7 @@ export class TabListOfferComponent implements OnInit{
         else return '85px';
     }
 
-    clickMenu(evt: any){
+    clickContextMenu(evt: any){
         this.selectedOffers.forEach(o => {
             if(evt.event == "add_to_local"){
                 if(this.source == OfferSource.LOCAL){
@@ -852,12 +853,18 @@ export class TabListOfferComponent implements OnInit{
                 }
             } else if(evt.event == "set_agent"){
                 o.agentId = evt.agentId;
-                o.agent = null;
-                this._offerService.save(o);
+                this._offerService.save(o).subscribe(offer =>{
+                    this.offers[this.offers.indexOf(o)] = offer;
+                    this.selectedOffers[this.selectedOffers.indexOf(o)] = offer;
+                });
+
             } else if(evt.event == "del_agent"){
                 o.agentId = null;
                 o.agent = null;
-                this._offerService.save(o);
+                this._offerService.save(o).subscribe(offer =>{
+                    this.offers[this.offers.indexOf(o)] = offer;
+                    this.selectedOffers[this.selectedOffers.indexOf(o)] = offer;
+                });
             } else if(evt.event == "del_obj"){
                 this._offerService.delete(o).subscribe(
                     data => {
@@ -871,7 +878,10 @@ export class TabListOfferComponent implements OnInit{
                   this.openPopup = {visible: true, task: "photo", offer: o, value: this.source};
             } else if(evt.event == "set_tag"){
                 o.tag = evt.tag;
-                this._offerService.save(o);
+                this._offerService.save(o).subscribe(offer =>{
+                    this.offers[this.offers.indexOf(o)] = offer;
+                    this.selectedOffers[this.selectedOffers.indexOf(o)] = offer;
+                });
             } else {
                 this._offerService.save(o);
             }
@@ -917,9 +927,30 @@ export class TabListOfferComponent implements OnInit{
             this._offerService.getSimilar(this.selectedOffers[0], page, per_page).subscribe(
                 data => {
                     this.similarOffers = data.list;
-                    console.log(data);
                 },
                 err => console.log(err)
             );
+    }
+
+    private eventTabs(tab: any) {
+        tab.getEvent().subscribe(event =>{
+            if(event.type == "update"){
+                for(let i = 0; i < this.offers.length; ++i){
+                    if(this.offers[i].id == event.value.id){
+                        this.selectedOffers[this.selectedOffers.indexOf(this.offers[i])] = event.value;
+                        this.offers[i] = event.value;
+                        break;
+                    }
+                }
+            } else if(event.type == "delete"){
+                for(let i = 0; i < this.offers.length; ++i){
+                    if(this.offers[i].id == event.value){
+                        this.selectedOffers.splice(this.selectedOffers.indexOf(this.offers[i]), 1);
+                        this.offers.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        });
     }
 }

@@ -5,15 +5,11 @@ import {RequestService} from '../../service/request.service';
 
 import {Tab} from '../../class/tab';
 import {Utils} from "../../class/utils";
-import {OfferService, OfferSource} from '../../service/offer.service';
-import {Offer} from '../../entity/offer';
+import {OfferSource} from '../../service/offer.service';
 import {Request} from '../../entity/request';
 import {HubService} from "../../service/hub.service";
 import {UserService} from "../../service/user.service";
 import {SessionService} from "../../service/session.service";
-import {Person} from "../../entity/person";
-import {PhoneBlock} from "../../class/phoneBlock";
-import {Organisation} from "../../entity/organisation";
 import {PersonService} from "../../service/person.service";
 import {OrganisationService} from "../../service/organisation.service";
 
@@ -33,14 +29,14 @@ import {OrganisationService} from "../../service/organisation.service";
             border-bottom: 1px solid var(--bottom-border);
             width: 100%;
             height: 122px;
-            display: block; 
+            display: block;
         }
 
         .digest-list digest-request:last-of-type{
             border-bottom: 1px solid var(--bottom-border);
         }
 
-        .selected { 
+        .selected {
           background-color: var(--color-blue) !important;
         }
     `],
@@ -130,9 +126,9 @@ import {OrganisationService} from "../../service/organisation.service";
                 </filter-select>
                 <div class="found">Найдено: {{hitsCount+" "}}/{{" "+requests?.length }}</div>
             </div>
-        </div> 
+        </div>
 
-        <hr class='underline'> 
+        <hr class='underline'>
         <div class="head"><span>{{tab.header}}</span></div>
         <div class="pane" [style.left.px]="paneHidden ? 30 : -340">
                <div class = "source_menu">
@@ -144,12 +140,12 @@ import {OrganisationService} from "../../service/organisation.service";
                 <div class="fixed-button" (click)="toggleLeftPane()">
                     <div class="arrow" [ngClass]="{'arrow-right': paneHidden, 'arrow-left': !paneHidden}"></div>
                 </div>
-                <div class="digest-list border" (contextmenu)="showContextMenu($event)">
+                <div class="digest-list border" (contextmenu)="contextMenu($event)">
                     <digest-request *ngFor="let req of requests; let i = index" [request]="req"
                             [class.selected]="selectedRequests.indexOf(req) > -1"
                             (click)="select($event, req, i)"
                             (contextmenu)="select($event, req, i)"
-                            (dblclick)="dblClick(req)"
+                            (dblclick)="openRequest(req)"
                             [active]="selectedRequests.indexOf(req) > -1"
                     >
                     </digest-request>
@@ -264,18 +260,18 @@ export class TabListRequestComponent implements OnInit {
         this.paneHidden = !this.paneHidden;
     }
 
-    showContextMenu(e) {
+    contextMenu(e) {
         e.preventDefault();
         e.stopPropagation();
 
         let c = this;
         //let users: User[] = this._userService.listCached("", 0, "");
         let uOpt = [{class:'entry', label: "На себя", disabled: false, callback: () => {
-                this.clickMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
+                this.clickContextMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
             }}];
         for (let op of this._userService.cacheUsers){
             op.callback = () => {
-                this.clickMenu({event: "set_agent", agentId: op.value});
+                this.clickContextMenu({event: "set_agent", agentId: op.value});
             };
             uOpt.push(op);
         }
@@ -318,26 +314,26 @@ export class TabListRequestComponent implements OnInit {
                     }},
                 {class: "entry", sub_class: 'del', disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
                     callback: () => {
-                        this.clickMenu({event: "del_obj"});
+                        this.clickContextMenu({event: "del_obj"});
                     }
                 },
                 {class: "delimiter"},
                 {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
                         {class: "entry", disabled: false, label: "Как Контакт",
                             callback: () => {
-                                this.clickMenu({event: "add_to_person"});
+                                this.clickContextMenu({event: "add_to_person"});
                             }
                         },
                         {class: "entry", disabled: false, label: "Как Организацию",
                             callback: () => {
-                                this.clickMenu({event: "add_to_company"});
+                                this.clickContextMenu({event: "add_to_company"});
                             }
                         },
                     ]},
                 {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить", items: [
                         {class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
-                                this.clickMenu({event: "del_agent", agent: null});
+                                this.clickContextMenu({event: "del_agent", agent: null});
                             }
                         }
                     ].concat(uOpt)},
@@ -394,7 +390,7 @@ export class TabListRequestComponent implements OnInit {
                 {class: "submenu", disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить тег", items: [
                         {class: "tag", icon: "", label: "", offer: this.selectedRequests.length == 1 ? this.selectedRequests[0] : null, tag,
                             callback: (new_tag) => {
-                                this.clickMenu({event: "set_tag", tag: new_tag});
+                                this.clickContextMenu({event: "set_tag", tag: new_tag});
                             }}
                     ]}
 
@@ -436,7 +432,7 @@ export class TabListRequestComponent implements OnInit {
         }
     }
 
-    clickMenu(evt: any){
+    clickContextMenu(evt: any){
         this.selectedRequests.forEach(o => {
             if(evt.event == "add_to_person"){
                 if(!o.person){
@@ -473,38 +469,64 @@ export class TabListRequestComponent implements OnInit {
                 o.agentId = evt.agentId;
                 let temp_ag = o.agent;
                 o.agent = null;
-                this._requestService.save(o).subscribe(data => {
-
-                    this.requests[this.requests.indexOf(o)] = data;
-                    o = data;
+                this._requestService.save(o).subscribe(request => {
+                    this.requests[this.requests.indexOf(o)] = request;
+                    this.selectedRequests[this.selectedRequests.indexOf(o)] = request;
                 });
                 o.agent = temp_ag;
 
             } else if(evt.event == "del_agent"){
                 o.agentId = null;
                 o.agent = null;
-                this._requestService.save(o);
+                this._requestService.save(o).subscribe(request =>{
+                    this.requests[this.requests.indexOf(o)] = request;
+                    this.selectedRequests[this.selectedRequests.indexOf(o)] = request;
+                });
             } else if(evt.event == "del_obj"){
-                /*this.subscription_offer = this._requestService.delete(o).subscribe(
+                this._requestService.delete(o).subscribe(
                     data => {
-                        this.selectedRequests.splice(this.selectedRequests.indexOf(o), 1);
-                        this.requests.splice(this.requests.indexOf(o), 1);
+                            this.selectedRequests.splice(this.selectedRequests.indexOf(o), 1);
+                            this.requests.splice(this.requests.indexOf(o), 1);
                     }
-                );*/
+                );
             } else if(evt.event == "check"){
                 //this.openPopup = {visible: true, task: "check", value: PhoneBlock.getAsString(o.phoneBlock, " "), person: o.person};
             } else if(evt.event == "set_tag"){
                 o.tag = evt.tag;
-                this._requestService.save(o);
-            } else {
-                this._requestService.save(o);
+                this._requestService.save(o).subscribe(request =>{
+                    this.requests[this.requests.indexOf(o)] = request;
+                    this.selectedRequests[this.selectedRequests.indexOf(o)] = request;
+                });
             }
         });
     }
 
-    public dblClick(req: Request) {
+    public openRequest(req: Request) {
         let tabSys = this._hubService.getProperty('tab_sys');
         let canEditable = this._sessionService.getUser().accountId == req.accountId;
-        tabSys.addTab('request', {request: req, canEditable });
+        let tab = tabSys.addTab('request', {request: req, canEditable });
+        this.eventTabs(tab);
+    }
+
+    private eventTabs(tab: any) {
+        tab.getEvent().subscribe(event =>{
+            if(event.type == "update"){
+                for(let i = 0; i < this.requests.length; ++i){
+                    if(this.requests[i].id == event.value.id){
+                        this.selectedRequests[this.selectedRequests.indexOf(this.requests[i])] = event.value;
+                        this.requests[i] = event.value;
+                        break;
+                    }
+                }
+            } else if(event.type == "delete"){
+                for(let i = 0; i < this.requests.length; ++i){
+                    if(this.requests[i].id == event.value){
+                        this.selectedRequests.splice(this.selectedRequests.indexOf(this.requests[i]), 1);
+                        this.requests.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        });
     }
 }

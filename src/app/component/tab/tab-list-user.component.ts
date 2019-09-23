@@ -1,5 +1,5 @@
 import {
-    Component, OnInit, AfterViewInit,
+    Component, OnInit
 } from '@angular/core';
 
 import {HubService} from '../../service/hub.service';
@@ -8,9 +8,6 @@ import {UserService} from '../../service/user.service';
 
 import {Tab} from '../../class/tab';
 import {User} from '../../entity/user';
-import {Observable} from "rxjs";
-import {Person} from "../../entity/person";
-
 
 @Component({
     selector: 'tab-list-user',
@@ -204,7 +201,8 @@ export class TabListUserComponent implements OnInit {
 
     openUser(usr: User) {
         let tabSys = this._hubService.getProperty('tab_sys');
-        tabSys.addTab('user', {user: usr, canEditable: true});
+        let tab = tabSys.addTab('user', {user: usr, canEditable: true});
+        this.eventTabs(tab);
     }
 
     addUser() {
@@ -350,18 +348,51 @@ export class TabListUserComponent implements OnInit {
             if(evt.event == "del_agent"){
                 o.agentId = null;
                 o.agent = null;
-                this._userService.save(o);
+                this._userService.save(o).subscribe(user =>{
+                    this.users[this.users.indexOf(o)] = user;
+                    this.selectedUser[this.selectedUser.indexOf(o)] = user;
+                });
             } else if(evt.event == "del_obj"){
-
+                this._userService.delete(o).subscribe(
+                    data => {
+                        this.selectedUser.splice(this.selectedUser.indexOf(o), 1);
+                        this.users.splice(this.users.indexOf(o), 1);
+                    }
+                );
             } else if(evt.event == "check"){
 
             } else if(evt.event == "photo"){
 
             } else if(evt.event == "set_tag"){
                 o.tag = evt.tag;
-                this._userService.save(o);
+                this._userService.save(o).subscribe(user =>{
+                    this.users[this.users.indexOf(o)] = user;
+                    this.selectedUser[this.selectedUser.indexOf(o)] = user;
+                });
             } else {
 
+            }
+        });
+    }
+
+    private eventTabs(tab: any) {
+        tab.getEvent().subscribe(event =>{
+            if(event.type == "update"){
+                for(let i = 0; i < this.users.length; ++i){
+                    if(this.users[i].id == event.value.id){
+                        this.selectedUser[this.selectedUser.indexOf(this.users[i])] = event.value;
+                        this.users[i] = event.value;
+                        break;
+                    }
+                }
+            } else if(event.type == "delete"){
+                for(let i = 0; i < this.users.length; ++i){
+                    if(this.users[i].id == event.value){
+                        this.selectedUser.splice(this.selectedUser.indexOf(this.users[i]), 1);
+                        this.users.splice(i, 1);
+                        break;
+                    }
+                }
             }
         });
     }

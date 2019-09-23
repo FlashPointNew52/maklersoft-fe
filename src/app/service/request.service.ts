@@ -26,10 +26,6 @@ export class RequestService {
 
         let query = [];
 
-        let user: User = this._sessionService.getUser();
-
-        query.push('accountId=' + user.accountId);
-        query.push('userId=' + user.id);
         query.push('page=' + page);
         query.push('per_page=' + perPage);
         query.push('search_query=' + searchQuery);
@@ -104,7 +100,6 @@ export class RequestService {
 
         delete request["selected"];
         let data_str = JSON.stringify(request);
-
         let ret_subj = <AsyncSubject<Request>>new AsyncSubject();
 
         this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
@@ -121,7 +116,22 @@ export class RequestService {
                 this._sessionService.handle_errors(err);
             }
         );
-
         return ret_subj;
+    }
+
+    delete(request: Request) {
+        let ret_res = new AsyncSubject() as AsyncSubject<any>;
+
+        this._http.get(this.RS + "delete/" + request.id, {withCredentials: true}).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                ret_res.next(data);
+                ret_res.complete();
+            },
+            err => this._sessionService.handle_errors(err)
+        );
+
+        return ret_res;
     }
 }

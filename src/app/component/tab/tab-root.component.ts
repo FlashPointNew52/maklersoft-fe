@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter, Output} from "@angular/core";
 import {Tab} from '../../class/tab';
 
 
@@ -9,7 +9,7 @@ import {Tab} from '../../class/tab';
         <ng-container [ngSwitch]="tab.type">
             <tab-main [tab]="tab" *ngSwitchCase="'main'"></tab-main>
             <tab-list-offer [tab]="tab" *ngSwitchCase="'list_offer'"></tab-list-offer>
-            <tab-offer [tab]="tab" *ngSwitchCase="'offer'"></tab-offer>
+            <tab-offer [tab]="tab" *ngSwitchCase="'offer'" ></tab-offer>
             <tab-list-person [tab]="tab" *ngSwitchCase="'list_person'"></tab-list-person>
             <tab-person [tab]="tab" *ngSwitchCase="'person'"></tab-person>
             <tab-list-organisation [tab]="tab" *ngSwitchCase="'list_organisation'"></tab-list-organisation>

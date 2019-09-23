@@ -1,23 +1,17 @@
-import {Component, OnInit, OnChanges} from '@angular/core';
-import {Output,Input, EventEmitter} from '@angular/core';
+import {Component, OnInit, OnChanges} from "@angular/core";
+import {Output, Input, EventEmitter} from "@angular/core";
 import {SuggestionService} from "../../service/suggestion.service";
 import {PersonService} from "../../service/person.service";
 import {SessionService} from "../../service/session.service";
 import {UserService} from "../../service/user.service";
-import {OrganisationService} from '../../service/organisation.service';
-import {HubService} from '../../service/hub.service';
-import {Offer} from '../../entity/offer';
-import {Tab} from '../../class/tab';
-import {Person} from '../../entity/person';
-import {Organisation} from '../../entity/organisation';
-import {AddressBlock} from "../../class/addressBlock";
+import {OrganisationService} from "../../service/organisation.service";
 import {PhoneBlock} from "../../class/phoneBlock";
 
 @Component({
-    selector: 'input-line',
-    inputs: ['name', 'queryTipe', 'type', 'value', 'filter'],
+    selector: "input-line",
+    inputs: ["name", "value", "query"],
     styles: [`
-        .input_line{
+        .input_line {
             border: 0;
             height: 19px;
             text-overflow: ellipsis;
@@ -27,7 +21,7 @@ import {PhoneBlock} from "../../class/phoneBlock";
             width: 100%;
         }
 
-        .label{
+        .label {
             position: absolute;
             top: 0;
             height: 10px;
@@ -36,125 +30,101 @@ import {PhoneBlock} from "../../class/phoneBlock";
             z-index: -1;
         }
 
-        .ng-untouched + .label{
+        .ng-untouched + .label {
         }
 
-        .ng-touched + .label{
+        .ng-touched + .label {
 
         }
 
-        .focus + .label{
+        .focus + .label {
             font-size: 10px;
             top: -9px;
             transition: 0.5s;
         }
 
-        .suggestions{
+        .suggestion {
             position: absolute;
-            z-index: 999;
+            padding: 10px 0;
             background-color: var(--box-backgroung);
-            left: -47px;
-            margin-top: 34px;
-            font-size: 12px;
-            top: 0;
-            width: calc(100% + 101px);
-            padding-left: 25px;
-            box-sizing: border-box;
-            min-height: 40px;
-            text-transform: none;
+            width: calc(100% + 50px);
+            left: -25px;
+            box-shadow: 2px 5px 5px 0 var(--color-grey);
+            z-index: 99;
         }
 
-        .suggestions ul{
-            list-style-type: none;
-            padding: 0;
-            text-align: left;
-            margin: 0 0 10px 0;
-        }
-
-        .suggestions ul li{
-            cursor: default;
-        }
-        .suggestions  ul:hover {
-            background: var(--hover-menu);
-            cursor: default;
-        }
-
-        .suggestions a{
-            text-decoration: none;
-        }
-
-        .suggestions a div{
+        .suggestion > span {
+            display: block;
             color: var(--color-blue);
-            font-weight: bold;
-            font-size: 12px;
-            line-height: 14px;
+            padding: 0 48px;
+            cursor: pointer;
         }
 
-        .suggestions a div span{
-            color: var(--color-inactive);
-            font-size: 12px;
-            font-weight: initial;
+        .suggestion > span:hover {
+            background-color: var(--box-hover-element);
+
+        }
+
+        .suggestion > span > span{
+            color: inherit;
+            display: block; 
+        }
+
+        .suggestion > span > div > span{
+            display: block;
         }
     `],
     template: `
-        <input type="{{type}}" [value] = "value" class = "input_line" [(ngModel)]="searchQuery" [class.focus]="searchQuery.length > 0" (focus)="setClass($event, 'focus')" (blur)="removeClass($event, 'focus')"
-               (keyup) = "edit($event)" [class.short_field]="queryTipe"
-        >
+        <input [value]="value" class="input_line" [(ngModel)]="searchQuery"
+               [class.focus]="searchQuery.length > 0" (focus)="setClass($event, 'focus')"
+               (blur)="removeClass($event, 'focus')" (keyup)="edit()">
         <span class="label">{{name}}</span>
+        <div class="suggestion" *ngIf="query && sgList.length > 0">
+            <ng-container *ngFor="let item of sgList; let i = index">
+                <span (click)="select(item)">
+                    <span>{{item.name}}</span>
+                    <div *ngIf="this.query.type == 'person' || this.query.type == 'user'">
+                        <span class="view-value" *ngIf="item?.phoneBlock?.main">{{ "+7" + item?.phoneBlock?.main | mask: "+0 (000) 000-00-00"}}</span>
+                        <span class="view-value" *ngIf="item?.phoneBlock?.cellphone">{{ "+7" + item?.phoneBlock?.cellphone | mask: "+0 (000) 000-00-00"}}</span>
+                        <span class="view-value" *ngIf="item?.phoneBlock?.office">{{ "+7" + item?.phoneBlock?.office | mask: "+0 (000) 000-00-00"}}</span>
+                        <span class="view-value" *ngIf="item?.phoneBlock?.fax">{{ "+7" + item?.phoneBlock?.fax | mask: "+0 (000) 000-00-00"}}</span>
+                        <span class="view-value" *ngIf="item?.phoneBlock?.home">{{ "+7" + item?.phoneBlock?.home | mask: "+0 (000) 000-00-00"}}</span>
+                        <span class="view-value" *ngIf="item?.phoneBlock?.other">{{ "+7" + item?.phoneBlock?.other | mask: "+0 (000) 000-00-00"}}</span>
+                        <span class="view-value" *ngIf="item?.phoneBlock?.ip">{{ "+7" + item?.phoneBlock?.ip | mask: "+0 (000) 000-00-00"}}</span>
+                    </div>
+                </span>
+            </ng-container>
 
-        <div class="suggestions" (document:click)="docClick()" *ngIf="queryTipe && sgList.length > 0">
-                <ul *ngFor="let item of sgList; let i = index" >
-                    <li >
-                        <a (click)="select(item, $event)" *ngIf="this.queryTipe == 'address'">{{item}}</a>
-                        <a (click)="select(item, $event)" *ngIf="this.queryTipe == 'organisation'">
-                          <div>{{item.name}}</div>
-                          <div><span>{{getAddress(item.addressBlock)}}</span></div>
-                        </a>
-                        <a (click)="select(item, $event)" *ngIf="this.queryTipe == 'person'">
-                          <div>{{item.name}}</div>
-                          <div>Тел: <span>{{getPhone(item.phoneBlock)}}</span></div>
-                        </a>
-                        <a (click)="select(item, $event)" *ngIf="this.queryTipe == 'user'">
-                          <div>{{item.name}}</div>
-                          <div>Тел: <span>{{getPhone(item.phoneBlock)}}</span></div>
-                        </a>
-                    </li>
-                </ul>
         </div>
     `
 })
 
 
-export class InputLineComponent implements OnInit, OnChanges{
+export class InputLineComponent implements OnInit, OnChanges {
     public name: string;
     public value: string = "";
-    public queryTipe: string;
-    public type: string = "text";
-    public filter: any = {};
-    in_line: any;
+    public query: any;
+
     searchQuery: string = "";
-    multiselect: HTMLElement;
     sgList: any[] = [];
-    person: any;
-    organisation: any;
+    timer = null;
+
     @Output() newValue: EventEmitter<any> = new EventEmitter();
 
     constructor(private _suggestionService: SuggestionService,
                 private _personService: PersonService,
                 private _userService: UserService,
                 private _sessionService: SessionService,
-                private _organisationService: OrganisationService,
-                private _hubService: HubService,
-    ){
-
+                private _organisationService: OrganisationService
+    ) {
     }
 
     ngOnInit() {
-        this.searchQuery = this.value ? this.value.toString() : '';
+        this.searchQuery = this.value ? this.value.toString() : "";
     }
 
     ngOnChanges() {
-        this.searchQuery = this.value ? this.value.toString() : '';
+        this.searchQuery = this.value ? this.value.toString() : "";
     }
 
     setClass(event, className) {
@@ -163,164 +133,59 @@ export class InputLineComponent implements OnInit, OnChanges{
     }
 
     removeClass(event, className) {
-        if(!this.searchQuery ||  this.searchQuery.length == 0){
+        if (!this.searchQuery || this.searchQuery.length == 0) {
             let elem = event.currentTarget as HTMLElement;
             elem.classList.remove(className);
         }
-
     }
 
-    isClick(event){
-        if(this.queryTipe && this.queryTipe == "address"){
-            /*let parent: HTMLElement = (<HTMLElement>event.currentTarget).parentElement;
-            while(parent.className.indexOf('view-group')== -1 && parent.className !== null){
-                parent = parent.parentElement;
-            }
-            let field: HTMLElement = <HTMLElement>parent.getElementsByTagName('ui-multiselect').item(0);
-            if(field.style.getPropertyValue('visibility') == 'hidden'){
-                field.style.setProperty('visibility','visible');
-            } else if(field.style.getPropertyValue('visibility') == ''){
-                field.style.setProperty('visibility','hidden');
-            }
-            let height: number;
-            if(parent.getElementsByTagName('input').length > 0)
-                height = parent.getElementsByTagName('input').length * 35;
-            else
-                height = (parent.getElementsByTagName('input').length - 1) * 35;
-            if(parent.offsetHeight == 30){
-                //parent.style.setProperty('height', ""+(height+15)+'px');
-                parent.style.setProperty('overflow', "visible");
-            }*/
-        }
-    }
-
-    isClick1(event){
-        if(this.queryTipe && this.queryTipe == "address"){
-            /*let parent: HTMLElement = (<HTMLElement>event.currentTarget).parentElement;
-            while(parent.className.indexOf('view-group')== -1 && parent.className !== null){
-                parent = parent.parentElement;
-            }
-            let field: HTMLElement = <HTMLElement>parent.getElementsByTagName('ui-multiselect').item(0);
-            let inputs  = field.getElementsByTagName('input');
-            if(inputs.length < 1){
-                if(field.style.getPropertyValue('visibility') == ''){
-                    field.style.setProperty('visibility','hidden');
-                }
-                let height: number;
-
-                if(parent.getElementsByTagName('input').length > 0)
-                    height = parent.getElementsByTagName('input').length * 35;
-                    else
-                    height = (parent.getElementsByTagName('input').length - 1) * 35;
-                    if(parent.offsetHeight == 30){
-                        //parent.style.setProperty('height', ""+(height+15)+'px');
-                        parent.style.setProperty('overflow', "visible");
+    edit() {
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+            if (this.query) {
+                console.log(this.query, this.searchQuery);
+                if (this.searchQuery && this.searchQuery.trim().length > 2) {
+                    if (this.query.type) {
+                        this.sgList = [];
+                        this.searchParamChanged();
                     }
-            }*/
-        }
-    }
-
-    edit(event) {
-        /*if(this.searchQuery.length > 2){
-            this.in_line = (<HTMLElement>event.currentTarget).parentElement.parentElement;
-            this.in_line.style.setProperty('z-index', '99');
-            if(this.queryTipe){
-                this.searchParamChanged(event);
-            }
-        } else if(!this.searchQuery || this.searchQuery.length == 0){
-            if(this.queryTipe){
-                this.onChange.emit({name: "Неизвестно", id: null});
-                this.sgList = [];
-            } else {
-                this.onChange.emit("");
-            }
-
-        } else if(!this.queryTipe){
-            this.onChange.emit(this.searchQuery);
-        }*/
-        this.newValue.emit(this.searchQuery);
-    }
-
-
-
-    docClick(){
-        this.in_line.style.removeProperty('z-index');
-        this.sgList = [];
-    }
-
-    searchParamChanged(e) {
-        if (this.searchQuery && this.searchQuery.length > 0) {
-            let sq = this.searchQuery.split(" ");
-            let lp = sq.pop()
-            let q = sq.join(" ");
-            if (lp.length > 0) {
-                if(this.queryTipe == "address"){
-                    this._suggestionService.list(this.searchQuery).subscribe(sgs => {
-                        this.sgList = sgs;
-                    });
-                } else if(this.queryTipe == "person"){
-                    this._personService.list( 0, 10, 'local', this.filter, {}, this.searchQuery).subscribe(sgs => {
-                        this.sgList = sgs;
-                    });
-                } else if(this.queryTipe == "organisation"){
-                    this._organisationService.list(0, 10, 'local', this.filter,{}, this.searchQuery).subscribe(sgs => {
-                        this.sgList = sgs;
-                    });
-                } else if(this.queryTipe == "user"){
-                    this._userService.list(0, 10, this.filter,{}, this.searchQuery).subscribe(sgs => {
-                        this.sgList = sgs;
-                    });
+                } else if (!this.searchQuery || this.searchQuery && this.searchQuery.trim().length == 0) {
+                    if (this.query.type) {
+                        this.newValue.emit({name: "", id: null});
+                        this.sgList = [];
+                    } else {
+                        this.newValue.emit("");
+                    }
                 }
+            } else {
+                this.newValue.emit(this.searchQuery);
             }
-        } else if(this.queryTipe == "address"){
-            this.newValue.emit(new AddressBlock());
-            this.multiselect.style.setProperty('display','none');
+        }, 500);
+    }
+
+    searchParamChanged() {
+        if (this.query.type == "person") {
+            this._personService.list(0, 10, "local", this.query.filter, {}, this.searchQuery).subscribe(sgs => {
+                this.sgList = sgs;
+            });
+        } else if (this.query.type == "org") {
+            this._organisationService.list(0, 10, "local", this.query.filter, {}, this.searchQuery).subscribe(sgs => {
+                this.sgList = sgs;
+            });
+        } else if (this.query.type == "user") {
+            this._userService.list(0, 10, this.query.filter, {}, this.searchQuery).subscribe(sgs => {
+                this.sgList = sgs;
+            });
         }
     }
 
-    select(itm: any, event) {
-
-        if(this.queryTipe && this.queryTipe == "address"){
-            this.searchQuery = itm;
-            //this.isClick(event);
-            let fullAddress: AddressBlock =  Offer.parseAddress(itm);
-            this.newValue.emit(fullAddress);
-            if(!this.multiselect)
-                this.multiselect = <HTMLElement>(<HTMLElement>event.target).parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getElementsByTagName("UI-MULTISELECT").item(0);
-            this.multiselect.style.removeProperty('display');
-        } else if(this.queryTipe && (this.queryTipe == "person" || this.queryTipe == "organisation" || this.queryTipe == "user")){
-            this.searchQuery = itm.name;
-            this.newValue.emit(itm);
-        }
+    select(itm: any) {
+        this.searchQuery = itm.name;
+        this.newValue.emit(itm);
         this.sgList = [];
-        this.in_line.style.removeProperty('z-index');
-    }
-
-    addPerson() {
-        let tab_sys = this._hubService.getProperty('tab_sys');
-        this.person = new Person();
-        tab_sys.addTab('person', {person: this.person});
-        setTimeout(() =>{
-            this.newValue.emit(this.person);
-        }, 10000);
-
-    }
-
-    addOrganisation(){
-        let tab_sys = this._hubService.getProperty('tab_sys');
-        this.organisation = new Organisation();
-        tab_sys.addTab('organisation', {organisation: this.organisation});
-        setTimeout(() =>{
-            this.newValue.emit(this.organisation);
-        }, 10000);
-    }
-
-
-    getAddress(addressBlock: AddressBlock) {
-       return  AddressBlock.getAsString(addressBlock);
     }
 
     public getPhone(phoneBlock: any) {
-      return  PhoneBlock.getNotNullData(phoneBlock);
+        return PhoneBlock.getNotNullData(phoneBlock);
     }
 }

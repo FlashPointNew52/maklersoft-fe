@@ -196,7 +196,7 @@ export class TabListOrganisationComponent implements OnInit {
                 private _sessionService: SessionService
     ) {
         setTimeout(() => {
-            this.tab.header = "Контрагенты";
+            this.tab.header = "Организации";
         });
     }
 
@@ -293,7 +293,8 @@ export class TabListOrganisationComponent implements OnInit {
     openOrganisation(org: Organisation) {
         let tabSys = this._hubService.getProperty("tab_sys");
         let canEditable = this.source == "local" && (this._sessionService.getUser().accountId == org.accountId);
-        tabSys.addTab("organisation", {organisation: org, canEditable: canEditable});
+        let tab =  tabSys.addTab("organisation", {organisation: org, canEditable});
+        this.eventTabs(tab);
     }
 
     clickOrganisation(event: MouseEvent, org: Organisation, i: number) {
@@ -467,16 +468,49 @@ export class TabListOrganisationComponent implements OnInit {
                 o.id = null;
                 o.typeCode = "realtor";
                 o.isAccount = false;
-                this._organisationService.save(o);
+                this._organisationService.save(o).subscribe(person =>{
+                    this.organisations[this.organisations.indexOf(o)] = person;
+                    this.selectedOrg[this.selectedOrg.indexOf(o)] = person;
+                });
             } else if (evt.event == "del_obj") {
-
+                this._organisationService.delete(o).subscribe(
+                    data => {
+                        this.selectedOrg.splice(this.selectedOrg.indexOf(o), 1);
+                        this.organisations.splice(this.organisations.indexOf(o), 1);
+                    }
+                );
             } else if (evt.event == "check") {
 
             } else if (evt.event == "set_tag") {
                 o.tag = evt.tag;
-                this._organisationService.save(o);
+                this._organisationService.save(o).subscribe(person =>{
+                    this.organisations[this.organisations.indexOf(o)] = person;
+                    this.selectedOrg[this.selectedOrg.indexOf(o)] = person;
+                });
             } else {
 
+            }
+        });
+    }
+
+    private eventTabs(tab: any) {
+        tab.getEvent().subscribe(event =>{
+            if(event.type == "update"){
+                for(let i = 0; i < this.organisations.length; ++i){
+                    if(this.organisations[i].id == event.value.id){
+                        this.selectedOrg[this.selectedOrg.indexOf(this.organisations[i])] = event.value;
+                        this.organisations[i] = event.value;
+                        break;
+                    }
+                }
+            } else if(event.type == "delete"){
+                for(let i = 0; i < this.organisations.length; ++i){
+                    if(this.organisations[i].id == event.value){
+                        this.selectedOrg.splice(this.selectedOrg.indexOf(this.organisations[i]), 1);
+                        this.organisations.splice(i, 1);
+                        break;
+                    }
+                }
             }
         });
     }
