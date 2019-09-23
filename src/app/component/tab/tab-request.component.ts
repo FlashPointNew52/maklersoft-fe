@@ -1,19 +1,19 @@
 import {Component, OnInit} from "@angular/core";
-import {Tab} from '../../class/tab';
-import {Offer} from '../../entity/offer';
-import {Person} from '../../entity/person';
-import {Request, ValueRange} from '../../entity/request';
+import {Tab} from "../../class/tab";
+import {Offer} from "../../entity/offer";
+import {Person} from "../../entity/person";
+import {Request, ValueRange} from "../../entity/request";
 import {PhoneBlock} from "../../class/phoneBlock";
-import {HubService} from '../../service/hub.service';
-import {ConfigService} from '../../service/config.service';
-import {OfferService, OfferSource} from '../../service/offer.service';
-import {RequestService} from '../../service/request.service';
-import {OrganisationService} from '../../service/organisation.service';
-import {TaskService} from '../../service/task.service';
-import {HistoryService} from '../../service/history.service';
-import {PersonService} from '../../service/person.service';
-import {UserService} from '../../service/user.service';
-import {AnalysisService} from '../../service/analysis.service';
+import {HubService} from "../../service/hub.service";
+import {ConfigService} from "../../service/config.service";
+import {OfferService, OfferSource} from "../../service/offer.service";
+import {RequestService} from "../../service/request.service";
+import {OrganisationService} from "../../service/organisation.service";
+import {TaskService} from "../../service/task.service";
+import {HistoryService} from "../../service/history.service";
+import {PersonService} from "../../service/person.service";
+import {UserService} from "../../service/user.service";
+import {AnalysisService} from "../../service/analysis.service";
 import {SessionService} from "../../service/session.service";
 import {Contact} from "../../entity/contact";
 import {Organisation} from "../../entity/organisation";
@@ -21,16 +21,16 @@ import {Utils} from "../../class/utils";
 import {ObjectBlock} from "../../class/objectBlock";
 
 @Component({
-    selector: 'tab-request',
-    inputs: ['tab'],
+    selector: "tab-request",
+    inputs: ["tab"],
     styles: [`
-        .property_face > span:last-child{
+        .property_face > span:last-child {
             font-size: 12px;
             color: var(--color-inactive);
             font-style: normal;
             text-transform: uppercase;
         }
-        
+
 
         .work-area {
             float: left;
@@ -39,14 +39,14 @@ import {ObjectBlock} from "../../class/objectBlock";
             position: relative;
         }
 
-        gmap-view{
+        gmap-view {
             width: calc(100% - 370px);
             height: 100%;
             display: block;
             position: relative;
-        } 
+        }
 
-        .property_face > ui-tag{
+        .property_face > ui-tag {
             position: absolute;
             width: 5px;
             height: 100%;
@@ -55,37 +55,41 @@ import {ObjectBlock} from "../../class/objectBlock";
         }
 
         .selected {
-            background-color: var(--color-blue) 
+            background-color: var(--color-blue)
         }
-        digest-offer{
+
+        digest-offer {
             border-bottom: 1px solid var(--bottom-border);
             width: 100%;
             height: 122px;
             display: block;
         }
 
-        .digest-list digest-offer:last-of-type{
+        .digest-list digest-offer:last-of-type {
             border-bottom: 1px solid var(--bottom-border);
         }
-         
+
     `],
-    template: `        
+    template: `
         <div class="search-form" *ngIf="workAreaMode != 'photo' && workAreaMode != 'advert'">
-            <input type="text" class="input_line" placeholder="Введите текст запроса" [style.width]="'calc(100% - 108px)'"
-                [(ngModel)]="request.request" (keyup)="$event" [disabled]="!editEnabled"
+            <input type="text" class="input_line" placeholder="Введите текст запроса"
+                   [style.width]="'calc(100% - 108px)'"
+                   [(ngModel)]="request.request" (keyup)="$event" [disabled]="!editEnabled"
             ><span class="find_icon"></span>
-            <div (click)="editEnabled ? toggleDraw() : ''" class="deactivate_draw" [class.activate_draw]="mapDrawAllowed"
+            <div (click)="editEnabled ? toggleDraw() : ''" class="deactivate_draw"
+                 [class.activate_draw]="mapDrawAllowed"
                  [class.inactive_bottom]="!editEnabled"
-            >ОБВЕСТИ</div>
+            >ОБВЕСТИ
+            </div>
             <div class="tool-box" *ngIf="mode == 1">
                 <filter-select *ngIf="request.offerTypeCode == 'sale'"
-                    [name]="'Тип сделки'"
-                    [options]="[
+                               [name]="'Тип сделки'"
+                               [options]="[
                                   {value: 'sale', label: 'Продажа'},
                                   {value: 'alternative', label: 'Альтернатива'}
                     ]"
-                    [value]="{'option' : filter.offerTypeCode}"
-                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
+                               [value]="{'option' : filter.offerTypeCode}"
+                               (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
                 >
                 </filter-select>
                 <filter-select
@@ -156,23 +160,27 @@ import {ObjectBlock} from "../../class/objectBlock";
                     (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
                 >
                 </filter-select>
-                <div class="found">Найдено: {{hitsCount+" "}}/{{" "+ offers?.length }}</div>
+                <div class="found">Найдено: {{hitsCount + " "}}/{{" " + offers?.length }}</div>
             </div>
         </div>
 
-        <div class = "property_face">
+        <div class="property_face">
             <ui-tag [value]="request?.tag"></ui-tag>
             <span class="main_title">{{request.id ? 'ЗАЯВКА' : 'НОВАЯ ЗАЯВКА'}}</span>
             <span class="type_title">{{reqClass.offerTypeCodeOptions[request.offerTypeCode]?.label}}</span>
         </div>
 
         <hr class='underline'>
-        <hr class='underline progress_bar' [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
+        <hr class='underline progress_bar'
+            [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
 
         <div class="pane" [style.left.px]="paneHidden ? -339 : null">
-            <div class = "source_menu"> 
+            <div class="source_menu">
                 <div class="button" [class.active]="mode == 0" (click)="mode = 0">ЗАЯВКА</div>
-                <div class="button last" [class.active]="mode == 1" (click)="mode = 1; filter.offerTypeCode = request.offerTypeCode;workAreaMode = 'map'" style="border-right: solid rgba(59, 89, 152, 1) 1px">ПРЕДЛОЖЕНИЯ</div>
+                <div class="button last" [class.active]="mode == 1"
+                     (click)="mode = 1; filter.offerTypeCode = request.offerTypeCode;workAreaMode = 'map'"
+                     style="border-right: solid rgba(59, 89, 152, 1) 1px">ПРЕДЛОЖЕНИЯ
+                </div>
                 <div class="edit_ready" *ngIf="mode == 0">
                     <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
                     <span class="link" *ngIf="editEnabled && canEditable" (click)="save()">Готово</span>
@@ -192,34 +200,40 @@ import {ObjectBlock} from "../../class/objectBlock";
                         <div class="show_block">
                             <span>Предложение</span>
                             <span class="view-value">{{conClass.typeOptions[contact.type]?.label}}</span>
-                        </div> 
+                        </div>
                         <div class="show_block">
                             <span>{{contact.type == 'person' ? 'ФИО' : 'Название организации'}}</span>
                             <span class="view-value link">{{ contact?.name}}</span>
                         </div>
                         <div class="show_block" *ngIf="contact?.phoneBlock?.main">
                             <span>Личный телефон</span>
-                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.main | mask: "+0 (000) 000-00-00"}}</span>
+                            <span
+                                class="view-value link">{{ "+7" + contact?.phoneBlock?.main | mask: "+0 (000) 000-00-00"}}</span>
                         </div>
                         <div class="show_block" *ngIf="contact?.phoneBlock?.cellphone">
                             <span>Личный телефон</span>
-                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.cellphone | mask: "+0 (000) 000-00-00"}}</span>
+                            <span
+                                class="view-value link">{{ "+7" + contact?.phoneBlock?.cellphone | mask: "+0 (000) 000-00-00"}}</span>
                         </div>
                         <div class="show_block" *ngIf="contact?.phoneBlock?.office">
                             <span>Рабочий телефон</span>
-                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.office | mask: "+0 (000) 000-00-00"}}</span>
+                            <span
+                                class="view-value link">{{ "+7" + contact?.phoneBlock?.office | mask: "+0 (000) 000-00-00"}}</span>
                         </div>
                         <div class="show_block" *ngIf="contact?.phoneBlock?.fax">
                             <span>Рабочий телефон</span>
-                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.fax | mask: "+0 (000) 000-00-00"}}</span>
+                            <span
+                                class="view-value link">{{ "+7" + contact?.phoneBlock?.fax | mask: "+0 (000) 000-00-00"}}</span>
                         </div>
                         <div class="show_block" *ngIf="contact?.phoneBlock?.home">
                             <span>Домашний телефон</span>
-                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.home | mask: "+0 (000) 000-00-00"}}</span>
+                            <span
+                                class="view-value link">{{ "+7" + contact?.phoneBlock?.home | mask: "+0 (000) 000-00-00"}}</span>
                         </div>
                         <div class="show_block" *ngIf="contact?.phoneBlock?.other">
                             <span>Другой телефон</span>
-                            <span class="view-value link">{{ "+7" + contact?.phoneBlock?.other | mask: "+0 (000) 000-00-00"}}</span>
+                            <span
+                                class="view-value link">{{ "+7" + contact?.phoneBlock?.other | mask: "+0 (000) 000-00-00"}}</span>
                         </div>
                         <div class="show_block" *ngIf="contact?.phoneBlock?.ip">
                             <span>Внутренний телефон</span>
@@ -267,7 +281,8 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                         <div class="show_block">
                             <span>Источник</span>
-                            <span class="view-value">{{ canEditable ? conClass.sourceCodeOptions[contact?.sourceCode]?.label : "Общая база"}}</span>
+                            <span
+                                class="view-value">{{ canEditable ? conClass.sourceCodeOptions[contact?.sourceCode]?.label : "Общая база"}}</span>
                         </div>
                         <div class="show_block">
                             <span>Статус</span>
@@ -287,7 +302,8 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                         <div class="show_block">
                             <span>Сделка</span>
-                            <span class="view-value">{{ reqClass.offerTypeCodeOptions[request.offerTypeCode]?.label}}</span>
+                            <span
+                                class="view-value">{{ reqClass.offerTypeCodeOptions[request.offerTypeCode]?.label}}</span>
                         </div>
                         <div class="show_block">
                             <span>Стадия заявки</span>
@@ -295,10 +311,11 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                         <div class="show_block">
                             <span>Ответственный</span>
-                            <span class="view-value link">{{ request.agent?.name}}</span>
+                            <span class="view-value"
+                                  [class.link]="request.agentId">{{ request.agent?.name || 'Не назначено'}}</span>
                         </div>
                         <ng-container *ngIf="block.getAsArray(request.contractBlock)?.length == 0">
-                            <div class="show_block" >
+                            <div class="show_block">
                                 <span>Договор</span>
                                 <span class="view-value">Нет</span>
                             </div>
@@ -310,7 +327,8 @@ import {ObjectBlock} from "../../class/objectBlock";
                             </div>
                             <div class="show_block" *ngIf="request?.contractBlock?.begin || request.contractBlock?.end">
                                 <span>Действие договора</span>
-                                <span class="view-value">{{ request.contractBlock?.begin}}-{{request.contractBlock?.end}}</span>
+                                <span class="view-value">{{ request.contractBlock?.begin}}
+                                    -{{request.contractBlock?.end}}</span>
                             </div>
                             <div class="show_block" *ngIf="request?.contractBlock?.continued">
                                 <span>Договор продлён</span>
@@ -323,12 +341,13 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </ng-container>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
-                        <sliding-menu [name] = "'Предложение'" [options]="conClass.typeOptions"
+                        <sliding-menu [name]="'Предложение'" [options]="conClass.typeOptions"
                                       [value]="contact?.type"
-                                      (result) = "contact.type = $event"
+                                      (result)="contact.type = $event"
                         ></sliding-menu>
-                        <input-line [name]="contact.type == 'person' ? 'ФИО' : 'Название организации'" [value]="contact?.name"
-                               (newValue)="contact.name = $event"
+                        <input-line [name]="contact.type == 'person' ? 'ФИО' : 'Название организации'"
+                                    [value]="contact?.name"
+                                    (newValue)="contact.name = $event"
                         ></input-line>
                         <multiselect-menu
                             [name]="'Телефон контакта'" [block]="contact?.phoneBlock" [addName]="'Добавить телефон'"
@@ -376,37 +395,37 @@ import {ObjectBlock} from "../../class/objectBlock";
                                     }"
                             (newData)="contact.socialBlock = $event"
                         ></multiselect-menu>
-                        <sliding-menu [name] = "'Источник'" [options]="conClass.sourceCodeOptions"
+                        <sliding-menu [name]="'Источник'" [options]="conClass.sourceCodeOptions"
                                       [value]="contact?.sourceCode"
-                                      (result)= "contact.sourceCode = $event"
+                                      (result)="contact.sourceCode = $event"
                         ></sliding-menu>
-                        <sliding-menu [name] = "'Статус'" [options]="conClass.middlemanOptions"
+                        <sliding-menu [name]="'Статус'" [options]="conClass.middlemanOptions"
                                       [value]="contact.isMiddleman ? 'middleman' : 'owner'"
-                                      (result)= "contact.isMiddleman = $event == 'middleman'"
+                                      (result)="contact.isMiddleman = $event == 'middleman'"
                         ></sliding-menu>
-                        <sliding-menu [name] = "'Тип контакта'" [options]="conClass.typeCodeOptions"
+                        <sliding-menu [name]="'Тип контакта'" [options]="conClass.typeCodeOptions"
                                       [value]="contact?.typeCode"
-                                      (result) = "contact.typeCode = $event"
+                                      (result)="contact.typeCode = $event"
                         ></sliding-menu>
-                        <sliding-menu [name] = "'Лояльность'" [options]="conClass.loyaltyOptions"
+                        <sliding-menu [name]="'Лояльность'" [options]="conClass.loyaltyOptions"
                                       [value]="contact?.loyalty"
-                                      (result) = "contact.loyalty = $event"
+                                      (result)="contact.loyalty = $event"
                         ></sliding-menu>
-                        <sliding-menu [name] = "'Стадия контакта'" [options]="conClass.stageCodeOptions"
+                        <sliding-menu [name]="'Стадия контакта'" [options]="conClass.stageCodeOptions"
                                       [value]="contact?.stageCode"
-                                      (result) = "contact.stageCode = $event"
+                                      (result)="contact.stageCode = $event"
                         ></sliding-menu>
-                        <sliding-menu [name]  = "'Сделка'" [options]="reqClass.offerTypeCodeOptions"
-                                      [value] = "request?.offerTypeCode"
-                                      (result)= "request.offerTypeCode = $event"
+                        <sliding-menu [name]="'Сделка'" [options]="reqClass.offerTypeCodeOptions"
+                                      [value]="request?.offerTypeCode"
+                                      (result)="request.offerTypeCode = $event"
                         ></sliding-menu>
-                        <sliding-menu [name] = "'Стадия заявки'" [options]="reqClass.stageCodeOptions"
+                        <sliding-menu [name]="'Стадия заявки'" [options]="reqClass.stageCodeOptions"
                                       [value]="request?.stageCode"
-                                      (result) = "request.stageCode = $event"
+                                      (result)="request.stageCode = $event"
                         ></sliding-menu>
-                        <sliding-menu [name] = "'Ответственный'" [options]="agentOpts"
-                                      [value]="request?.agentId"
-                                      (result) = "agentChanged($event)"
+                        <sliding-menu [name]="'Ответственный'" [options]="agentOpts"
+                                      [value]="request?.agentId || null"
+                                      (result)="agentChanged($event)"
                         ></sliding-menu>
                         <multiselect-menu
                             [name]="'Договор'" [block]="request?.contractBlock" [addName]="'Добавить данные'"
@@ -439,21 +458,26 @@ import {ObjectBlock} from "../../class/objectBlock";
                             <span>Рейтинг</span>
                             <span class="view-value">{{ request?.rate}}</span>
                         </div>
-                        
+
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <div class="show_block">
                             <span>Новостройка</span>
-                            <switch-button [value]="request?.newBuilding" (newValue)="request.newBuilding = $event"></switch-button>
+                            <switch-button [value]="request?.newBuilding"
+                                           (newValue)="request.newBuilding = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Обременение</span>
-                            <switch-button [value]="request?.encumbrance" (newValue)="request.encumbrance = $event"></switch-button>
+                            <switch-button [value]="request?.encumbrance"
+                                           (newValue)="request.encumbrance = $event"></switch-button>
                         </div>
-                        <input-line [name]="'Год постройки'" [value]="request?.buildYear" (newValue)="request.buildYear = $event"></input-line>
-                        <input-line [name]="'Рейтинг'" [value]="request?.rate" (newValue)="request.rate = $event"></input-line>
+                        <input-line [name]="'Год постройки'" [value]="request?.buildYear"
+                                    (newValue)="request.buildYear = $event"></input-line>
+                        <input-line [name]="'Рейтинг'" [value]="request?.rate"
+                                    (newValue)="request.rate = $event"></input-line>
                     </ng-container>
-                    <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="!editEnabled" (newValue)="request.description = $event" [update]="update"></input-area>
+                    <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="!editEnabled"
+                                (newValue)="request.description = $event" [update]="update"></input-area>
                 </ui-tab>
                 <ui-tab [title]="'УСЛОВИЯ'" *ngIf="request.offerTypeCode == 'rent'" (tabSelect)="update = {}">
                     <ng-container *ngIf="!editEnabled">
@@ -470,21 +494,28 @@ import {ObjectBlock} from "../../class/objectBlock";
                             <span>Рейтинг</span>
                             <span class="view-value">{{ request?.rate}}</span>
                         </div>
-                        <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="true" [update]="update"></input-area>
+                        <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="true"
+                                    [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <conditions-switches [block]="request.conditions" [disabled]="false"></conditions-switches>
-                        <input-line [name]="'Дата заезда'" [value]="request?.arrival_date" (newValue)="request.arrival_date = $event"></input-line>
-                        <input-line [name]="'Период проживания'" [value]="request?.period" (newValue)="request.period = $event"></input-line>
-                        <input-line [name]="'Рейтинг'" [value]="request?.rate" (newValue)="request.rate = $event"></input-line>
-                        <input-area [name]="'Дополнительно'" [value]="request?.description" (newValue)="request.description = $event" [update]="update"></input-area>
+                        <input-line [name]="'Дата заезда'" [value]="request?.arrival_date"
+                                    (newValue)="request.arrival_date = $event"></input-line>
+                        <input-line [name]="'Период проживания'" [value]="request?.period"
+                                    (newValue)="request.period = $event"></input-line>
+                        <input-line [name]="'Рейтинг'" [value]="request?.rate"
+                                    (newValue)="request.rate = $event"></input-line>
+                        <input-area [name]="'Дополнительно'" [value]="request?.description"
+                                    (newValue)="request.description = $event" [update]="update"></input-area>
                     </ng-container>
                 </ui-tab>
                 <ui-tab [title]="'БЮДЖЕТ'" *ngIf="request.offerTypeCode != 'rent'" (tabSelect)="update = {}">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Бюджет</span>
-                            <span class="view-value">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}} руб.</span>
+                            <span
+                                class="view-value">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}}
+                                руб.</span>
                         </div>
                         <div class="show_block">
                             <span>Наличные</span>
@@ -506,7 +537,8 @@ import {ObjectBlock} from "../../class/objectBlock";
                             <span>Комиссия</span>
                             <switch-button [value]="request?.commission" [disabled]="true"></switch-button>
                         </div>
-                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" [disabled]="true" [update]="update"></input-area>
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" [disabled]="true"
+                                    [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <div class="show_block">
@@ -515,32 +547,40 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                         <div class="show_block">
                             <span>Ипотека</span>
-                            <switch-button [value]="request?.mortgage" (newValue)="request.mortgage = $event"></switch-button>
+                            <switch-button [value]="request?.mortgage"
+                                           (newValue)="request.mortgage = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Сертификат</span>
-                            <switch-button [value]="request?.certificate" (newValue)="request.certificate = $event"></switch-button>
+                            <switch-button [value]="request?.certificate"
+                                           (newValue)="request.certificate = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Материнский капитал</span>
-                            <switch-button [value]="request?.maternalCapital" (newValue)="request.maternalCapital = $event"></switch-button>
+                            <switch-button [value]="request?.maternalCapital"
+                                           (newValue)="request.maternalCapital = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Комиссия</span>
-                            <switch-button [value]="request?.commission" (newValue)="request.commission = $event"></switch-button>
+                            <switch-button [value]="request?.commission"
+                                           (newValue)="request.commission = $event"></switch-button>
                         </div>
-                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" (newValue)="request.costInfo = $event" [update]="update"></input-area>
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo"
+                                    (newValue)="request.costInfo = $event" [update]="update"></input-area>
                     </ng-container>
                 </ui-tab>
                 <ui-tab [title]="'БЮДЖЕТ'" *ngIf="request.offerTypeCode == 'rent'" (tabSelect)="update={}">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Бюджет</span>
-                            <span class="view-value">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}} руб.</span>
+                            <span
+                                class="view-value">{{utils.getNumWithWhitespace(valRange.getHuman(request?.budget, 1000))}}
+                                руб.</span>
                         </div>
                         <div class="show_block">
                             <span>Форма оплаты</span>
-                            <span class="view-value">{{reqClass.paymentMethodOptions[request?.paymentMethod]?.label}}</span>
+                            <span
+                                class="view-value">{{reqClass.paymentMethodOptions[request?.paymentMethod]?.label}}</span>
                         </div>
                         <div class="show_block">
                             <span>Комунальные платежи</span>
@@ -558,51 +598,67 @@ import {ObjectBlock} from "../../class/objectBlock";
                             <span>Комиссия</span>
                             <switch-button [value]="request?.commission" [disabled]="true"></switch-button>
                         </div>
-                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" [disabled]="true" [update]="update"></input-area>
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" [disabled]="true"
+                                    [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
-                        <sliding-menu [name] = "'Форма оплаты'" [options]="reqClass.paymentMethodOptions"
+                        <sliding-menu [name]="'Форма оплаты'" [options]="reqClass.paymentMethodOptions"
                                       [value]="request?.paymentMethod"
-                                      (result) = "request.paymentMethod = $event"
+                                      (result)="request.paymentMethod = $event"
                         ></sliding-menu>
                         <div class="show_block">
                             <span>Комунальные платежи</span>
-                            <switch-button [value]="request?.utilityBills" (newValue)="request.utilityBills = $event"></switch-button>
+                            <switch-button [value]="request?.utilityBills"
+                                           (newValue)="request.utilityBills = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Счетчики</span>
-                            <switch-button [value]="request?.counters" (newValue)="request.counters = $event"></switch-button>
+                            <switch-button [value]="request?.counters"
+                                           (newValue)="request.counters = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Депозит</span>
-                            <switch-button [value]="request?.deposit" (newValue)="request.deposit = $event"></switch-button>
+                            <switch-button [value]="request?.deposit"
+                                           (newValue)="request.deposit = $event"></switch-button>
                         </div>
                         <div class="show_block">
                             <span>Комиссия</span>
-                            <switch-button [value]="request?.commission" (newValue)="request.commission = $event"></switch-button>
+                            <switch-button [value]="request?.commission"
+                                           (newValue)="request.commission = $event"></switch-button>
                         </div>
-                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" (newValue)="request.costInfo = $event" [update]="update"></input-area>
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo"
+                                    (newValue)="request.costInfo = $event" [update]="update"></input-area>
                     </ng-container>
                 </ui-tab>
                 <div more class="more">ЕЩЁ...
                     <div>
                         <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Карта</div>
-                        <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на ипотеку</div>
+                        <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на
+                            ипотеку
+                        </div>
                         <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
-                        <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">Заметки</div>
-                        <div (click)="openNotebook('daily', $event)" [class.selected]="workAreaMode == 'daily'">Ежедневник</div>
+                        <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">
+                            Заметки
+                        </div>
+                        <div (click)="openNotebook('daily', $event)" [class.selected]="workAreaMode == 'daily'">
+                            Ежедневник
+                        </div>
                         <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
-                        <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">IP-телефония</div>
-                        <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка</div>
+                        <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">
+                            IP-телефония
+                        </div>
+                        <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка
+                        </div>
                         <div (click)="workAreaMode = 'report'" [class.selected]="workAreaMode == 'report'">Отчет</div>
-                        <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История</div>
-                        
-                        <div class="delete" (click)="$event">Удалить заявку</div>
+                        <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История
+                        </div>
+
+                        <div class="delete" (click)="delete()">Удалить заявку</div>
                     </div>
                 </div>
             </ui-tabs-menu>
             <div class="digest-list" (contextmenu)="showContextMenu($event)" *ngIf="mode == 1">
-            <!--TODO: Нужно потом переделать в нормальном виде-->
+                <!--TODO: Нужно потом переделать в нормальном виде-->
                 <ui-tabs-menu>
                     <ui-tab [title]="'ОБЩАЯ БАЗА'" (tabSelect)="source = 0 ; getOffers();">
                         <digest-offer *ngFor="let offer of offers; let i = index" [offer]="offer"
@@ -624,28 +680,30 @@ import {ObjectBlock} from "../../class/objectBlock";
                     </ui-tab>
                 </ui-tabs-menu>
             </div>
-        </div> 
+        </div>
 
         <div class="work-area">
             <ng-container [ngSwitch]="workAreaMode">
-                <yamap-view *ngSwitchCase="'map'" [drawMap] = "mapDrawAllowed"
-                            (drawFinished) = "request.searchArea = $event.coords"
-                    [searchArea] = "request.searchArea" [offers] = "offers"
+                <yamap-view *ngSwitchCase="'map'" [drawMap]="mapDrawAllowed"
+                            (drawFinished)="request.searchArea = $event.coords"
+                            [searchArea]="request.searchArea" [offers]="offers"
                 >
                 </yamap-view>
-                <files-view *ngSwitchCase="'doc'" [files]="request.documents" [full]="paneHidden" [type]="'doc'" [editMode]="editEnabled"
-                            (add)="addFile($event, 'doc')" (delete)="request.documents = $event" (progressLoad)="displayProgress($event)"></files-view>
+                <files-view *ngSwitchCase="'doc'" [files]="request.documents" [full]="paneHidden" [type]="'doc'"
+                            [editMode]="editEnabled"
+                            (add)="addFile($event, 'doc')" (delete)="request.documents = $event"
+                            (progressLoad)="displayProgress($event)"></files-view>
             </ng-container>
         </div>
     `
 })
 
-export class TabRequestComponent implements OnInit{
+export class TabRequestComponent implements OnInit {
     public tab: Tab;
     public request: Request = new Request();
     mode: number = 0;
     progressWidth: number = 0;
-    workAreaMode: string = 'map';
+    workAreaMode: string = "map";
     canEditable: boolean = true;
     page: number = 0;
     source: OfferSource = OfferSource.LOCAL;
@@ -657,7 +715,7 @@ export class TabRequestComponent implements OnInit{
     hitsCount: number = 0;
 
     conClass = Contact;
-    reqClass  = Request;
+    reqClass = Request;
     block = ObjectBlock;
     utils = Utils;
     utilsObj = null;
@@ -668,10 +726,10 @@ export class TabRequestComponent implements OnInit{
     };
 
     filter: any = {
-        agentId: 'all',
-        stateCode: 'all',
-        tag: 'all',
-        offerTypeCode: 'sale',
+        agentId: "all",
+        stateCode: "all",
+        tag: "all",
+        offerTypeCode: "sale"
     };
 
     editEnabled: boolean = false;
@@ -692,17 +750,17 @@ export class TabRequestComponent implements OnInit{
                 private _sessionService: SessionService,
                 private _organisationService: OrganisationService
     ) {
-        this.utilsObj = new Utils(_sessionService, _personService,_organisationService);
+        this.utilsObj = new Utils(_sessionService, _personService, _organisationService);
         this.agentOpts[this._sessionService.getUser().id] = {label: this._sessionService.getUser().name};
-        for(let user of _userService.cacheUsers){
+        for (let user of _userService.cacheUsers) {
             this.agentOpts[user.value] = {label: user.label};
         }
 
         setTimeout(() => {
             if (this.request.id) {
-                this.tab.header = 'Заявка';
+                this.tab.header = "Заявка";
             } else {
-                this.tab.header = 'Новая заявка';
+                this.tab.header = "Новая заявка";
             }
         });
     }
@@ -710,33 +768,35 @@ export class TabRequestComponent implements OnInit{
     ngOnInit() {
         this.request = this.tab.args.request;
         this.canEditable = this.tab.args.canEditable;
-        if(this.request.id == null) {
+        if (this.request.id == null) {
             this.editEnabled = true;
         }
 
-        if(this.request.person){
+        if (this.request.person) {
             this.contact = this.request.person;
             this.contact.type = "person";
-        } else if(this.request.company){
+        } else if (this.request.company) {
             this.contact = this.request.company;
             this.contact.type = "organisation";
         }
     }
 
     agentChanged(event) {
-        this.request.agentId = event;
-        if(this.request.agentId != null) {
+        this.request.agentId = event == "null" ? null : event;
+        if (this.request.agentId != null) {
             this._userService.get(this.request.agentId).subscribe(agent => {
                 this.request.agent = agent;
             });
         }
     }
+
     openNotebook(name, event) {
-        let block = this._hubService.getProperty('notebook');
+        let block = this._hubService.getProperty("notebook");
 
         block.setMode(name, event);
         block.setShow(true, event);
     }
+
     toggleLeftPane() {
         this.paneHidden = !this.paneHidden;
     }
@@ -758,9 +818,9 @@ export class TabRequestComponent implements OnInit{
         if (!this.chechForm())
             return;
 
-        if(this.contact.type == 'person'){
+        if (this.contact.type == "person") {
             this._personService.save(this.contact as Person).subscribe(person => {
-                if(person) {
+                if (person) {
                     this.request.personId = person.id;
                     this.request.person = person;
                     delete this.request.company;
@@ -768,16 +828,16 @@ export class TabRequestComponent implements OnInit{
                     this.contact = person;
                     this.contact.type = "person";
                     this._requestService.save(this.request).subscribe(request => {
-                        setTimeout(() => {
-                            this.request = request;
-                        });
+                        this.request = request;
+                        this.tab.setEvent({type: 'update', value: this.request});
+
                         this.toggleEdit();
                     });
                 }
             });
-        } else{
+        } else {
             this._organisationService.save(this.contact as Organisation).subscribe(org => {
-                if(org) {
+                if (org) {
                     this.request.companyId = org.id;
                     this.request.company = org;
                     delete this.request.person;
@@ -787,28 +847,29 @@ export class TabRequestComponent implements OnInit{
                     this._requestService.save(this.request).subscribe(request => {
                         setTimeout(() => {
                             this.request = request;
+                            this.tab.setEvent({type: 'update', value: this.request});
                         });
                         this.toggleEdit();
                     });
                 }
             });
-       }
+        }
     }
 
-    chechForm(){
-        if (this.request.request.length < 1){
+    chechForm() {
+        if (this.request.request.length < 1) {
             alert("Введите текст запроса");
             return false;
         }
-        if(PhoneBlock.getNotNullData(this.contact.phoneBlock) == ""){
+        if (PhoneBlock.getNotNullData(this.contact.phoneBlock) == "") {
             alert("Не указан контактный телефон");
             return false;
         }
-        if(!PhoneBlock.check(PhoneBlock.removeSymb(this.contact.phoneBlock))){
+        if (!PhoneBlock.check(PhoneBlock.removeSymb(this.contact.phoneBlock))) {
             alert("Один из телефонов указан неверно");
             return false;
         }
-        if(!this.contact.name || this.contact.name.length < 5){
+        if (!this.contact.name || this.contact.name.length < 5) {
             alert("Не указано имя контакта или имя слишком короткое");
             return false;
         }
@@ -818,7 +879,7 @@ export class TabRequestComponent implements OnInit{
     getOffers() {
         this.offers = [];
         this.selectedOffers = [];
-        this._offerService.list(0, 100, this.source, this.filter,null, this.request.request, this.request.searchArea).subscribe(
+        this._offerService.list(0, 100, this.source, this.filter, null, this.request.request, this.request.searchArea).subscribe(
             offers => {
                 this.offers = offers.list;
             },
@@ -826,13 +887,15 @@ export class TabRequestComponent implements OnInit{
         );
     }
 
-    displayProgress(event){
+    displayProgress(event) {
         this.progressWidth = event;
-        if(event == 100) setTimeout(()=>{this.progressWidth = 0;}, 3000);
+        if (event == 100) setTimeout(() => {
+            this.progressWidth = 0;
+        }, 3000);
     }
 
-    addFile(event, array){
-        if(array == 'doc')
+    addFile(event, array) {
+        if (array == "doc")
             this.request.documents.length > 0 ? this.request.documents.push(event) : this.request.documents = event;
     }
 
@@ -842,10 +905,12 @@ export class TabRequestComponent implements OnInit{
 
         let c = this;
         //let users: User[] = this._userService.listCached("", 0, "");
-        let uOpt = [{class:'entry', label: "На себя", disabled: false, callback: () => {
+        let uOpt = [{
+            class: "entry", label: "На себя", disabled: false, callback: () => {
                 this.clickMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
-            }}];
-        for (let op of this._userService.cacheUsers){
+            }
+        }];
+        for (let op of this._userService.cacheUsers) {
             op.callback = () => {
                 this.clickMenu({event: "set_agent", agentId: op.value});
             };
@@ -854,16 +919,17 @@ export class TabRequestComponent implements OnInit{
 
         let stateOpt = [];
         let states = [
-            {value: 'raw', label: 'Не активен'},
-            {value: 'active', label: 'Активен'},
-            {value: 'work', label: 'В работе'},
-            {value: 'suspended', label: 'Приостановлен'},
-            {value: 'archive', label: 'Архив'}
+            {value: "raw", label: "Не активен"},
+            {value: "active", label: "Активен"},
+            {value: "work", label: "В работе"},
+            {value: "suspended", label: "Приостановлен"},
+            {value: "archive", label: "Архив"}
         ];
 
         states.forEach(s => {
             stateOpt.push(
-                {class: "entry", disabled: false, label: s.label, callback: () => {
+                {
+                    class: "entry", disabled: false, label: s.label, callback: () => {
                         c.selectedOffers.forEach(o => {
                             o.stageCode = s.value;
                             c._offerService.save(o);
@@ -878,99 +944,136 @@ export class TabRequestComponent implements OnInit{
             pY: e.pageY,
             scrollable: false,
             items: [
-                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: 'Проверить', callback: () => {
+                {
+                    class: "entry",
+                    disabled: this.selectedOffers.length != 1,
+                    icon: "",
+                    label: "Проверить",
+                    callback: () => {
 
-                    }},
-                {class: "entry", disabled: false, icon: "", label: 'Открыть', callback: () => {
-                        let tab_sys = this._hubService.getProperty('tab_sys');
+                    }
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: "Открыть", callback: () => {
+                        let tab_sys = this._hubService.getProperty("tab_sys");
                         this.selectedOffers.forEach(o => {
-                            let canEditable =  this._sessionService.getAccount().id == o.accountId;
-                            tab_sys.addTab('offer', {offer: o, canEditable});
+                            let canEditable = this._sessionService.getAccount().id == o.accountId;
+                            tab_sys.addTab("offer", {offer: o, canEditable});
                         });
-                    }},
-                {class: "entry", disabled:  !this.utilsObj.canImpact(this.selectedOffers), icon: "", label: 'Удалить',
+                    }
+                },
+                {
+                    class: "entry", disabled: !this.utilsObj.canImpact(this.selectedOffers), icon: "", label: "Удалить",
                     callback: () => {
                         this.clickMenu({event: "del_obj"});
                     }
                 },
                 {class: "delimiter"},
-                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
-                        {class: "entry", disabled: false, label: "Как Контакт",
+                {
+                    class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
+                        {
+                            class: "entry", disabled: false, label: "Как Контакт",
                             callback: () => {
                                 this.clickMenu({event: "add_to_person"});
                             }
                         },
-                        {class: "entry", disabled: false, label: "Как Организацию",
+                        {
+                            class: "entry", disabled: false, label: "Как Организацию",
                             callback: () => {
                                 this.clickMenu({event: "add_to_company"});
                             }
-                        },
-                    ]},
-                {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedOffers), icon: "", label: "Назначить", items: [
-                        {class: "entry", disabled: false, label: "Не назначено",
+                        }
+                    ]
+                },
+                {
+                    class: "submenu",
+                    disabled: !this.utilsObj.canImpact(this.selectedOffers),
+                    icon: "",
+                    label: "Назначить",
+                    items: [
+                        {
+                            class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
                                 this.clickMenu({event: "del_agent", agent: null});
                             }
                         }
-                    ].concat(uOpt)},
-                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: [
-
-                    ]},
-                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: [
-
-                    ]},
+                    ].concat(uOpt)
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: []
+                },
+                {
+                    class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: []
+                },
                 {class: "delimiter"},
-                {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
+                {
+                    class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
                         {class: "entry", disabled: false, label: "Email1"},
                         {class: "entry", disabled: false, label: "Email2"},
-                        {class: "entry", disabled: false, label: "Email3"},
-                    ]},
-                {class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
+                        {class: "entry", disabled: false, label: "Email3"}
+                    ]
+                },
+                {
+                    class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
                         {class: "entry", disabled: false, label: "Номер1"},
                         {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"},
-                    ]},
-                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
+                        {class: "entry", disabled: false, label: "Номер3"}
+                    ]
+                },
+                {
+                    class: "submenu", disabled: false, icon: "", label: "Позвонить", items: [
                         {class: "entry", disabled: false, label: "Номер1"},
                         {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"},
-                    ]},
-                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: [
-
-                    ]},
+                        {class: "entry", disabled: false, label: "Номер3"}
+                    ]
+                },
+                {
+                    class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: []
+                },
                 {class: "delimiter"},
-                {class: "submenu", disabled:  !this.utilsObj.canImpact(this.selectedOffers), icon: "", label: "Назначить тег", items: [
-                        {class: "tag", icon: "", label: "", offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null, tag,
+                {
+                    class: "submenu",
+                    disabled: !this.utilsObj.canImpact(this.selectedOffers),
+                    icon: "",
+                    label: "Назначить тег",
+                    items: [
+                        {
+                            class: "tag",
+                            icon: "",
+                            label: "",
+                            offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null,
+                            tag,
                             callback: (new_tag) => {
                                 this.clickMenu({event: "set_tag", tag: new_tag});
-                            }}
-                    ]}
+                            }
+                        }
+                    ]
+                }
 
             ]
         };
 
-        this._hubService.shared_var['cm'] = menu;
-        this._hubService.shared_var['cm_hidden'] = false;
+        this._hubService.shared_var["cm"] = menu;
+        this._hubService.shared_var["cm_hidden"] = false;
     }
 
-    clickMenu(evt: any){
+    clickMenu(evt: any) {
         this.selectedOffers.forEach(offer => {
-            if(evt.event == "add_to_person"){
-                if(!offer.person){
-                     let pers: Person = new Person();
-                     pers.phoneBlock = PhoneBlock.toFormat(offer.phoneBlock);
-                     this._personService.save(pers).subscribe(
-                         data => {
-                             offer.person = data;
-                             offer.personId = data.id;
-                             let tabSys = this._hubService.getProperty('tab_sys');
-                             tabSys.addTab('person', {person: offer.person, canEditable: true});
-                         }
-                     );
+            if (evt.event == "add_to_person") {
+                if (!offer.person) {
+                    let pers: Person = new Person();
+                    pers.phoneBlock = PhoneBlock.toFormat(offer.phoneBlock);
+                    this._personService.save(pers).subscribe(
+                        data => {
+                            offer.person = data;
+                            offer.personId = data.id;
+                            let tabSys = this._hubService.getProperty("tab_sys");
+                            tabSys.addTab("person", {person: offer.person, canEditable: true});
+                        }
+                    );
                 }
-            }
-            else if(evt.event == "add_to_company"){
-                if(!offer.person && !offer.company && offer.phoneBlock.main){
+            } else if (evt.event == "add_to_company") {
+                if (!offer.person && !offer.company && offer.phoneBlock.main) {
                     let org: Organisation = new Organisation();
                     org.phoneBlock = PhoneBlock.toFormat(offer.phoneBlock);
 
@@ -978,29 +1081,29 @@ export class TabRequestComponent implements OnInit{
                         data => {
                             offer.company = data;
                             offer.companyId = data.id;
-                            let tabSys = this._hubService.getProperty('tab_sys');
-                            tabSys.addTab('organisation', {organisation: offer.company, canEditable: true});
+                            let tabSys = this._hubService.getProperty("tab_sys");
+                            tabSys.addTab("organisation", {organisation: offer.company, canEditable: true});
                         }
                     );
                 }
-            } else if(evt.event == "set_agent"){
+            } else if (evt.event == "set_agent") {
                 offer.agentId = evt.agentId;
                 offer.agent = null;
                 this._offerService.save(offer);
-            } else if(evt.event == "del_agent"){
+            } else if (evt.event == "del_agent") {
                 offer.agentId = null;
                 offer.agent = null;
                 this._offerService.save(offer);
-            } else if(evt.event == "del_obj"){
+            } else if (evt.event == "del_obj") {
                 /*this.subscription_offer = this._requestService.delete(o).subscribe(
                     data => {
                         this.selectedRequests.splice(this.selectedRequests.indexOf(o), 1);
                         this.requests.splice(this.requests.indexOf(o), 1);
                     }
                 );*/
-            } else if(evt.event == "check"){
+            } else if (evt.event == "check") {
                 //this.openPopup = {visible: true, task: "check", value: PhoneBlock.getAsString(o.phoneBlock, " "), person: o.person};
-            } else if(evt.event == "set_tag"){
+            } else if (evt.event == "set_tag") {
                 offer.tag = evt.tag;
                 this._offerService.save(offer);
             } else {
@@ -1044,13 +1147,21 @@ export class TabRequestComponent implements OnInit{
         this.getOffers();
     }
 
-    openOffer(offer: Offer){
-        let tab_sys = this._hubService.getProperty('tab_sys');
+    openOffer(offer: Offer) {
+        let tab_sys = this._hubService.getProperty("tab_sys");
         let canEditable = this.source == OfferSource.IMPORT ? false : (this._sessionService.getUser().accountId == offer.accountId);
-        tab_sys.addTab('offer', {offer, canEditable });
+        tab_sys.addTab("offer", {offer, canEditable});
     }
 
     public findContact(event) {
         this.utilsObj.findContact(event, this.contact).subscribe(data => this.contact = data);
+    }
+
+    public delete() {
+        this._requestService.delete(this.request).subscribe((stat) =>{
+            this._hubService.getProperty("modal-window").showMessage("Заявка удалена успешно");
+            this.tab.setEvent({type: 'delete', value: this.request.id});
+            this._hubService.getProperty('tab_sys').closeTab(this.tab);
+        });
     }
 }

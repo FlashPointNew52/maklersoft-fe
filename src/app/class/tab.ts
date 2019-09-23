@@ -1,4 +1,5 @@
-import {Subject} from "rxjs";
+import {AsyncSubject, BehaviorSubject, Subject} from "rxjs";
+import {Rating} from "../entity/rating";
 
 export class Tab {
     id: number;
@@ -10,6 +11,7 @@ export class Tab {
     public active: boolean;
 
     refreshRq: any;
+    private event;
 
     constructor(tabSys, type, args) {
         this.header = 'Loading...';
@@ -30,5 +32,19 @@ export class Tab {
 
     refresh(sender: string) {
         //this.refreshRq.next(sender);
+    }
+
+    getEvent(){
+        this.event = new BehaviorSubject({});
+        return this.event;
+    }
+
+    setEvent(event: any){
+        this.event.next(event);
+    }
+
+    sendEvent(){
+        if(this.event)
+            this.event.complete();
     }
 }

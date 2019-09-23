@@ -91,7 +91,7 @@ import {Contact} from "../../entity/contact";
             <ui-tag [value]="organisation.tag"></ui-tag>
         </div>
         <div class="billet">
-            
+
             <div style= "width: 285px; min-width: 285px; margin-right: 35px;">
                 <div class="date"  [class.selected]="selected">{{dateType == 'addDate' ? "Добавлено: " : dateType == 'changeDate' ? "Изменено: " : "Назначено: "}}
                 {{ utils.getDateInCalendar(organisation[dateType] || organisation.changeDate || organisation.addDate) }}</div>
@@ -105,7 +105,7 @@ import {Contact} from "../../entity/contact";
               <span class="type" [class.selected]="selected">{{organisation.isMiddleman ? "Посредник" : "Принципал"}}</span>
             </div>
             <div style= "width: 140px; margin-right: 35px;">
-              <span class="type" [class.selected]="selected">{{organisation.ourCompany && organisation.accountId == _sessionService.getUser().accountId ? "Наша компания" 
+              <span class="type" [class.selected]="selected">{{organisation.ourCompany && organisation.accountId == _sessionService.getUser().accountId ? "Наша компания"
                   : (conClass.typeCodeOptions[organisation.typeCode]?.label || 'Неизвестно')}}</span>
             </div>
             <div style= "width: 116px; margin-right: 35px;">
@@ -123,8 +123,8 @@ import {Contact} from "../../entity/contact";
                       {{organisation.contact?.name || organisation.agent?.name}}
                 </div>
                 <div class="phones" *ngIf="!(organisation.contactId || organisation.agentId)" class="user">
-                  <span class="phone" [class.selected]="selected">{{phones[0] ? (phones[0].phone | mask: "+0 "+phones[0].mask) : ""}}</span><br>
-                  <span class="phone" [class.selected]="selected">{{phones[1] ? (phones[1].phone | mask: "+0 "+phones[1].mask) : ""}}</span>
+                  <span class="phone" [class.selected]="selected">{{phones[0] ? ("+7" + phones[0].phone | mask: "+0 (000) 000-00-00") : ""}}</span><br>
+                  <span class="phone" [class.selected]="selected">{{phones[1] ? ("+7" + phones[1].phone | mask: "+0 (000) 000-00-00") : ""}}</span>
                 </div>
             </div>
         </div>

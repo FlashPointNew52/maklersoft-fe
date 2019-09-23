@@ -90,6 +90,7 @@ export class Request {
         this.contractBlock = new ContractBlock();
         this.conditions = new ConditionsBlock();
         this.documents = [];
+        this.agentId = null;
     }
 
     public static offerTypeCodeOptions = {

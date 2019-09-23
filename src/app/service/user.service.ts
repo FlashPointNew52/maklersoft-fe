@@ -1,18 +1,18 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 import {AsyncSubject} from "rxjs";
-import {map} from 'rxjs/operators';
-import {ConfigService} from './config.service';
+import {map} from "rxjs/operators";
+import {ConfigService} from "./config.service";
 import {SessionService} from "./session.service";
 import {OrganisationService} from "./organisation.service";
-import {User} from '../entity/user';
-import {HttpClient} from '@angular/common/http';
+import {User} from "../entity/user";
+import {HttpClient} from "@angular/common/http";
 
 
 
 @Injectable()
 export class UserService {
 
-    RS: String = "";
+    RS: string = "";
 
     cache: any = {};
 
@@ -24,30 +24,30 @@ export class UserService {
                 private _sessionService: SessionService,
                 private _organisationService: OrganisationService
     ) {
-        this.RS = this._configService.getConfig().RESTServer + '/api/v1/user/';
+        this.RS = this._configService.getConfig().RESTServer + "/api/v1/user/";
     }
 
-    cacheUserAndOrg(){
+    cacheUserAndOrg() {
         this.cacheOrgAndUser = [];
         this.cacheUsers = [];
         this.cacheOrgs = [];
-        this._organisationService.list(0, 100, "local", {"ourCompany":1},{"addDate":"DESC"}, "").subscribe(orgs => {
+        this._organisationService.list(0, 100, "local", {ourCompany: 1}, {addDate: "DESC"}, "").subscribe(orgs => {
             //this.cache[data.id] = {org_name: data.name, items: []};
-            for(let org of orgs){
-                this.list(0, 100, {"organisationId": org.id},{"addDate":"DESC"}, null).subscribe(users =>{
+            for (let org of orgs) {
+                this.list(0, 100, {organisationId: org.id}, {addDate: "DESC"}, null).subscribe(users => {
                     let items = [];
-                    for(let usr of users){
-                        items.push({class: 'entry', value: usr.id, label: usr.name});
+                    for (let usr of users) {
+                        items.push({class: "entry", value: usr.id, label: usr.name});
                     }
-                    this.cacheOrgAndUser.push({class:'submenu', value: org.id, label: org.name, items: items});
-                    this.cacheOrgs.push({class: 'entry', value: org.id, label: org.name});
+                    this.cacheOrgAndUser.push({class: "submenu", value: org.id, label: org.name, items});
+                    this.cacheOrgs.push({class: "entry", value: org.id, label: org.name});
                 });
             }
         });
 
-        this.list(0, 300, {"cashed": true},{"changeDate":"DESC"}, "").subscribe(users =>{
-            for(let usr of users){
-                this.cacheUsers.push({class:'entry', value: usr.id, label: usr.name});
+        this.list(0, 300, {cashed: true}, {changeDate: "DESC"}, "").subscribe(users => {
+            for (let usr of users) {
+                this.cacheUsers.push({class: "entry", value: usr.id, label: usr.name});
             }
         });
     }
@@ -61,19 +61,19 @@ export class UserService {
         let query = [];
         query.push("page=" + page);
         query.push("per_page=" + per_page);
-        if(searchQuery != null)
+        if (searchQuery != null)
             query.push("searchQuery=" + searchQuery);
         query.push("filter=" + JSON.stringify(filter));
         query.push("sort=" + JSON.stringify(sort));
 
-        let ret_subj = <AsyncSubject<User[]>>new AsyncSubject();
-        let _resourceUrl = this.RS + 'list?' + query.join("&");
+        let ret_subj = new AsyncSubject() as AsyncSubject<User[]>;
+        let _resourceUrl = this.RS + "list?" + query.join("&");
 
 
         this._http.get(_resourceUrl, {withCredentials: true}).pipe(
-        map((res: Response) => res)).subscribe(
+            map((res: Response) => res)).subscribe(
             raw => {
-              let data = JSON.parse(JSON.stringify(raw));
+                let data = JSON.parse(JSON.stringify(raw));
                 let users: User[] = data.result;
                 ret_subj.next(users);
                 ret_subj.complete();
@@ -81,7 +81,7 @@ export class UserService {
             err => {
                 this._sessionService.handle_errors(err);
             }
-         );
+        );
 
         return ret_subj;
     }
@@ -105,46 +105,46 @@ export class UserService {
         }
 
 
-        let _resourceUrl = this.RS + 'list?' + query.join("&");
+        let _resourceUrl = this.RS + "list?" + query.join("&");
 
-        let ret_subj = <AsyncSubject<User[]>>new AsyncSubject();
+        let ret_subj = new AsyncSubject() as AsyncSubject<User[]>;
 
-        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+        this._http.get(_resourceUrl, {withCredentials: true}).pipe(
             map((res: Response) => res)).subscribe(
-                raw => {
-                  let data = JSON.parse(JSON.stringify(raw));
-                    let users: User[] = data.result;
+            raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                let users: User[] = data.result;
 
-                    ret_subj.next(users);
-                    ret_subj.complete();
-                },
-                err => {
-                    this._sessionService.handle_errors(err);
-                }
-            );
+                ret_subj.next(users);
+                ret_subj.complete();
+            },
+            err => {
+                this._sessionService.handle_errors(err);
+            }
+        );
 
         return ret_subj;
     }
 
     get(userId: number) {
 
-        let _resourceUrl = this.RS + 'get/' + userId;
+        let _resourceUrl = this.RS + "get/" + userId;
 
-        let ret_subj = <AsyncSubject<User>>new AsyncSubject();
+        let ret_subj = new AsyncSubject() as AsyncSubject<User>;
 
-        this._http.get(_resourceUrl, { withCredentials: true }).pipe(
+        this._http.get(_resourceUrl, {withCredentials: true}).pipe(
             map((res: Response) => res)).subscribe(
-                raw => {
-                  let data = JSON.parse(JSON.stringify(raw));
-                    let u: User = data.result;
+            raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                let us: User = data.result;
 
-                    ret_subj.next(u);
-                    ret_subj.complete();
-                },
-                err => {
-                    this._sessionService.handle_errors(err);
-                }
-            );
+                ret_subj.next(us);
+                ret_subj.complete();
+            },
+            err => {
+                this._sessionService.handle_errors(err);
+            }
+        );
 
         return ret_subj;
     }
@@ -155,40 +155,16 @@ export class UserService {
         user.accountId = _user.accountId;
 
 
-        let _resourceUrl = this.RS + 'save';
+        let _resourceUrl = this.RS + "save";
 
-        let ret_subj = <AsyncSubject<User>>new AsyncSubject();
-
-        let data_str = JSON.stringify(user);
-
-        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
-            map((res: Response) => res)).subscribe(
-                raw => {
-                  let data = JSON.parse(JSON.stringify(raw));
-                    let u: User = data.result;
-                    ret_subj.next(u);
-                    ret_subj.complete();
-                },
-                err => {
-                    this._sessionService.handle_errors(err);
-                }
-            );
-
-        return ret_subj;
-    }
-
-    saveX(user: User) {
-
-        let _resourceUrl = this.RS + 'save';
-
-        let ret_subj = <AsyncSubject<User>>new AsyncSubject();
+        let ret_subj = new AsyncSubject() as AsyncSubject<User>;
 
         let data_str = JSON.stringify(user);
 
-        this._http.post(_resourceUrl, data_str, { withCredentials: true }).pipe(
+        this._http.post(_resourceUrl, data_str, {withCredentials: true}).pipe(
             map((res: Response) => res)).subscribe(
             raw => {
-              let data = JSON.parse(JSON.stringify(raw));
+                let data = JSON.parse(JSON.stringify(raw));
                 let u: User = data.result;
                 ret_subj.next(u);
                 ret_subj.complete();
@@ -199,5 +175,45 @@ export class UserService {
         );
 
         return ret_subj;
+    }
+
+    saveX(user: User) {
+
+        let _resourceUrl = this.RS + "save";
+
+        let ret_subj = new AsyncSubject() as AsyncSubject<User>;
+
+        let data_str = JSON.stringify(user);
+
+        this._http.post(_resourceUrl, data_str, {withCredentials: true}).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                let u: User = data.result;
+                ret_subj.next(u);
+                ret_subj.complete();
+            },
+            err => {
+                this._sessionService.handle_errors(err);
+            }
+        );
+
+        return ret_subj;
+    }
+
+    delete(user: User) {
+        let ret_res = new AsyncSubject() as AsyncSubject<any>;
+
+        this._http.get(this.RS + "delete/" + user.id, {withCredentials: true}).pipe(
+            map((res: Response) => res)).subscribe(
+            raw => {
+                let data = JSON.parse(JSON.stringify(raw));
+                ret_res.next(data);
+                ret_res.complete();
+            },
+            err => this._sessionService.handle_errors(err)
+        );
+
+        return ret_res;
     }
 }

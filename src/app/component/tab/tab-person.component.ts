@@ -61,11 +61,6 @@ import {Contact} from "../../entity/contact";
             line-height: 16px;
         }
 
-        .edit_ready {
-            height: 12px;
-            margin-top: 15px;
-            padding-right: 24px;
-        }
 
         ui-tabs-menu {
             margin-top: -10px;
@@ -144,11 +139,11 @@ import {Contact} from "../../entity/contact";
             [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
         <div class="pane">
             <div class="edit_ready">
-                <span class="link" *ngIf="!editEnabled && canEditable" style="z-index: 99;" (click)="toggleEdit()">Изменить</span>
+                <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
                 <span class="link" *ngIf="editEnabled && canEditable" (click)="save()">Готово</span>
                 <div *ngIf="!canEditable" class="pointer_menu" (click)="contextMenu($event)">...</div>
             </div>
-            <ui-tabs-menu>
+            <ui-tabs-menu class="without_buttons">
                 <ui-tab [title]="'ГЛАВНАЯ'">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
@@ -242,11 +237,11 @@ import {Contact} from "../../entity/contact";
                             <span class="view-value">{{person.addressBlock?.region}}</span>
                         </div>
                         <div class="show_block" *ngIf="person.addressBlock?.city">
-                            <span>Населённый пункт</span>
+                            <span>Нас. пункт</span>
                             <span class="view-value">{{person.addressBlock?.city}}</span>
                         </div>
                         <div class="show_block" *ngIf="person.addressBlock?.admArea">
-                            <span>Административный район</span>
+                            <span>Адм. район</span>
                             <span class="view-value">{{person.addressBlock?.admArea}}</span>
                         </div>
                         <div class="show_block" *ngIf="person.addressBlock?.area">
@@ -282,6 +277,12 @@ import {Contact} from "../../entity/contact";
                             <span>Статус</span>
                             <span class="view-value">{{ person?.isMiddleman ? "Посредник" : "Принципал"}}</span>
                         </div>
+                        <div class="show_block" *ngIf="person?.isMiddleman">
+                            <span>Организация</span>
+                            <span class="view-value" [class.link]="person.organisation?.id"  (click)="openOrganisation()">
+                                {{ person.organisation?.name || 'Неизвестно'}}
+                            </span>
+                        </div>
                         <div class="show_block">
                             <span>Тип контакта</span>
                             <span class="view-value">{{ conClass.typeCodeOptions[person?.typeCode]?.label}}</span>
@@ -297,7 +298,7 @@ import {Contact} from "../../entity/contact";
                         <div class="show_block" *ngIf="canEditable">
                             <span>Ответственный</span>
                             <span class="view-value" [class.link]="person.agentId"
-                                  (click)="openUser()">{{ person.agent?.name}}</span>
+                                  (click)="openUser()">{{ person.agent?.name || 'Не назначено'}}</span>
                         </div>
                         <ng-container *ngIf="block.getAsArray(person.contractBlock)?.length == 0">
                             <div class="show_block">
@@ -324,10 +325,6 @@ import {Contact} from "../../entity/contact";
                                 <span class="view-value">{{ person.contractBlock?.terminated}}</span>
                             </div>
                         </ng-container>
-                        <!-- <li *ngIf="person?.isMiddleman"><span class="view-label">Организация:</span>
-                          <span class="view-value" [class.link]="person.organisation?.id" (click)="openOrganisation()"
-                          >{{ person.organisation?.name || 'Неизвестно'}}</span>
-                        </li> -->
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <input-line [name]="'ФИО'" [value]="person?.name" (newValue)="person.name = $event"></input-line>
@@ -388,6 +385,9 @@ import {Contact} from "../../entity/contact";
                                       [value]="person.isMiddleman ? 'middleman' : 'owner'"
                                       (result)="person.isMiddleman = $event == 'middleman'"
                         ></sliding-menu>
+                        <input-line *ngIf="person.isMiddleman" [name]="'Организация'" [value]="person?.organisation?.name"
+                                    [query]="{type: 'org', filter:{}}" (newValue)="person.organisation = $event"
+                        ></input-line>
                         <sliding-menu [name]="'Тип контакта'" [options]="conClass.typeCodeOptions"
                                       [value]="person?.typeCode"
                                       (result)="person.typeCode = $event"
@@ -401,7 +401,7 @@ import {Contact} from "../../entity/contact";
                                       (result)="person.stageCode = $event"
                         ></sliding-menu>
                         <sliding-menu [name]="'Ответственный'" [options]="agentOpts"
-                                      [value]="person?.agentId"
+                                      [value]="person?.agentId || null"
                                       (result)="agentChanged($event)"
                         ></sliding-menu>
                         <multiselect-menu
@@ -419,9 +419,29 @@ import {Contact} from "../../entity/contact";
                     <input-area [name]="'Дополнительно'" [value]="person?.description" [disabled]="!editEnabled"
                                 (newValue)="person.description = $event" [update]="update"></input-area>
                 </ui-tab>
-                <ui-tab [title]="'ПРЕДЛОЖЕНИЯ'"></ui-tab>
-                <ui-tab [title]="'ЗАЯВКИ'"></ui-tab>
-                <div more class="more">ЕЩЁ...</div>
+                <ui-tab [title]="'ПРЕДЛОЖЕНИЯ'" (tabSelect)="listOffers()">
+                    <digest-offer *ngFor="let off of offers; let i = index" [offer]="off"
+                                    [class.selected]="selectedOffers.indexOf(off) > -1"
+                                    (click)="selectedOffers = select($event, offers, selectedOffers, off, i)"
+                                    (contextmenu)="selectedOffers = select($event, offers, selectedOffers, off, i)"
+                                    (dblclick)="selectedOffers = select($event, offers, selectedOffers, off, i)"
+                                    [active]="selectedOffers.indexOf(off) > -1"
+                    ></digest-offer>
+                </ui-tab>
+                <ui-tab [title]="'ЗАЯВКИ'" (tabSelect)="listRequests()">
+                    <digest-request *ngFor="let req of requests; let i = index" [request]="req"
+                                    [class.selected]="selectedRequests.indexOf(req) > -1"
+                                    (click)="selectedRequests = select($event, requests, selectedRequests, req, i)"
+                                    (contextmenu)="selectedRequests = select($event, requests, selectedRequests, req, i)"
+                                    (dblclick)="selectedOffers = select($event, requests, selectedRequests, req, i)"
+                                    [active]="selectedRequests.indexOf(req) > -1"
+                    ></digest-request>
+                </ui-tab>
+                <div more class="more">ЕЩЁ...
+                    <div>
+                        <div class="delete" (click)="delete()">Удалить контакт</div>
+                    </div>
+                </div>
             </ui-tabs-menu>
         </div>
         <div class="work-area">
@@ -446,12 +466,15 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
     utilsObj = null;
 
     organisationsOpts: any[] = [];
-    agentOpts: any[] = [{class: "entry", value: null, label: "Не назначено"},
-        {class: "entry", value: this._sessionService.getUser().id, label: this._sessionService.getUser().name}
-    ];
+    agentOpts: any = {
+        null: {label: "Не назначено"}
+    };
 
     offers: Offer[];
+    selectedOffers: Offer[];
     requests: Request[];
+    selectedRequests: Request[];
+    lastClckIdx: number = 0;
 
     editEnabled: boolean = false;
 
@@ -477,28 +500,20 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
             });
         });
 
-        this.agentOpts = this.agentOpts.concat(_userService.cacheUsers);
+        this.agentOpts[this._sessionService.getUser().id] = {label: this._sessionService.getUser().name};
+        for(let user of _userService.cacheUsers){
+            this.agentOpts[user.value] = {label: user.label};
+        }
     }
 
     ngOnInit() {
         this.person = this.tab.args.person;
         this.canEditable = this.tab.args.canEditable;
-        if (this.person.id && this.person.accountId == this._sessionService.getUser().accountId && this.canEditable) {
-            this._personService.get(this.person.id).subscribe(pers => {
-                this.person = pers;
-            });
-        }
 
         if (this.person.organisationId) {
             this._organisationService.get(this.person.organisationId).subscribe(org => {
                 this.person.organisation = org;
             });
-        }
-
-        if (this.person.agentId != null) {
-            /*this._userService.get(this.person.agentId).subscribe(agent => {
-              this.person.agent = agent;
-          });*/
         }
 
         if (this.person.id == null && this.canEditable) {
@@ -529,15 +544,17 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
             delete this.person.organisationId;
         }
 
-        this._personService.save(this.person).subscribe(
-            person => {
-                setTimeout(() => {
-                    this.person.copyFields(person);
-                });
-                this.toggleEdit();
-            }
-        );
+        setTimeout(() => {
+            this._personService.save(this.person).subscribe(
+                person => {
+                    this.person = person;
+                    this.tab.setEvent({type: 'update', value: this.person});
+                    this.toggleEdit();
+                }
+            );
+        }, 50);
     }
+
 
     checkForm() {
         if (PhoneBlock.getNotNullData(this.person.phoneBlock) == "") {
@@ -565,12 +582,14 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
         }
     }
 
-    agentChanged(e) {
-        this.person.agentId = e.selected.value;
+    agentChanged(event) {
+        this.person.agentId = event == "null" ? null : event;
         if (this.person.agentId != null) {
             this._userService.get(this.person.agentId).subscribe(agent => {
                 this.person.agent = agent;
             });
+        } else{
+            this.person.agent = null;
         }
     }
 
@@ -584,6 +603,30 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
         if (event == 100) setTimeout(() => {
             this.progressWidth = 0;
         }, 1300);
+    }
+
+    listOffers() {
+        this.offers = this.selectedOffers = this.requests = this.selectedRequests = [];
+        this.lastClckIdx = 0;
+        if(this.person.id){
+            this._offerService.list(0, 200, 1,{personId: this.person.id}, [], "", []).subscribe(
+                data => {
+                    this.offers = data.list;
+                }
+            );
+        }
+    }
+
+    listRequests() {
+        this.offers = this.selectedOffers = this.requests = this.selectedRequests = [];
+        this.lastClckIdx = 0;
+        if(this.person.id){
+            this._requestService.list(0, 200, {personId: this.person.id, source: 'our'}, [], "", []).subscribe(
+                data => {
+                    this.requests = data.list;
+                }
+            );
+        }
     }
 
     contextMenu(e) {
@@ -687,8 +730,45 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
 
     public findContact(event) {
         this.utilsObj.findContact(event, this.person).subscribe(data => {
-            if (data.id) this._hubService.getProperty("modal-window").showMessage("Контакт с таким номером телефона уже существует");
+            if (data.id) this._hubService.getProperty("modal-window").showMessage("Контакт ("+ data.name +") с таким номером телефона уже существует");
         });
     }
 
+    select(event: MouseEvent, objSelected: any, obj: any, objects: any, i: number) {
+        if (event.button == 2) {    // right click
+            if (objSelected.indexOf(obj) == -1) { // if not over selected items
+                this.lastClckIdx = i;
+                objSelected = [obj];
+            }
+        } else {
+            if (event.ctrlKey) {
+                this.lastClckIdx = i;
+                objSelected = [].concat(objSelected).concat(obj);
+            } else if (event.shiftKey) {
+                objSelected = [];
+                let idx = i;
+                let idx_e = this.lastClckIdx;
+                if (i > this.lastClckIdx) {
+                    idx = this.lastClckIdx;
+                    idx_e = i;
+                }
+                while (idx <= idx_e) {
+                    let oi = objects[idx++];
+                    objSelected.push(oi);
+                }
+            } else {
+                this.lastClckIdx = i;
+                objSelected = [obj];
+            }
+        }
+        return objSelected;
+    }
+
+    public delete() {
+        this._personService.delete(this.person).subscribe((stat) =>{
+            this._hubService.getProperty("modal-window").showMessage("Контакт и все с ним связи удалены");
+            this.tab.setEvent({type: 'delete', value: this.person.id});
+            this._hubService.getProperty('tab_sys').closeTab(this.tab);
+        });
+    }
 }

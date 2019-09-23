@@ -60,12 +60,6 @@ import {ObjectBlock} from "../../class/objectBlock";
         line-height: 16px;
     }
 
-    .edit_ready {
-        height: 12px;
-        margin-top: 15px;
-        padding-right: 24px;
-    }
-
     ui-tabs-menu {
         margin-top: -10px;
     }
@@ -131,31 +125,31 @@ import {ObjectBlock} from "../../class/objectBlock";
                     (progressState) = "displayProgress($event)" [obj_type] = "'users'">
                 </ui-upload-file>
             </div>
-            <div class="last_name">{{utils.getSurname(user.name) || "Неизвестно"}}</div>
-            <div class="first_name">{{utils.getFirstName(user.name) || "Неизвестно"}}</div>
-            <div class="position">{{ userClass.positionOptionsByDepart[user.department][user.position]?.label }}</div>
+            <div class="last_name">{{utils.getSurname(user?.name) || "Неизвестно"}}</div>
+            <div class="first_name">{{utils.getFirstName(user?.name) || "Неизвестно"}}</div>
+            <div class="position">{{ user.department && user.position ? userClass.positionOptionsByDepart[user?.department][user?.position]?.label : "Неизвестно"}}</div>
         </div>
         <hr class='underline'>
         <hr class='underline progress_bar' [ngStyle]="{'width': progressWidth + 'vw', 'transition': progressWidth > 0 ? 'all 2s ease 0s' : 'all 0s ease 0s'}">
         <div class="pane">
             <div class="edit_ready">
-                <span class="link" style="z-index: 99;" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
-                <span class="link" style="z-index: 99;" *ngIf="editEnabled" (click)="save()">Готово</span>
+                <span class="link" *ngIf="!editEnabled" (click)="toggleEdit()">Изменить</span>
+                <span class="link" *ngIf="editEnabled" (click)="save()">Готово</span>
             </div>
-            <ui-tabs-menu>
-                <ui-tab [title]="'ГЛАВНАЯ'" class="without_buttons">
+            <ui-tabs-menu class="without_buttons">
+                <ui-tab [title]="'ГЛАВНАЯ'" >
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Дата создания</span>
-                            <span class="view-value">{{ utils.getDateInCalendar(user.addDate) }}</span>
+                            <span class="view-value">{{ utils.getDateInCalendar(user?.addDate) }}</span>
                         </div>
                         <div class="show_block">
                             <span>Дата изменения</span>
-                            <span class="view-value">{{ utils.getDateInCalendar(user.changeDate) }}</span>
+                            <span class="view-value">{{ utils.getDateInCalendar(user?.changeDate) }}</span>
                         </div>
                         <div class="show_block">
                             <span>ФИО</span>
-                            <span class="view-value link">{{ user.name}}</span>
+                            <span class="view-value link">{{ user?.name}}</span>
                         </div>
                         <div class="show_block" *ngIf="user?.phoneBlock?.main">
                             <span>Личный телефон</span>
@@ -187,7 +181,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                         <div class="show_block">
                             <span>Ответственный</span>
-                            <span class="view-value link">{{ user.agent?.name}}</span>
+                            <span class="view-value link">{{ user.agent?.name || 'Не назначено'}}</span>
                         </div>
                         <div class="show_block" *ngIf="user?.messengerBlock?.whatsapp">
                             <span>WhatsApp</span>
@@ -313,12 +307,9 @@ import {ObjectBlock} from "../../class/objectBlock";
                             (newData)="user.phoneBlock = $event"
                         ></multiselect-menu>
                         <sliding-menu [name] = "'Ответственный'" [options]="agentOpts"
-                                      [value]="user?.agentId"
+                                      [value]="user?.agentId || null"
                                       (result) = "agentChanged($event)"
                         ></sliding-menu>
-                        <!-- <li><span class="view-label">Ответственный</span> <span class="view-value"
-                                          [class.link]="user.agentId" (click)="openUser()">{{ user.agent?.name || 'Неизвестно'}}</span>
-                        </li> -->
                         <multiselect-menu
                             [name]="'Мессенджеры'" [block]="user?.messengerBlock" [addName]="'Добавить мессенджер'"
                             [params]="{ 'whatsapp': {label: 'WhatsApp', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
@@ -378,7 +369,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                     </ng-container>
                     <input-area [name]="'Дополнительно'" [value]="user?.description" [disabled]="!editEnabled" (newValue)="user.description = $event" [update]="update"></input-area>
                 </ui-tab>
-                <ui-tab [title]="'ОБЩАЯ'" class="without_buttons">
+                <ui-tab [title]="'ОБЩАЯ'">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
                             <span>Офис</span>
@@ -392,9 +383,9 @@ import {ObjectBlock} from "../../class/objectBlock";
                             <span>Должность</span>
                             <span class="view-value">{{ userClass.positionOptionsByDepart[user.department][user?.position]?.label}}</span>
                         </div>
-                        <div class="show_block" *ngIf="user.department != 'management'">
+                        <div class="show_block" *ngIf="user.department && user.department != 'management'">
                             <span>Специализация</span>
-                            <span class="view-value">{{ userClass.specializationOptionsByDepart[user.department][user.specialization]?.label}}</span>
+                            <span class="view-value">{{ user.specialization ? userClass.specializationOptionsByDepart[user.department][user?.specialization]?.label : "Не указано"}}</span>
                         </div>
                         <div class="show_block" *ngIf="user.department == 'sale' && user.department && user.department != 'management'">
                             <span>Недвижимость</span>
@@ -406,7 +397,8 @@ import {ObjectBlock} from "../../class/objectBlock";
                         </div>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
-                        <input-line [name]="'Офис'" [value]="user?.organisation?.name || ''" [queryTipe]="'organisation'" [filter]="{'ourCompany': 1}" (newValue)="user.organisation = $event"></input-line>
+                        <input-line [name]="'Офис'" [value]="user?.organisation?.name || ''" (newValue)="user.organisation = $event"
+                                    [query]="{type: 'org', filter: {ourCompany: 1}}"></input-line>
                         <sliding-menu [name] = "'Отдел'" [options]="userClass.departmentOptions"
                                       [value]="user?.department"
                                       (result) = "user.department = $event"
@@ -430,13 +422,13 @@ import {ObjectBlock} from "../../class/objectBlock";
 
                     </ng-container>
                 </ui-tab>
-                <ui-tab [title]="'ОБУЧЕНИЕ'" class="without_buttons">
+                <ui-tab [title]="'ОБУЧЕНИЕ'">
                 </ui-tab>
                 <div more class="more">ЕЩЁ...
                     <div>
                         <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
                         <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История</div>
-                        <div class="delete" (click)="$event">Удалить пользователя</div>
+                        <div class="delete" (click)="delete()">Удалить пользователя</div>
                     </div>
                 </div>
             </ui-tabs-menu>
@@ -482,9 +474,9 @@ export class TabUserComponent implements OnInit, AfterViewInit {
     requests: Request[];
 
     workAreaMode: string = '';
-    agentOpts: any[] = [{class:'entry', value: null, label: "Не назначено"},
-            {class:'entry', value: this._sessionService.getUser().id, label: this._sessionService.getUser().name}
-    ];
+    agentOpts: any = {
+        null: {label: "Не назначено"}
+    };
 
     editEnabled: boolean = false;
 
@@ -500,18 +492,17 @@ export class TabUserComponent implements OnInit, AfterViewInit {
                 private _organisationService: OrganisationService,
                 private _sessionService: SessionService
     ) {
-        this.agentOpts = this.agentOpts.concat(_userService.cacheUsers);
+        this.agentOpts[this._sessionService.getUser().id] = {label: this._sessionService.getUser().name};
+        for(let user of _userService.cacheUsers){
+            this.agentOpts[user.value] = {label: user.label};
+        }
 
     }
 
     ngOnInit() {
 
         this.user = this.tab.args.user;
-        if(this.user.id) {
-            this._userService.get(this.user.id).subscribe(usr => {
-                this.user = usr;
-            });
-        } else{
+        if(!this.user.id) {
            this.editEnabled = true;
         }
         /*if(this.user.id){
@@ -559,9 +550,8 @@ export class TabUserComponent implements OnInit, AfterViewInit {
         if(this.user.organisation)
             this.user.organisationId = this.user.organisation.id;
         this._userService.save(this.user).subscribe(user => {
-            setTimeout(() => {
-                this.user = user;
-            });
+            this.user = user;
+            this.tab.setEvent({type: 'update', value: this.user});
             this.toggleEdit();
         });
     }
@@ -583,16 +573,22 @@ export class TabUserComponent implements OnInit, AfterViewInit {
             this._hubService.getProperty("modal-window").showMessage("Не указано Фамилия, Имя или Отчество");
             return false;
         }
+        if(!this.user.department){
+            this._hubService.getProperty("modal-window").showMessage("Не указан отдел");
+            return false;
+        }
 
         return true;
     }
 
 
-    agentChanged(e) {
-        this.user.agentId = e.selected.value;
-        this._userService.get(this.user.agentId).subscribe(agent => {
-            this.user.agent = agent;
-        });
+    agentChanged(event) {
+        this.user.agentId = event == "null" ? null : event;
+        if (this.user.agentId != null ) {
+            this._userService.get(this.user.agentId).subscribe(agent => {
+                this.user.agent = agent;
+            });
+        }
     }
 
     openUser(){
@@ -617,5 +613,13 @@ export class TabUserComponent implements OnInit, AfterViewInit {
     displayProgress(event){
         this.progressWidth = event;
         if(event == 100) setTimeout(()=>{this.progressWidth = 0;}, 3000);
+    }
+
+    public delete() {
+        this._userService.delete(this.user).subscribe((stat) =>{
+            this._hubService.getProperty("modal-window").showMessage("Контакт и все с ним связи удалены");
+            this.tab.setEvent({type: 'delete', value: this.user.id});
+            this._hubService.getProperty('tab_sys').closeTab(this.tab);
+        });
     }
 }

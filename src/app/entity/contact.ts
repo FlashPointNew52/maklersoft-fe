@@ -50,12 +50,13 @@ export class Contact {
         this.socialBlock = new SocialBlock();
         this.messengerBlock = new MessengerBlock();
         this.contractBlock = new ContractBlock();
+        this.agentId = null;
         if(name){
             this.name = name;
         }
         this.loyalty = "undefined";
         this.typeCode = "unknown";
-        this.stageCode = "potential";
+        this.stageCode = "raw";
     }
 
     public static typeOptions = {
@@ -94,6 +95,7 @@ export class Contact {
     };
 
     public static stageCodeOptions = {
+        raw: {label: 'Неопределено', items: []},
         potential: {label: 'Потенциальный клиент', items: []},
         new: {label: 'Новый клиент', items: []},
         permanent: {label: 'Постоянный клиент', items: []},

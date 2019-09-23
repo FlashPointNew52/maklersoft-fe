@@ -7,10 +7,12 @@ import {SessionService} from "../service/session.service";
 
 @Component({
     selector: 'modal-window',
-    styles: [`    
+    styles: [`
         :host{
             position: absolute;
             z-index: 9999;
+            top: 0;
+            left: 0;
         }
         .window{
             position: absolute;
@@ -62,7 +64,7 @@ import {SessionService} from "../service/session.service";
             line-height: 11px;
             white-space: pre-line;
         }
-        
+
         .sendReport{
             align-self: flex-end;
             margin-right: 15px;
@@ -83,7 +85,7 @@ import {SessionService} from "../service/session.service";
                 <div *ngIf="error" (click)="sendMsg()" class="sendReport">Сообщить об ошибке</div>
             </div>
         </div>
-        
+
     `
 })
 
@@ -104,6 +106,7 @@ export class ModalWindowComponent {
         this.message = value;
     }
     public showMessage(value: string, err?: any){
+        this.error = null;
         if(err)
             this.error = err;
         this.message = value;
@@ -121,4 +124,3 @@ export class ModalWindowComponent {
         });
     }
 }
-

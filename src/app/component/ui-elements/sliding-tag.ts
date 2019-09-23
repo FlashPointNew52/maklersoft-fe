@@ -17,7 +17,7 @@ import {Tags} from "../../class/tags";
                 <span>{{tag.label}}</span>
             </div>
         </div>
-        
+
     `,
     styles: [`
         .menu_header{
@@ -29,7 +29,11 @@ import {Tags} from "../../class/tags";
         }
 
         .active {
-            background-color: var(--selected-digest);
+            background-color: var(--color-blue);
+        }
+
+        .active > span{
+            color: white;
         }
 
         .hidden_menu{
@@ -46,7 +50,7 @@ import {Tags} from "../../class/tags";
         .hidden_menu .selected, .hidden_menu > div:hover{
             background-color: var(--bottom-border);
         }
-        
+
         .tag{
             width: 30px;
             height: 13px;

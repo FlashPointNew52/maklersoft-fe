@@ -66,7 +66,7 @@ import {UploadFile} from "../../class/uploadFile";
             overflow-y: auto;
             height: 100%;
             width: 100%;
-            
+
         }
 
         .files_body ul > div{
@@ -257,19 +257,19 @@ import {UploadFile} from "../../class/uploadFile";
             background-size: cover;
             background-position: center;
         }
-        
+
         .photo-style .tools{
-            display: none; 
+            display: none;
         }
         .photo-style:hover .tools{
             display: flex;
-            position: relative; 
+            position: relative;
             top: -175px;
         }
         .tools{
             width: 100%;
             height: 100%;
-            align-items: center; 
+            align-items: center;
             justify-content: center;
         }
         .tools div{
@@ -315,7 +315,7 @@ import {UploadFile} from "../../class/uploadFile";
         }
         .title-block:first-child{
             margin-top: 13px;
-        } 
+        }
         .add_author{
             margin-left: 10px;
             font-style: italic;
@@ -327,13 +327,13 @@ import {UploadFile} from "../../class/uploadFile";
             width: calc(100% - 370px);
             height: calc(100vh - 122px);
             top: 0;
-            left: 370px; 
-            background-color: #f2f3f4; 
+            left: 370px;
+            background-color: #f2f3f4;
         }
         .gallery.open{
             display: block;
         }
-        .gal-top{ 
+        .gal-top{
             display: flex;
             align-items: center;
             justify-content: center;
@@ -370,7 +370,7 @@ import {UploadFile} from "../../class/uploadFile";
         .arrow-block .arrow-right{
             transform: rotate(-90deg);
         }
-        .big-photo-block{ 
+        .big-photo-block{
             height: 100%;
             width: calc(100% - 360px);
             max-width: 950px;
@@ -386,7 +386,7 @@ import {UploadFile} from "../../class/uploadFile";
             position: relative;
             width: 46px;
             height: 46px;
-            top: -542px;
+            top: -619px;
             left: calc(100% - 75px);
             background-size: 100% 100%;
             border-radius: 23px;
@@ -414,7 +414,7 @@ import {UploadFile} from "../../class/uploadFile";
             top: -30px;
         }
         .bottom-gal ul{
-            list-style: none; 
+            list-style: none;
             padding: 0;
             margin: 0;
             height: 100%;
@@ -433,7 +433,7 @@ import {UploadFile} from "../../class/uploadFile";
         }
         .bottom-gal ul li.clicked{
             border-top: 6px solid var(--color-blue);
-        } 
+        }
         .bottom-gal .photo{
             background-size: 100%;
             width: 100% !important;
@@ -464,7 +464,7 @@ import {UploadFile} from "../../class/uploadFile";
     template: `
         <div class="block-title" >
             <div *ngIf="type == 'photo'">ФОТО ПРЕДЛОЖЕНИЯ</div><div *ngIf="type == 'doc'">ДОКУМЕНТЫ ПРЕДЛОЖЕНИЯ</div><div>({{files?.length}})</div>
-            
+
         </div>
         <div class="files_body_new" [class.full]="full">
             <ul>
@@ -475,7 +475,7 @@ import {UploadFile} from "../../class/uploadFile";
                                     [parent]="'photo'"
                     ></ui-upload-file>
                 </li>
-          
+
                 <li *ngFor="let file of files, let i = index" class="photo-style" [class.open]="editMode" [class.doc-bord]="type == 'doc'">
                     <div class="photo" *ngIf="type == 'photo'" [style.background-image]="file.href ? 'url(' + file?.href + ')' : ''"></div>
                     <div class="photo doc" *ngIf="type == 'doc'" [style.background-image]="file.ext ? 'url(assets/' + file?.ext + '.png)' : ''"><a class="filename">{{file?.name}}</a></div>
@@ -483,35 +483,35 @@ import {UploadFile} from "../../class/uploadFile";
                         <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "galleryOpenFunc(file.href)"></div>
                         <div style= "background-image: url('../../../assets/photo_icon/check.png');" ></div>
                         <div style= "background-image: url('../../../assets/photo_icon/cross.png');" (click) = "file_delete(i)"></div>
-                        
-                    </div>  
-                </li> 
- 
+
+                    </div>
+                </li>
+
                 <div *ngFor="let obj of new_struct, let i = index" class="edit-photos" [class.open]="!editMode">
                     <div class="title-block">{{obj?.convert}} <div class="add_author">{{obj?.author}}</div></div>
                     <ul>
                         <li *ngFor="let url of obj.urls, let j = index" class="photo-style" [class.open]="!editMode"  [class.doc-bord]="type == 'doc'">
                             <ng-container *ngIf="type == 'photo'">
-                                <div class="photo" [style.background-image]="'url(' + url?.href + ')'"></div> 
+                                <div class="photo" [style.background-image]="'url(' + url?.href + ')'"></div>
                                 <div class="tools">
                                     <div style= "background-image: url('../../../assets/photo_icon/zoom.png');height: 50px; width: 50px" (click) = "galleryOpenFunc(url.href)"></div>
                                 </div>
-                            </ng-container> 
-                            
-                            <ng-container *ngIf="type == 'doc'"> 
+                            </ng-container>
+
+                            <ng-container *ngIf="type == 'doc'">
                                 <div class="photo doc" [style.background-image]="'url(assets/' + url?.ext + '.png)'"><a class="filename">{{url?.name}}</a></div>
                                 <div class="tools">
                                     <div style= "background-image: url('../../../assets/photo_icon/zoom.png');" (click) = "printInfo(url)"></div>
                                 </div>
                             </ng-container>
                         </li>
-                    </ul> 
-                </div> 
+                    </ul>
+                </div>
             </ul>
-        </div> 
+        </div>
         <!-- TODO: убрать просмотр фотографии в глобальный компонент -->
         <div class="gallery" [class.full]="full" [class.open]="galleryOpen">
-            <div class="gal-top"> 
+            <div class="gal-top">
                 <div class="arrow-block" (click)="prev_photo()"><div class="arrow-left"></div></div>
                 <div class="big-photo-block"><div class="big-photo" [style.background-image]="'url(' + cur_photo + ')'"></div></div>
                 <div class="arrow-block" (click)="next_photo()"><div class="arrow-right"></div></div>
@@ -522,7 +522,7 @@ import {UploadFile} from "../../class/uploadFile";
                     <li *ngFor="let photo of files, let i = index" class="carousel-li" [class.clicked]="photo.href == cur_photo">
                         <div class="photo" [style.background-image]="photo.href ? 'url(' + photo?.href + ')' : ''" (click) = "galleryOpenFunc(photo?.href)"></div>
                     </li>
-                </ul> 
+                </ul>
             </div>
         </div>
     `
@@ -573,10 +573,10 @@ export class FilesView implements OnInit, OnChanges {
 
     }
     info(file){
-       console.log(file)
+
     }
     printInfo(obj){
-        console.log(obj);
+
         window.open(obj.href);
     }
     galleryOpenFunc( url){
@@ -647,7 +647,6 @@ export class FilesView implements OnInit, OnChanges {
             }
         }
         this.new_struct.splice(this.new_struct.length - 1,1);
-        console.log(this.new_struct);
     }
 
     addFile(ev){
