@@ -33,7 +33,7 @@ export class Utils{
         });
     }
     public static getMonth(date: number) {
-        switch (moment(date* 1000).format("M")) {
+        switch (moment(date).format("M")) {
             case "1": return "Января";
             case "2": return "Февраля";
             case "3": return "Апреля";
@@ -46,6 +46,30 @@ export class Utils{
             case "10": return "Октября";
             case "11": return "Ноября";
             case "12": return "Декабря";
+        }
+    }
+    public static getDayOfWeek(date: number, mode: string) {
+        if (mode == 'short') {
+            switch (moment(date).format("d")) {
+                case "0": return "Пн.";
+                case "1": return "Вт.";
+                case "2": return "Ср.";
+                case "3": return "Чт.";
+                case "4": return "Пт.";
+                case "5": return "Сб.";
+                case "6": return "Вск.";
+            }
+        }
+        if (mode == 'full') {
+            switch (moment(date).format("d")) {
+                case "0": return "Понедельник";
+                case "1": return "Вторник";
+                case "2": return "Среда";
+                case "3": return "Четверг";
+                case "4": return "Пятница";
+                case "5": return "Суббота";
+                case "6": return "Воскресенье";
+            }
         }
     }
     public static getDateInCalendar(date: number){

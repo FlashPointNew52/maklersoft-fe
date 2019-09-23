@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {SocialBlock} from "../../class/socialBlock";
 
 @Component({
-    selector: 'ui-view-social',
+    selector: 'view-social',
     inputs: ['block'],
     template: `
         <div [style.background-image]="'url(/assets/socials/vk'+ (block?.vk ? '_active': '') +'.png)'"></div>
@@ -24,7 +24,7 @@ import {SocialBlock} from "../../class/socialBlock";
 })
 
 
-export class UIViewSocials {
+export class ViewSocialsComponent {
     public block: SocialBlock = new SocialBlock();
 
 }
