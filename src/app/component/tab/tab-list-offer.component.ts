@@ -46,11 +46,51 @@ import {Utils} from "../../class/utils";
         .selected {
             background-color: var(--color-blue) !important;
         }
+        .map-buttons{
+            position: absolute;
+            top: 20px;
+            left: calc(100% - 180px*3 - 30px);
+            display: flex;
+            z-index: 100;
+        }
+        .map-button{
+            width: 180px;
+            height: 35px;
+            background-color: white;
+            border: 1px solid #DFE1EE;
+            box-shadow: 2px 0 4px #DFE1EE;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: none;
+        }
+        .map-button:first-child{
+            border-right: none;
+        }
+        .map-button:last-child{
+            border: 1px solid #DFE1EE;
+        }
+        .map-button:last-child:hover{
+            border: 1px solid #3b5998;
+        }
+        .map-button:hover{
+            background-color: #3b5998;
+            color: white;
+            cursor: pointer;
+        }
+        .map-button:focus, .map-button:active{
+            background-color: #2B3C63;
+            color: white;
+        }
+        .map-button.activate{
+            background-color: #3b5998;
+            color: white;
+        }
     `],
     template: `
 
         <div class="search-form" *ngIf="workAreaMode != 'advert' && workAreaMode != 'photo'">
-            <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'calc(100% - 108px)'"
+            <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'100%'"
                    [(ngModel)]="searchQuery" (keyup)="searchStringChanged($event)"
             ><span class="find_icon"></span>
 <!--            <div class="suggestions" (document:click)="docClick()" *ngIf="sgList.length > 0">-->
@@ -60,7 +100,7 @@ import {Utils} from "../../class/utils";
 <!--                    </li>-->
 <!--                </ul>-->
 <!--            </div>-->
-            <div (click)="toggleDraw()" class="deactivate_draw" [class.activate_draw]="mapDrawAllowed">ОБВЕСТИ</div>
+<!--            <div (click)="toggleDraw()" class="deactivate_draw" [class.activate_draw]="mapDrawAllowed">ОБВЕСТИ</div>-->
             <div class="tool-box">
                 <filter-select
                     [name]="'Тип сделки'"
@@ -181,7 +221,13 @@ import {Utils} from "../../class/utils";
             </div>
         </div>
         <div class="work-area">
+            
             <ng-container [ngSwitch]="workAreaMode">
+                <div class="map-buttons" *ngSwitchCase="'map'">
+                    <div class="map-button" (click)="toggleDraw()" [class.activate]="mapDrawAllowed">ОБВЕДИТЕ ЛОКАЦИЮ</div>
+                    <div class="map-button">ИНФРАСТРУКТУРА</div>
+                    <div class="map-button">СВОДКА</div>
+                </div>
                 <yamap-view *ngSwitchCase="'map'" [drawMap] = "mapDrawAllowed"
                             [offers] = "offers"
                             [selected_offers] = "selectedOffers"
@@ -192,8 +238,10 @@ import {Utils} from "../../class/utils";
                             (showSameOffers) = "showSameOffers($event)"
                 >
                 </yamap-view>
-                <adv-view *ngSwitchCase="'advert'" [count]="selectedOffers.length"></adv-view>
+                <adv-view *ngSwitchCase="'advert'" [offers]="selectedOffers"
+                ></adv-view>
                 <files-view [full]="paneHidden" [files]="selectedOffers[0].photos" [type]="'photo'" [editMode]="false" *ngSwitchCase="'photo'"></files-view>
+                <files-view [full]="paneHidden" [files]="selectedOffers[0].documents" [type]="'doc'" [editMode]="false" *ngSwitchCase="'doc'"></files-view>
             </ng-container>
         </div>
     `
@@ -433,11 +481,6 @@ export class TabListOfferComponent implements OnInit{
                         tab_sys.addTab('offer', {offer: o, canEditable});
                     });
                 }},
-                {class: "entry", sub_class: 'del', disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: 'Удалить',
-                    callback: () => {
-                        this.clickContextMenu({event: "del_obj"});
-                    }
-                },
                 {class: "delimiter"},
                 {class: "entry", disabled: false, icon: "", label: 'Перейти в источник',
                     callback: () => {
@@ -464,38 +507,27 @@ export class TabListOfferComponent implements OnInit{
                         }, 100);
                     }
                 },
-                {class: "delimiter"},
-                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
-                    {class: "entry", disabled: this.source == OfferSource.LOCAL, label: "Как Предложение",
-                        callback: () => {
-                            this.clickContextMenu({event: "add_to_local"});
-                        }
-                    },
-                    {class: "entry", disabled: false, label: "Как Контакт",
-                        callback: () => {
-                            this.clickContextMenu({event: "add_to_person"});
-                        }
-                    },
-                    {class: "entry", disabled: false, label: "Как Контрагент",
-                        callback: () => {
-                            this.clickContextMenu({event: "add_to_company"});
-                        }
-                    },
-                ]},
-                {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить", items: [
-                    {class: "entry", disabled: false, label: "Не назначено",
-                      callback: () => {
-                        this.clickContextMenu({event: "del_agent", agent: null});
-                      }
-                    }
-                ].concat(uOpt)},
-                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
-                        let block = this._hubService.getProperty('notebook');
-
-                        block.setMode("diary", event);
-                        block.setShow(true, event);
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Показать документы",
+                    callback: () => {
+                        this.cur_id = this.selectedOffers[0].id;
+                        this.workAreaMode = 'doc';
                     }
                 },
+                {class: "entry", disabled: false, icon: "", label: "Экспорт предложения в...", callback: () => {
+                        this.workAreaMode = 'advert';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Выписка из ЕГРН",
+                    callback: () => {
+                        this.workAreaMode = 'egrn';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Заявка на ипотеку",
+                    callback: () => {
+                        this.workAreaMode = 'mortgage';
+                    }
+                },
+                {class: "delimiter"},
                 {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
                         let block = this._hubService.getProperty('notebook');
 
@@ -503,76 +535,124 @@ export class TabListOfferComponent implements OnInit{
                         block.setShow(true, event);
                     }
                 },
-                {class: "entry", disabled: false, icon: "", label: "Добавить в рекламу", callback: () => {
-                    this.workAreaMode = 'advert';
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+
+                        block.setMode("daily", event);
+                        block.setShow(true, event);
                     }
                 },
-                {class: "delimiter"},
-                {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
-                    {class: "entry", disabled: false, label: "Email1"},
-                    {class: "entry", disabled: false, label: "Email2"},
-                    {class: "entry", disabled: false, label: "Email3"},
-                ]},
-                {class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
-                    {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
-                            let block = this._hubService.getProperty('notebook');
-
-                            block.setMode("chat", event);
-                            block.setShow(true, event);
-                        }
-                    },
-                    {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
-                            let block = this._hubService.getProperty('notebook');
-
-                            block.setMode("chat", event);
-                            block.setShow(true, event);
-                        }
-                    },
-                    {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
-                            let block = this._hubService.getProperty('notebook');
-
-                            block.setMode("chat", event);
-                            block.setShow(true, event);
-                        }
-                    },
-                ]},
-                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
-                    {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
-                            let block = this._hubService.getProperty('notebook');
-
-                            block.setMode("phone", event);
-                            block.setShow(true, event);
-                        }
-                    },
-                    {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
-                            let block = this._hubService.getProperty('notebook');
-
-                            block.setMode("phone", event);
-                            block.setShow(true, event);
-                        }
-                    },
-                    {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
-                            let block = this._hubService.getProperty('notebook');
-
-                            block.setMode("phone", event);
-                            block.setShow(true, event);
-                        }
-                    },
-                ]},
-                {class: "submenu", disabled: false, icon: "", label: "Написать в чат",  callback: (event) => {
+                {class: "entry", disabled: false, icon: "", label: "Написать в чат",  callback: (event) => {
                         let block = this._hubService.getProperty('notebook');
 
                         block.setMode("chat", event);
                         block.setShow(true, event);
                     }},
+                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
+                        {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                    ]},
+                // {class: "delimiter"},
+                // {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
+                //     {class: "entry", disabled: this.source == OfferSource.LOCAL, label: "Как Предложение",
+                //         callback: () => {
+                //             this.clickContextMenu({event: "add_to_local"});
+                //         }
+                //     },
+                //     {class: "entry", disabled: false, label: "Как Контакт",
+                //         callback: () => {
+                //             this.clickContextMenu({event: "add_to_person"});
+                //         }
+                //     },
+                //     {class: "entry", disabled: false, label: "Как Организацию",
+                //         callback: () => {
+                //             this.clickContextMenu({event: "add_to_company"});
+                //         }
+                //     },
+                // ]},
+                // {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить", items: [
+                //     {class: "entry", disabled: false, label: "Не назначено",
+                //       callback: () => {
+                //         this.clickContextMenu({event: "del_agent", agent: null});
+                //       }
+                //     }
+                // ].concat(uOpt)},
+                // {class: "delimiter"},
+                // {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
+                //     {class: "entry", disabled: false, label: "Email1"},
+                //     {class: "entry", disabled: false, label: "Email2"},
+                //     {class: "entry", disabled: false, label: "Email3"},
+                // ]},
+                // {class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
+                //     {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                //             let block = this._hubService.getProperty('notebook');
+                //
+                //             block.setMode("chat", event);
+                //             block.setShow(true, event);
+                //         }
+                //     },
+                //     {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                //             let block = this._hubService.getProperty('notebook');
+                //
+                //             block.setMode("chat", event);
+                //             block.setShow(true, event);
+                //         }
+                //     },
+                //     {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                //             let block = this._hubService.getProperty('notebook');
+                //
+                //             block.setMode("chat", event);
+                //             block.setShow(true, event);
+                //         }
+                //     },
+                // ]},
                 {class: "delimiter"},
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Сводка",
+                    callback: () => {
+                        this.workAreaMode = 'svodka';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Отчет",
+                    callback: () => {
+                        this.workAreaMode = 'report';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "История",
+                    callback: () => {
+                        this.workAreaMode = 'history';
+                    }
+                },
                 {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить тег", items: [
                     {class: "tag", icon: "", label: "", offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null, tag,
                         callback: (new_tag) => {
                           this.clickContextMenu({event: "set_tag", tag: new_tag});
                     }}
-                ]}
-
+                ]},
+                {class: "delimiter"},
+                {class: "entry", sub_class: 'del', disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: 'Удалить',
+                    callback: () => {
+                        this.clickContextMenu({event: "del_obj"});
+                    }
+                }
             ]
         };
 

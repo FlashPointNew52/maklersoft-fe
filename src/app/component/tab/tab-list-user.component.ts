@@ -278,11 +278,6 @@ export class TabListUserComponent implements OnInit {
                     tab_sys.addTab('user', {user: o, canEditable: true});
                 });
               }},
-            {class: "entry", disabled: false, icon: "", label: 'Удалить',
-              callback: () => {
-                this.clickContextMenu({event: "del_obj"});
-              }
-            },
             {class: "delimiter"},
 
             {class: "entry", disabled: this.selectedUser.length == 1 ? false : true, icon: "", label: "Просмотреть фото",
@@ -334,7 +329,13 @@ export class TabListUserComponent implements OnInit {
                   callback: (new_tag) => {
                     this.clickContextMenu({event: "set_tag", tag: new_tag});
                   }}
-              ]}
+              ]},
+              {class: "entry", disabled: false, icon: "", label: 'Удалить',
+                  callback: () => {
+                      this.clickContextMenu({event: "del_obj"});
+                  }
+              },
+              {class: "delimiter"}
 
           ]
         };

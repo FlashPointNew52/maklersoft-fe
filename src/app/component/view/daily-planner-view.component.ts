@@ -304,8 +304,8 @@ export class DailyPlannerViewComponent implements OnInit, AfterViewInit, OnChang
     mode = 'view';
     button_mode = 'done';
     selectedEvent = [];
-    date = new Date();
-    cur_time = Utils.getFullCurrentTime(this.date.getTime());
+    date = Date.now();
+    cur_time: any; // = Utils.getFullCurrentTime(this.date.getTime());
     month_count:any;
     new_ev_array = [];
     events = [
@@ -319,7 +319,7 @@ export class DailyPlannerViewComponent implements OnInit, AfterViewInit, OnChang
         {status: 'done',date: 1567152050000, describe: 'Звонок. Договориться о встрече'},
         {status: 'done',date: 1567152050000, describe: 'Звонок. Договориться о встрече'}
         ];
-    cur_date = moment(this.date.getTime()).format("D") + " " + Utils.getMonth(this.date.getTime());
+    cur_date = moment(Date.now()/1000).format("D") + " " + Utils.getMonth(Date.now()/1000);
     cur_month:any;
     count_days: any;
     unix_date: any;
@@ -335,7 +335,7 @@ export class DailyPlannerViewComponent implements OnInit, AfterViewInit, OnChang
 
     }
     ngOnInit() {
-        this.month_count = moment(this.date.getTime()).daysInMonth();
+        this.month_count = moment(Date.now()/1000).daysInMonth();
         for(let i = 0; i < this.events.length; i++) {
             this.new_ev_array.push({ status: this.events[i].status, date: this.events[i].date, day_of_year: moment(this.events[i].date).dayOfYear(), time: moment(this.events[i].date).format('HH:mm'), hour: moment(this.events[i].date).format('H'),  describe: this.events[i].describe});
         }
@@ -418,8 +418,7 @@ export class DailyPlannerViewComponent implements OnInit, AfterViewInit, OnChang
     ngAfterViewInit() {
 
         setInterval(() => {
-            this.date = new Date();
-            this.cur_time = Utils.getFullCurrentTime(this.date.getTime());
+            this.cur_time = Utils.getFullCurrentTime(Date.now()/1000);
             document.getElementById('cur_time').innerText = this.cur_time;
         }, 100);
     }

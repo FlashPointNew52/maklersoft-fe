@@ -16,11 +16,11 @@ import {Contact} from "../../entity/contact";
     inputs: ['tab', 'dateType'],
     styles: [`
         .work-area {
-            height: calc(100vh - 122px);
-            padding: 30px 0;
+            height: calc(100vh - 122px - 90px);
+            padding-bottom: 30px;
             min-width: 1150px;
             max-width: 1300px;
-            margin: 0 auto;
+            margin: 80px auto 0;
             display: flex;
             flex-direction: column;
             overflow: auto;
@@ -44,11 +44,7 @@ import {Contact} from "../../entity/contact";
         }
     `],
     template: `
-        <div class = "round_menu">
-            <div class="button" (click)="addPerson()">Добавить</div>
-            <div class="button" (click)="toggleSource('all')"   [class.button_active]="this.source != 'local'">Общая</div>
-            <div class="button" (click)="toggleSource('local')" [class.button_active]="this.source == 'local'">Компания</div>
-        </div>
+        
         <div class="search-form">
             <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'100%'"
                    [(ngModel)]="searchQuery" (keyup)="searchParamChanged()"
@@ -135,8 +131,18 @@ import {Contact} from "../../entity/contact";
 
         <hr class='underline'>
         <div class="head"><span>{{tab.header}}</span></div>
-
+        <div class="source_menu list"> 
+                <div class="add" style="width: 220px;max-width: unset;height: 35px" (click)="addPerson()">ДОБАВИТЬ</div>
+                <div class="average"  style="width: 220px;max-width: unset;height: 35px" (click)="toggleSource('all')"  [class.active]="this.source != 'local'">ОБЩАЯ</div>
+                <div  (click)="toggleSource('local')"  style="width: 220px;max-width: unset;height: 35px" [class.active]="this.source == 'local'">КОМПАНИЯ</div>
+        </div>
         <div class="work-area" (contextmenu)="contextMenu($event)" (offClick)="selectedPerson = []" (scroll)="scroll($event)">
+<!--            <div class = "round_menu">-->
+<!--                <div class="button" (click)="addPerson()">Добавить</div>-->
+<!--                <div class="button" (click)="toggleSource('all')"   [class.button_active]="this.source != 'local'">Общая</div>-->
+<!--                <div class="button" (click)="toggleSource('local')" [class.button_active]="this.source == 'local'">Компания</div>-->
+<!--            </div>-->
+            
             <digest-person *ngFor="let p of persons; let i = index"
                 [person]="p"
                 (click)="clickPerson($event, p, i)"
@@ -188,6 +194,7 @@ export class TabListPersonComponent implements OnInit {
     selectedPerson: Person[] = [];
 
     lastClckIdx: number = 0;
+    workAreaMode: any;
 
     constructor(private _configService: ConfigService,
         private _hubService: HubService,
@@ -384,61 +391,108 @@ export class TabListPersonComponent implements OnInit {
                         tab_sys.addTab('person', {person: o, canEditable: canEditable});
                     });
                 }},
-                {class: "entry", disabled: this.source == 'local' && this.canImpact() ? false : true, icon: "", label: 'Удалить',
-                    callback: () => {
-                        this.clickContextMenu({event: "del_obj"});
-                    }
-                },
                 {class: "delimiter"},
-
-                {class: "entry", disabled: this.selectedPerson.length == 1 ? false : true, icon: "", label: "Просмотреть фото",
+                {class: "entry", disabled: this.selectedPerson.length == 1 ? false : true, icon: "", label: "Показать фото",
                     callback: () => {
                         this.clickContextMenu({event: "photo"});
                     }
                 },
-                {class: "delimiter"},
-                {class: "entry", disabled: this.canImpactAmongAdd(), icon: "", label: "Добавить в контакты", callback: () => {
-                    this.clickContextMenu({event: "add_to_local"});
-                }},
-                {class: "submenu", disabled: this.source == 'local' && this.canImpact() ? false : true, icon: "", label: "Назначить", items: [
-                    {class: "entry", disabled: false, label: "Не назначено",
-                        callback: () => {
-                            this.clickContextMenu({event: "del_agent", agent: null});
-                        }
+                {class: "entry", disabled: this.selectedPerson.length == 1 ? false : true, icon: "", label: "Показать документы",
+                    callback: () => {
+                        this.clickContextMenu({event: "doc"});
                     }
-                ].concat(uOpt)},
-                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: [
-
-                ]},
-                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: [
-
-                ]},
+                },
+                {class: "entry", disabled: this.selectedPerson.length != 1, icon: "", label: "Заявка на ипотеку",
+                    callback: () => {
+                    }
+                },
                 {class: "delimiter"},
-                {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
-                    {class: "entry", disabled: false, label: "Email1"},
-                    {class: "entry", disabled: false, label: "Email2"},
-                    {class: "entry", disabled: false, label: "Email3"},
-                ]},
-                {class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
-                    {class: "entry", disabled: false, label: "Номер1"},
-                    {class: "entry", disabled: false, label: "Номер2"},
-                    {class: "entry", disabled: false, label: "Номер3"},
-                ]},
+                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
+                        {class: "entry", disabled: false, label: "Как Контакт",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_person"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Как Организацию",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_company"});
+                            }
+                        },
+                    ]},
+                {class: "submenu",  icon: "", label: "Назначить", items: [
+                        {class: "entry", disabled: false, label: "Не назначено",
+                            callback: () => {
+                                this.clickContextMenu({event: "del_agent", agent: null});
+                            }
+                        }
+                    ].concat(uOpt)},
+                {class: "delimiter"},
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('notes', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('diary', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('chat', event);
+                        block.setShow(true, event);
+                    }},
                 {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
-                    {class: "entry", disabled: false, label: "Номер1"},
-                    {class: "entry", disabled: false, label: "Номер2"},
-                    {class: "entry", disabled: false, label: "Номер3"},
-                ]},
-                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: [
+                        {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
 
-                ]},
-                {class: "delimiter", disabled: this.source == 'local' && this.canImpact() ? false : true},
-                {class: "submenu", disabled: this.source == 'local' && this.canImpact() ? false : true, icon: "", label: "Назначить тег", items: [
-                    {class: "tag", icon: "", label: "", offer: this.selectedPerson.length == 1 ? this.selectedPerson[0] : null, tag: tag,
-                        callback: (new_tag) => {
-                          this.clickContextMenu({event: "set_tag", tag: new_tag});
-                    }}
-                ]}
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", disabled: this.selectedPerson.length != 1, icon: "", label: "Сводка",
+                    callback: () => {
+                        this.workAreaMode = 'svodka';
+                    }
+                },
+                {class: "entry", disabled: this.selectedPerson.length != 1, icon: "", label: "Отчет",
+                    callback: () => {
+                        this.workAreaMode = 'report';
+                    }
+                },
+                {class: "entry", disabled: this.selectedPerson.length != 1, icon: "", label: "История",
+                    callback: () => {
+                        this.workAreaMode = 'history';
+                    }
+                },
+                {class: "submenu", icon: "", label: "Назначить тег", items: [
+                        {class: "tag", icon: "", label: "", offer: this.selectedPerson.length == 1 ? this.selectedPerson[0] : null, tag,
+                            callback: (new_tag) => {
+                                this.clickContextMenu({event: "set_tag", tag: new_tag});
+                            }}
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", disabled: this.source == 'local' && this.canImpact() ? false : true, icon: "", label: 'Удалить',
+                    callback: () => {
+                        this.clickContextMenu({event: "del_obj"});
+                    }
+                }
 
             ]
         };

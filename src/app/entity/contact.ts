@@ -7,6 +7,7 @@ import {MessengerBlock} from "../class/messengerBlock";
 import {Organisation} from "./organisation";
 import {User} from "./user";
 import {ContractBlock} from "../class/contractBlock";
+import {UploadFile} from '../class/uploadFile';
 
 export class Contact {
     id: number;
@@ -39,6 +40,8 @@ export class Contact {
     photoMini: string;
     isMiddleman: boolean;
     type: string;
+    photos: UploadFile[];         //url фото
+    documents: UploadFile[];         //url документов
 
     constructor(name?) {
         //this.agent = new User();

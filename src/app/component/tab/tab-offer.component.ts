@@ -1237,34 +1237,41 @@ import {Contact} from "../../entity/contact";
                     <input-area [name]="'Дополнительно'" [value]="offer?.costInfo" (newValue)="offer.costInfo = $event"
                                 [disabled]="!editEnabled" [update]="update"></input-area>
                 </ui-tab>
-                <div more class="more">ЕЩЁ...
-                    <div>
-                        <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Карта</div>
-                        <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
-                        <div (click)="workAreaMode = 'photo'" [class.selected]="workAreaMode == 'photo'">Фото</div>
-                        <div (click)="workAreaMode = 'advert'" [class.selected]="workAreaMode == 'advert'">Реклама</div>
-                        <div (click)="workAreaMode = 'egrn'" [class.selected]="workAreaMode == 'egrn'">Выписка из ЕГРН
-                        </div>
-                        <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на
-                            ипотеку
-                        </div>
-                        <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">
-                            Заметки
-                        </div>
-                        <div (click)="openNotebook('daily', $event)" [class.selected]="workAreaMode == 'daily'">
-                            Ежедневник
-                        </div>
-                        <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
-                        <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">
-                            IP-телефония
-                        </div>
-                        <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка
-                        </div>
-                        <div (click)="workAreaMode = 'report'" [class.selected]="workAreaMode == 'report'">Отчет</div>
-                        <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История
-                        </div>
-                        <div class="delete" (click)="delete()">Удалить предложение</div>
-                    </div>
+<!--                (click)="showContextMenu($event);"-->
+                <div more class="more" (click)="showContextMenu($event);" (offClick)="this._hubService.shared_var['cm_hidden'] = true">ЕЩЁ...
+<!--                    <div>-->
+<!--                        <div>Проверить</div>-->
+<!--                        <hr style="margin: 4px 13px;"/>-->
+<!--                        <div><a href="{{offer.sourceUrl}}">Перейти в источник</a></div>-->
+<!--                        <div (click)="workAreaMode = 'photo'" [class.selected]="workAreaMode == 'photo'">Показать фото</div>-->
+<!--                        <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Перейти на карту</div>-->
+<!--                        <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Показать документы</div>                        -->
+<!--                        <div (click)="workAreaMode = 'advert'" [class.selected]="workAreaMode == 'advert'">Экспорт предложения в...</div>-->
+<!--                        <div (click)="workAreaMode = 'egrn'" [class.selected]="workAreaMode == 'egrn'">Выписка из ЕГРН-->
+<!--                        </div>-->
+<!--                        <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на-->
+<!--                            ипотеку-->
+<!--                        </div>-->
+<!--                        <hr style="margin: 4px 13px;"/>-->
+<!--                        <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">-->
+<!--                            Добавить заметку-->
+<!--                        </div>-->
+<!--                        <div (click)="openNotebook('daily', $event)" [class.selected]="workAreaMode == 'daily'">-->
+<!--                            Добавить задачу-->
+<!--                        </div>-->
+<!--                        <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Написать в чат</div>-->
+<!--                        <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">-->
+<!--                            Позвонить-->
+<!--                        </div>-->
+<!--                        <hr style="margin: 4px 13px;"/>-->
+<!--                        <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка-->
+<!--                        </div>-->
+<!--                        <div (click)="workAreaMode = 'report'" [class.selected]="workAreaMode == 'report'">Отчет</div>-->
+<!--                        <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История-->
+<!--                        </div>-->
+<!--                        <hr style="margin: 4px 13px;"/>-->
+<!--                        <div class="delete" (click)="delete()">Удалить</div>-->
+<!--                    </div>-->
                 </div>
             </ui-tabs-menu>
             <div class="digest-list" (contextmenu)="$event" *ngIf="mode == 1">
@@ -1298,7 +1305,7 @@ import {Contact} from "../../entity/contact";
                             [selected_offers]="selectedOffers"
                 >
                 </yamap-view>
-                <adv-view *ngSwitchCase="'advert'"></adv-view>
+                <adv-view *ngSwitchCase="'advert'" [offers]="[offer]"  [mode]="'offer'"></adv-view>
                 <files-view *ngSwitchCase="'photo'" [files]="offer.photos" [full]="paneHidden" [type]="'photo'"
                             [editMode]="editEnabled"
                             (add)="addFile($event, 'photo')" (delete)="offer.photos = $event"
@@ -1429,7 +1436,280 @@ export class TabOfferComponent implements OnInit {
 
         }
     }
+    showContextMenu(e) {
+        e.preventDefault();
+        e.stopPropagation();
 
+        let c = this;
+        //let users: User[] = this._userService.listCached("", 0, "");
+        let uOpt = [{class:'entry', label: "На себя", disabled: false, callback: () => {
+                this.clickContextMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
+            }}];
+        for (let op of this._userService.cacheUsers){
+            op.callback = () => {
+                this.clickContextMenu({event: "set_agent", agentId: op.value});
+            };
+            uOpt.push(op);
+        }
+        let stateOpt = [];
+        let states = [
+            {value: 'raw', label: 'Не активен'},
+            {value: 'active', label: 'Активен'},
+            {value: 'work', label: 'В работе'},
+            {value: 'suspended', label: 'Приостановлен'},
+            {value: 'archive', label: 'Архив'}
+        ];
+        states.forEach(s => {
+            stateOpt.push(
+                {class: "entry", disabled: false, label: s.label, callback() {
+                        c.selectedOffers.forEach(o => {
+                            o.stageCode = s.value;
+                            c._offerService.save(o);
+                        });
+                    }}
+            );
+        });
+        let tag = this.selectedOffers[0].tag || null;
+        let menu = {
+            pX: e.pageX,
+            pY: e.pageY,
+            scrollable: false,
+            items: [
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: 'Проверить', callback: () => {
+                        this.openPopup = {visible: true, task: "check"};
+                    }},
+                {class: "entry", disabled: false, icon: "", label: 'Открыть', callback: () => {
+                        let tab_sys = this._hubService.getProperty('tab_sys');
+                        this.selectedOffers.forEach(o => {
+                            let canEditable = this.source == OfferSource.IMPORT ? false : (this._sessionService.getUser().accountId == o.accountId);
+                            tab_sys.addTab('offer', {offer: o, canEditable});
+                        });
+                    }},
+                {class: "delimiter"},
+                {class: "entry", disabled: false, icon: "", label: 'Перейти в источник',
+                    callback: () => {
+                        this.selectedOffers.forEach(o => {
+                            if(o.sourceUrl)
+                                window.open(o.sourceUrl, '_blank');
+                        });
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Показать фото",
+                    callback: () => {
+                        this.workAreaMode = 'photo';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Перейти на карту",
+                    callback: () => {
+                        this.workAreaMode = 'map';
+                        let off = this.selectedOffers[0];
+                        this.selectedOffers = [];
+                        setTimeout(() => {
+                            this.selectedOffers = [off]
+                        }, 100);
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Показать документы",
+                    callback: () => {
+                        this.workAreaMode = 'doc';
+                    }
+                },
+                {class: "entry", disabled: false, icon: "", label: "Экспорт предложения в...", callback: () => {
+                        this.workAreaMode = 'advert';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Выписка из ЕГРН",
+                    callback: () => {
+                        this.workAreaMode = 'egrn';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Заявка на ипотеку",
+                    callback: () => {
+                        this.workAreaMode = 'mortgage';
+                    }
+                },
+                {class: "delimiter"},
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+
+                        block.setMode("notes", event);
+                        block.setShow(true, event);
+                    }
+                },
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+
+                        block.setMode("daily", event);
+                        block.setShow(true, event);
+                    }
+                },
+                {class: "entry", disabled: false, icon: "", label: "Написать в чат",  callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+
+                        block.setMode("chat", event);
+                        block.setShow(true, event);
+                    }},
+                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
+                        {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                    ]},
+
+                {class: "delimiter"},
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Сводка",
+                    callback: () => {
+                        this.workAreaMode = 'svodka';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Отчет",
+                    callback: () => {
+                        this.workAreaMode = 'report';
+                    }
+                },
+                {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "История",
+                    callback: () => {
+                        this.workAreaMode = 'history';
+                    }
+                },
+                {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить тег", items: [
+                        {class: "tag", icon: "", label: "", offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null, tag,
+                            callback: (new_tag) => {
+                                this.clickContextMenu({event: "set_tag", tag: new_tag});
+                            }}
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", sub_class: 'del', disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: 'Удалить',
+                    callback: () => {
+                        this.clickContextMenu({event: "del_obj"});
+                    }
+                }
+            ]
+        };
+
+        this._hubService.shared_var['cm'] = menu;
+        this._hubService.shared_var['cm_hidden'] = false;
+    }
+    clickContextMenu(evt: any){
+        this.selectedOffers.forEach(o => {
+            if(evt.event == "add_to_local"){
+                if(this.source == OfferSource.LOCAL){
+                    o.changeDate = Math.round((Date.now() / 1000));
+                } else{
+                    o.addDate = null;
+                }
+                o.stageCode = 'raw';
+                if(evt.agent){
+                    o.agentId = evt.agent.id;
+                    o.agent = evt.agent;
+                } else {
+                    o.agentId = null;
+                    o.agent = null;
+                }
+                if(!o.person && !o.company && o.phoneBlock.main){
+                    let pers: Person = new Person();
+                    pers.phoneBlock =  PhoneBlock.toFormat(o.phoneBlock);
+                    if(evt.agent) {
+                        pers.agent = evt.agent;
+                        pers.agentId = evt.agent.id;
+                    }
+                    this._personService.save(pers).subscribe(
+                        data => {
+                            o.person = data;
+                            o.personId = data.id;
+                            this._offerService.save(o);
+                        }
+                    );
+                } else{
+                    o.person != null ? o.personId = o.person.id : o.companyId = o.company.id;
+                    this._offerService.save(o);
+                    o.offerRef = 1;
+                }
+            } else if(evt.event == "add_to_person"){
+                if(!o.person  && o.phoneBlock.main){
+                    let pers: Person = new Person();
+                    pers.phoneBlock = PhoneBlock.toFormat(o.phoneBlock);
+                    this._personService.save(pers).subscribe(
+                        data => {
+                            o.person = data;
+                            o.personId = data.id;
+                            /*this.offers.forEach(t => {
+                                if(t.phones_import)
+                            });*/
+                            let tabSys = this._hubService.getProperty('tab_sys');
+                            tabSys.addTab('person', {person: o.person, canEditable: true});
+                        }
+                    );
+                }
+            }
+            else if(evt.event == "add_to_company"){
+                if(!o.person && !o.company && o.phoneBlock.main){
+                    let org: Organisation = new Organisation();
+                    org.phoneBlock = PhoneBlock.toFormat(o.phoneBlock);
+
+                    this._organisationService.save(org).subscribe(
+                        data => {
+                            o.company = data;
+                            o.companyId = data.id;
+                            let tabSys = this._hubService.getProperty('tab_sys');
+                            tabSys.addTab('organisation', {organisation: o.company, canEditable: true});
+                        }
+                    );
+                }
+            } else if(evt.event == "set_agent"){
+                o.agentId = evt.agentId;
+                this._offerService.save(o).subscribe(offer =>{
+                    this.selectedOffers[this.selectedOffers.indexOf(o)] = offer;
+                });
+
+            } else if(evt.event == "del_agent"){
+                o.agentId = null;
+                o.agent = null;
+                this._offerService.save(o).subscribe(offer =>{
+                    this.selectedOffers[this.selectedOffers.indexOf(o)] = offer;
+                });
+            } else if(evt.event == "del_obj"){
+                this._offerService.delete(o).subscribe(
+                    data => {
+                        this.selectedOffers.splice(this.selectedOffers.indexOf(o), 1);
+                    }
+                );
+            } else if(evt.event == "check"){
+                this.openPopup = {visible: true, task: "check", value: PhoneBlock.getAsString(o.phoneBlock, " "), person: o.person};
+            } else if(evt.event == "photo"){
+                this.openPopup = {visible: true, task: "photo", offer: o, value: this.source};
+            } else if(evt.event == "set_tag"){
+                o.tag = evt.tag;
+                this._offerService.save(o).subscribe(offer =>{
+                    this.selectedOffers[this.selectedOffers.indexOf(o)] = offer;
+                });
+            } else {
+                this._offerService.save(o);
+            }
+        });
+        if(evt.event == "map"){
+            this.openPopup = {visible: true, task: "map", offers: this.selectedOffers, value: this.source,
+                map: {}
+            };
+        }
+    }
     openNotebook(name, event) {
         let block = this._hubService.getProperty("notebook");
 
@@ -1802,30 +2082,12 @@ export class TabOfferComponent implements OnInit {
                         }
                     ]
                 },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: [
-                        {
-                            class: "entry", disabled: false, label: "Произвольно", callback: function () {
-                                alert("yay s1!");
-                            }
-                        },
-                        {
-                            class: "entry", disabled: false, label: "Шаблон 1", callback: function () {
-                                alert("yay s2!");
-                            }
-                        },
-                        {
-                            class: "entry", disabled: false, label: "Шаблон 2", callback: function () {
-                                alert("yay s2!");
-                            }
-                        },
-                        {
-                            class: "entry", disabled: false, label: "Шаблон 3", callback: function () {
-                                alert("yay s2!");
-                            }
-                        }
-                    ]
-                }
+                {class: "submenu", disabled: false, icon: "", label: "Написать в чат",  callback: (event) => {
+                    let block = this._hubService.getProperty('notebook');
+
+                    block.setMode("chat", event);
+                    block.setShow(true, event);
+                }}
             ]
         };
 

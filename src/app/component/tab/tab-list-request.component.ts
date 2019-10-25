@@ -41,7 +41,7 @@ import {OrganisationService} from "../../service/organisation.service";
         }
     `],
     template: `
-        <div class="search-form">
+        <div class="search-form" *ngIf="workAreaMode == 'map'">
             <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'100%'"
                 [(ngModel)]="searchQuery" (keyup)="searchParamChanged()"
             ><span class="find_icon_right"></span>
@@ -140,7 +140,7 @@ import {OrganisationService} from "../../service/organisation.service";
                 <div class="fixed-button" (click)="toggleLeftPane()">
                     <div class="arrow" [ngClass]="{'arrow-right': paneHidden, 'arrow-left': !paneHidden}"></div>
                 </div>
-                <div class="digest-list border" (contextmenu)="contextMenu($event)">
+                <div class="digest-list border" (contextmenu)="contextMenu($event)" (scroll)="scroll($event)" (offClick)="this._hubService.shared_var['cm_hidden'] = true" >
                     <digest-request *ngFor="let req of requests; let i = index" [request]="req"
                             [class.selected]="selectedRequests.indexOf(req) > -1"
                             (click)="select($event, req, i)"
@@ -152,9 +152,14 @@ import {OrganisationService} from "../../service/organisation.service";
                 </div>
         </div>
         <div class="work-area">
-            <yamap-view>
-
-            </yamap-view>
+            <ng-container [ngSwitch]="workAreaMode">
+                <yamap-view *ngSwitchCase="'map'">
+    
+                </yamap-view>
+                <adv-view *ngSwitchCase="'advert'" [request]="selectedRequests[0]" [mode]="'request'"></adv-view>
+                <files-view [full]="paneHidden" [files]="selectedRequests[0].photos" [type]="'photo'" [editMode]="false" *ngSwitchCase="'photo'"></files-view>
+                <files-view [full]="paneHidden" [files]="selectedRequests[0].documents" [type]="'doc'" [editMode]="false" *ngSwitchCase="'doc'"></files-view>
+            </ng-container>
         </div>
     `
 })
@@ -170,7 +175,7 @@ export class TabListRequestComponent implements OnInit {
     page: number = 0;
     perPage: number = 32;
     paneHidden: boolean = true;
-
+    workAreaMode: string = 'map';
     filter: any = {
         offerTypeCode: 'sale',
         isMiddleman: 'all',
@@ -312,9 +317,29 @@ export class TabListRequestComponent implements OnInit {
                             tab_sys.addTab('offer', {offer: o, canEditable});
                         });
                     }},
-                {class: "entry", sub_class: 'del', disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
+                {class: "delimiter"},
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Показать фото",
                     callback: () => {
-                        this.clickContextMenu({event: "del_obj"});
+                        this.workAreaMode = 'photo';
+                    }
+                },
+                {class: "entry", icon: "", label: "Перейти на карту",
+                    callback: () => {
+                        this.workAreaMode = 'map';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Показать документы",
+                    callback: () => {
+                        this.workAreaMode = 'doc';
+                    }
+                },
+                {class: "entry", disabled: false, icon: "", label: "Экспорт заявки в...", callback: () => {
+                        this.workAreaMode = 'advert';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Заявка на ипотеку",
+                    callback: () => {
+                        this.workAreaMode = 'mortgage';
                     }
                 },
                 {class: "delimiter"},
@@ -337,27 +362,21 @@ export class TabListRequestComponent implements OnInit {
                             }
                         }
                     ].concat(uOpt)},
-                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
-                        let block = this._hubService.getProperty('notebook');
-                        block.setMode('diary', event);
-                        block.setShow(true, event);
-                    }},
                 {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
                         let block = this._hubService.getProperty('notebook');
                         block.setMode('notes', event);
                         block.setShow(true, event);
                     }},
-                {class: "delimiter"},
-                {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
-                        {class: "entry", disabled: false, label: "Email1"},
-                        {class: "entry", disabled: false, label: "Email2"},
-                        {class: "entry", disabled: false, label: "Email3"},
-                    ]},
-                {class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
-                        {class: "entry", disabled: false, label: "Номер1"},
-                        {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"},
-                    ]},
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('diary', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('chat', event);
+                        block.setShow(true, event);
+                    }},
                 {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
                         {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
                                 let block = this._hubService.getProperty('notebook');
@@ -381,19 +400,47 @@ export class TabListRequestComponent implements OnInit {
                             }
                         },
                     ]},
-                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
-                        let block = this._hubService.getProperty('notebook');
-                        block.setMode('chat', event);
-                        block.setShow(true, event);
-                    }},
+                // {class: "delimiter"},
+                // {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
+                //         {class: "entry", disabled: false, label: "Email1"},
+                //         {class: "entry", disabled: false, label: "Email2"},
+                //         {class: "entry", disabled: false, label: "Email3"},
+                //     ]},
+                // {class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
+                //         {class: "entry", disabled: false, label: "Номер1"},
+                //         {class: "entry", disabled: false, label: "Номер2"},
+                //         {class: "entry", disabled: false, label: "Номер3"},
+                //     ]},
+
+
                 {class: "delimiter"},
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Сводка",
+                    callback: () => {
+                        this.workAreaMode = 'svodka';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Отчет",
+                    callback: () => {
+                        this.workAreaMode = 'report';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "История",
+                    callback: () => {
+                        this.workAreaMode = 'history';
+                    }
+                },
                 {class: "submenu", disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить тег", items: [
                         {class: "tag", icon: "", label: "", offer: this.selectedRequests.length == 1 ? this.selectedRequests[0] : null, tag,
                             callback: (new_tag) => {
                                 this.clickContextMenu({event: "set_tag", tag: new_tag});
                             }}
-                    ]}
-
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", sub_class: 'del', disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
+                    callback: () => {
+                        this.clickContextMenu({event: "del_obj"});
+                    }
+                }
             ]
         };
 

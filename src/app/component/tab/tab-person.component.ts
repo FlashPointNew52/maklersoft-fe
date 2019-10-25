@@ -68,12 +68,13 @@ import {Contact} from "../../entity/contact";
 
         .work-area {
             float: right;
-            height: calc(100vh - 115px);
-            width: calc(100vw - 400px);
+            height: calc(100vh - 122px);
+            width: 100vw;
             display: flex;
             flex-direction: column;
             flex-wrap: wrap;
             align-content: start;
+            position: relative;
         }
 
         .rating_block {
@@ -437,20 +438,30 @@ import {Contact} from "../../entity/contact";
                                     [active]="selectedRequests.indexOf(req) > -1"
                     ></digest-request>
                 </ui-tab>
-                <div more class="more">ЕЩЁ...
-                    <div>
-                        <div class="delete" (click)="delete()">Удалить контакт</div>
-                    </div>
+                <div more class="more" (click)="contextMenu($event);" (offClick)="this._hubService.shared_var['cm_hidden'] = true">ЕЩЁ...
+<!--                    <div>-->
+<!--                        <div class="delete" (click)="delete()">Удалить контакт</div>-->
+<!--                    </div>-->
                 </div>
             </ui-tabs-menu>
         </div>
         <div class="work-area">
-            <div class="rating_block">
-                <rating-view [obj]="person" [type]="canEditable == true ? 'person' : 'user'"></rating-view>
-            </div>
-            <div class="comment_block">
-                <comments-view [obj]="person" [type]="canEditable == true ? 'person' : 'user'"></comments-view>
-            </div>
+            <ng-container [ngSwitch]="workAreaMode">
+                <div class="rating_block" *ngSwitchCase="'rating'">
+                    <rating-view [obj]="person" [type]="canEditable == true ? 'person' : 'user'"></rating-view>
+                </div>
+                <div class="comment_block" *ngSwitchCase="'rating'">
+                    <comments-view [obj]="person" [type]="canEditable == true ? 'person' : 'user'"></comments-view>
+                </div>
+                <files-view *ngSwitchCase="'photo'" [files]="" [type]="'photo'"
+                            [editMode]="editEnabled"
+                            (add)="addFile($event, 'photo')" (delete)="person.photos = $event"
+                            (progressLoad)="displayProgress($event)"></files-view>
+                <files-view *ngSwitchCase="'doc'" [files]="person.documents" [type]="'doc'"
+                            [editMode]="editEnabled"
+                            (add)="addFile($event, 'doc')" (delete)="person.documents = $event"
+                            (progressLoad)="displayProgress($event)"></files-view>
+            </ng-container>
         </div>    `
 })
 
@@ -464,7 +475,7 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
     block = ObjectBlock;
     utils = Utils;
     utilsObj = null;
-
+    workAreaMode: any;
     organisationsOpts: any[] = [];
     agentOpts: any = {
         null: {label: "Не назначено"}
@@ -592,11 +603,16 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
             this.person.agent = null;
         }
     }
-
-    addFile(event){
-        this.person.photo = event[0].href;
-        this.person.photoMini = event[0].href;
+    addFile(event, array) {
+        if (array == "photo")
+            this.person.photos.length > 0 ? this.person.photos = [].concat(this.person.photos).concat(event) : this.person.photos = event;
+        else if (array == "doc")
+            this.person.documents.length > 0 ? this.person.documents = [].concat(this.person.documents).concat(event) : this.person.documents = event;
     }
+    // addFile(event){
+    //     this.person.photo = event[0].href;
+    //     this.person.photoMini = event[0].href;
+    // }
 
     displayProgress(event) {
         this.progressWidth = event;
@@ -635,65 +651,125 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
 
 
         let uOpt = [];
-
+        let tag = this.person.tag || null;
         let menu = {
             pX: e.pageX,
             pY: e.pageY,
             scrollable: false,
             items: [
-                {
-                    class: "entry", disabled: false, icon: "", label: "Проверить", callback: () => {
+                {class: "entry",  icon: "", label: 'Проверить', callback: () => {
                         //this.openPopup = {visible: true, task: "check"};
-                    }
-                },
+                    }},
+                {class: "entry", disabled: false, icon: "", label: 'Открыть', callback: () => {
+                        let tab_sys = this._hubService.getProperty('tab_sys');
 
-                {
-                    class: "entry", disabled: false, icon: "", label: "Просмотреть фото",
+                            tab_sys.addTab('person', {person: this.person, canEditable: this.canEditable});
+                    }},
+                {class: "delimiter"},
+                {class: "entry",  icon: "", label: "Показать фото",
                     callback: () => {
                         this.clickContextMenu({event: "photo"});
+                        this.workAreaMode = 'photo';
                     }
                 },
-                {class: "delimiter"},
-                {
-                    class: "entry",
-                    disabled: this.person.userRef != null,
-                    icon: "",
-                    label: "Добавить в контакты",
+                {class: "entry",  icon: "", label: "Показать документы",
                     callback: () => {
-                        this.clickContextMenu({event: "add_to_local"});
+                        this.clickContextMenu({event: "doc"});
+                        this.workAreaMode = 'doc';
                     }
                 },
-                {
-                    class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: []
-                },
-                {
-                    class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: []
+                {class: "entry", label: "Заявка на ипотеку",
+                    callback: () => {
+                    }
                 },
                 {class: "delimiter"},
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
-                        {class: "entry", disabled: false, label: "Email1"},
-                        {class: "entry", disabled: false, label: "Email2"},
-                        {class: "entry", disabled: false, label: "Email3"}
-                    ]
+                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
+                        {class: "entry", disabled: false, label: "Как Контакт",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_person"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Как Организацию",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_company"});
+                            }
+                        },
+                    ]},
+                {class: "submenu",  icon: "", label: "Назначить", items: [
+                        {class: "entry", disabled: false, label: "Не назначено",
+                            callback: () => {
+                                this.clickContextMenu({event: "del_agent", agent: null});
+                            }
+                        }
+                    ].concat(uOpt)},
+                {class: "delimiter"},
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('notes', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('daily', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('chat', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
+                        {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                    ]},
+                {class: "delimiter"},
+                {class: "entry",  icon: "", label: "Сводка",
+                    callback: () => {
+                        this.workAreaMode = 'svodka';
+                    }
                 },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
-                        {class: "entry", disabled: false, label: "Номер1"},
-                        {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"}
-                    ]
+                {class: "entry",  icon: "", label: "Отчет",
+                    callback: () => {
+                        this.workAreaMode = 'report';
+                    }
                 },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Позвонить", items: [
-                        {class: "entry", disabled: false, label: "Номер1"},
-                        {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"}
-                    ]
+                {class: "entry", icon: "", label: "История",
+                    callback: () => {
+                        this.workAreaMode = 'history';
+                    }
                 },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: []
+                {class: "submenu", icon: "", label: "Назначить тег", items: [
+                        {class: "tag", icon: "", label: "", offer: this.person != undefined ?  this.person : null, tag,
+                            callback: (new_tag) => {
+                                this.clickContextMenu({event: "set_tag", tag: new_tag});
+                            }}
+                    ]},
+                {class: "delimiter"},
+                {class: "entry",  icon: "", label: 'Удалить',
+                    callback: () => {
+                        this.clickContextMenu({event: "del_obj"});
+                    }
                 }
+
             ]
         };
 
