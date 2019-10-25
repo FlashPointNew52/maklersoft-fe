@@ -347,7 +347,7 @@ import {Contact} from "../../entity/contact";
                             <span>Стадия объекта</span>
                             <span class="view-value">{{ offClass.stageCodeOptions[offer?.stageCode]?.label}}</span>
                         </div>
-                        <div class="show_block">
+                        <div class="show_block" *ngIf="offer.accountId == this._sessionService.getUser().accountId">
                             <span>Источник объекта</span>
                             <span class="view-value" *ngIf="offer.sourceMedia && offer.sourceUrl"><a
                                 href="{{offer.sourceUrl}}"
@@ -1408,6 +1408,9 @@ export class TabOfferComponent implements OnInit {
         } else if (this.offer.company) {
             this.contact = this.offer.company;
             this.contact.type = "organisation";
+        } else{
+            this.contact.phoneBlock = this.offer.phoneBlock;
+            this.contact.type = "person";
         }
         let c = this._configService.getConfig();
         let loc = null;//this._sessionService.getAccount().location;
@@ -1526,9 +1529,12 @@ export class TabOfferComponent implements OnInit {
             this._hubService.getProperty("modal-window").showMessage("Один из телефонов указан неверно");
             return false;
         }
-
         if (!AddressBlock.check(this.offer.addressBlock)) {
             this._hubService.getProperty("modal-window").showMessage("Адрес не заполнен. Сохранение невозможно!");
+            return false;
+        }
+        if (this.offer.stageCode == 'listing' && !this.offer.agentId) {
+            this._hubService.getProperty("modal-window").showMessage("Невозможно перевести объект в стадию \"Листинг\" без ответственного");
             return false;
         }
 

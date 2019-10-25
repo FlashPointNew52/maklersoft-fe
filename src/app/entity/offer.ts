@@ -68,7 +68,7 @@ export class Offer {
 
     photos: UploadFile[];         //url фото
     documents: UploadFile[];         //url документов
-    
+
     sourceCode: string;             //источник объекта
 
     offerTypeCode: string;          //Предложение (аренда/продажа)
@@ -570,13 +570,13 @@ export class Offer {
     };
 
     public static sourceMediaOptions = {
-        present_site: "Презент сайт",
-        present_archive: "Презент архив",
-        avito: "Авито",
-        farpost: "Фарпост",
-        cian: "Циан",
-        irr: "Из рук в руки",
-        mkv: "Мир квартир"
+        present_site:  {label: "Презент сайт"},
+        present_archive:  {label: "Презент архив"},
+        avito:  {label: "Авито"},
+        farpost:  {label: "Фарпост"},
+        cian:  {label: "Циан"},
+        irr:  {label: "Из рук в руки"},
+        mkv:  {label: "Мир квартир"}
     };
 
     public static importSort = [

@@ -439,6 +439,10 @@ import {Contact} from "../../entity/contact";
                 </ui-tab>
                 <div more class="more">ЕЩЁ...
                     <div>
+                        <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">Заметки</div>
+                        <div (click)="openNotebook('daily', $event)" [class.selected]="workAreaMode == 'daily'">Ежедневник</div>
+                        <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
+                        <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">IP-телефония</div>
                         <div class="delete" (click)="delete()">Удалить контакт</div>
                     </div>
                 </div>
@@ -762,6 +766,13 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
             }
         }
         return objSelected;
+    }
+
+    openNotebook(name, event) {
+        let block = this._hubService.getProperty("notebook");
+
+        block.setMode(name, event);
+        block.setShow(true, event);
     }
 
     public delete() {

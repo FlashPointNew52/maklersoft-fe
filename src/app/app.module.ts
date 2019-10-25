@@ -81,7 +81,7 @@ import {AddressInputComponent} from "./component/ui-elements/address-input";
 import {ViewSocialsComponent} from "./component/ui-elements/view-socials";
 
 const appRoutes: Routes = [
-    {path: "admin", loadChildren: "src/app/admin.module#AdminModule"},
+    {path: "admin", loadChildren: "app/admin.module#AdminModule"},
     {path: "main", component: MainComponent},
     {
         path: "",

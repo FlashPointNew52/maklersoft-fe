@@ -390,13 +390,6 @@ export class TabListPersonComponent implements OnInit {
                     }
                 },
                 {class: "delimiter"},
-
-                {class: "entry", disabled: this.selectedPerson.length == 1 ? false : true, icon: "", label: "Просмотреть фото",
-                    callback: () => {
-                        this.clickContextMenu({event: "photo"});
-                    }
-                },
-                {class: "delimiter"},
                 {class: "entry", disabled: this.canImpactAmongAdd(), icon: "", label: "Добавить в контакты", callback: () => {
                     this.clickContextMenu({event: "add_to_local"});
                 }},

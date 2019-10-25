@@ -167,7 +167,7 @@ import {Utils} from "../../class/utils";
             <div class="fixed-button" (click)="toggleLeftPane()">
                 <div class="arrow" [ngClass]="{'arrow-right': paneHidden, 'arrow-left': !paneHidden}"></div>
             </div>
-            <div class="digest-list border" (contextmenu)="showContextMenu($event); contextCheck()" (offClick)="this._hubService.shared_var['cm_hidden'] = true">
+            <div class="digest-list border" (contextmenu)="showContextMenu($event); contextCheck()" (scroll)="scroll($event)" (offClick)="this._hubService.shared_var['cm_hidden'] = true">
                 <digest-offer *ngFor="let offer of offers; let i = index" [offer]="offer"
                                 [active]="selectedOffers.indexOf(offer) > -1"
                                 [class.selected]="selectedOffers.indexOf(offer) > -1"

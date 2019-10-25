@@ -312,7 +312,7 @@ export class LoginScreenComponent implements OnInit{
 
     get_code() {
         this._sessionService.get_code(this.phone).subscribe(result => {
-            if (result == null) {
+            if (result) {
                 this.isFindPhone = true;
                 this.password = "";
             }
@@ -338,7 +338,7 @@ export class LoginScreenComponent implements OnInit{
             return;
         }
         this._sessionService.check_code(this.phone, this.temp_code, this.password).subscribe(result => {
-            if (result == null) {
+            if (result) {
                 this._hubService.getProperty("modal-window").showMessage("Пароль успешно изменен", null);
                 this.temp_code = "";
                 this.confirm_password = "";
@@ -367,7 +367,7 @@ export class LoginScreenComponent implements OnInit{
             return;
         }
         this._sessionService.registrate(this.org_name, this.user_name, this.mail, this.phone).subscribe(res => {
-            if (res == null) {
+            if (res) {
                 this._hubService.getProperty("modal-window").showMessage("Регистрация прошла успешно! Для входа используйте пароль, отправленный Вам в SMS и на почтовый адрес.", null);
                 this.typeWindow = 1;
             }
