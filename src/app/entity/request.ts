@@ -4,6 +4,10 @@ import {ContractBlock} from "../class/contractBlock";
 import {ConditionsBlock} from "../class/conditionsBlock";
 import {Organisation} from "./organisation";
 import {UploadFile} from "../class/uploadFile";
+import {Rating} from '../class/rating';
+import {AddressBlock} from '../class/addressBlock';
+import {PhoneBlock} from '../class/phoneBlock';
+import {EmailBlock} from '../class/emailBlock';
 
 export class ValueRange {
     fixVal: any;
@@ -40,6 +44,41 @@ export class Request {
     companyId: number;
     company: Organisation;
 
+    categoryCode: string;           //категория недвижимости
+    buildingType: string;           //тип дома
+    buildingClass: string;          //тип недвижимости
+    typeCode: string;               //тип объекта
+    objectStage: string;            //стадия строительства
+    distance: string;               //удаленность
+    settlement: string;             //Наименование поселения
+    guard: boolean;                 //есть охрана
+    housingComplex: string;         //Жилищный комплекс
+    mortgages: boolean;              //под ипотеку
+    houseType: string;            //Материал дома
+    roomScheme: string;           //Тип комнат
+    floorsCount: number;            //этажность
+    levelsCount: number;            //уровней
+
+    squareTotal: number;            //площадь общая
+    squareLiving: number;           //площадь жилая
+    squareKitchen: number;          //площадь кухни
+    balcony: boolean;               //есть балкон
+    loggia: boolean;                //есть лоджия
+    condition: string;            //Состояние объекта
+    bathroom: string;             //тип санузла
+    squareLand: number;             //площадь участка
+    squareLandType: number;         //тип участка
+    waterSupply: boolean;           //есть водоснабжение
+    gasification: boolean;          //есть газ
+    electrification: boolean;       //есть электричество
+    sewerage: boolean;              //есть канализация
+    centralHeating: boolean;        //есть отопление
+    objectName: string;             //название объекта
+    ceilingHeight: number;          //высота потолков
+    lift: boolean;                  //есть лифт
+    parking: boolean;               //есть парковка
+    locRating: Rating;
+
     addDate: number;
     changeDate: number;
     assignDate: number;
@@ -47,7 +86,6 @@ export class Request {
 
     stageCode: string;
     offerTypeCode: string;
-    request: string;
 
     newBuilding: boolean;
     encumbrance: boolean;
@@ -71,8 +109,8 @@ export class Request {
 
     typeCodes: string[];
     budget: ValueRange;
-    roomsCount: ValueRange;
-    floor: ValueRange;
+    roomsCount: number;
+    floor: number;
     square: ValueRange;
 
     tag: number;
@@ -80,13 +118,24 @@ export class Request {
     description: string;
 
     documents: UploadFile[];
+    photos: UploadFile[];
 
     constructor() {
+        this.categoryCode = "rezidential";
+        this.buildingType =  'multisection_house';
+        this.buildingClass =  'economy';
+        this.typeCode = 'apartment';
+        this.houseType = "other";
+        this.bathroom = "other";
+        this.roomScheme = "other";
+        this.condition = "other";
+        this.locRating = new Rating();
+        this.locRating.map = {average : 0};
+
         this.offerTypeCode = "sale";
         this.stageCode = "raw";
         this.searchArea = [];
-        this.request = '';
-        this.budget = this.roomsCount = this.roomsCount = this.floor = this.square = new ValueRange();
+        this.budget = new ValueRange();
         this.contractBlock = new ContractBlock();
         this.conditions = new ConditionsBlock();
         this.documents = [];

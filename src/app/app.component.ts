@@ -38,5 +38,34 @@ export class AppComponent {
     constructor(protected _hubService: HubService) {
         this._hubService.shared_var['cm'] = {};
         this._hubService.shared_var['cm_hidden'] = true;
+        if (localStorage.getItem('vk_time') != undefined) {
+            if (Date.now()/1000 - Number.parseInt(localStorage.getItem('vk_time'),10) > 86400) {
+                localStorage.setItem('vk_counter', '0');
+            }
+        } else {
+            localStorage.setItem('vk_counter', '0');
+        }
+        if (localStorage.getItem('ok_time') != undefined) {
+            if (Date.now()/1000 - Number.parseInt(localStorage.getItem('ok_time'),10) > 86400) {
+                localStorage.setItem('ok_counter', '0');
+            }
+        } else {
+            localStorage.setItem('ok_counter', '0');
+        }
+        if (localStorage.getItem('facebook_time') != undefined) {
+            if (Date.now()/1000 - Number.parseInt(localStorage.getItem('facebook_time'),10) > 86400) {
+                localStorage.setItem('facebook_counter', '0');
+            }
+        } else {
+            localStorage.setItem('facebook_counter', '0');
+        }
+        if (localStorage.getItem('twitter_time') != undefined) {
+            if (Date.now()/1000 - Number.parseInt(localStorage.getItem('twitter_time'),10) > 86400) {
+                localStorage.setItem('twitter_counter', '0');
+            }
+        } else {
+            localStorage.setItem('twitter_counter', '0');
+        }
     }
+
 }

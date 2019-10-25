@@ -1,5 +1,4 @@
 import {Component, OnInit, AfterViewInit} from '@angular/core';
-
 import {Tab} from '../../class/tab';
 import {User} from '../../entity/user';
 import {Offer} from '../../entity/offer';
@@ -428,13 +427,14 @@ import {ObjectBlock} from "../../class/objectBlock";
                     <div>
                         <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
                         <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История</div>
+                        <hr style="    margin: 4px 13px;"/>
                         <div class="delete" (click)="delete()">Удалить пользователя</div>
                     </div>
                 </div>
             </ui-tabs-menu>
         </div>
 
-        <div class="work-area">
+        <div class="work-area">            
                 <div class="rating_block">
                   <rating-view [obj]="user" [type]="'user'"></rating-view>
                 </div>
@@ -537,7 +537,174 @@ export class TabUserComponent implements OnInit, AfterViewInit {
         });
     }
 
+    contextMenu(e) {
+        e.preventDefault();
+        e.stopPropagation();
 
+        let uOpt = [];
+
+        let tag = this.user.tag || null;
+        let menu = {
+            pX: e.pageX,
+            pY: e.pageY,
+            scrollable: false,
+            items: [
+                {class: "entry", icon: "", label: 'Проверить', callback: () => {
+                        //this.openPopup = {visible: true, task: "check"};
+                    }},
+                {class: "entry", disabled: false, icon: "", label: 'Открыть', callback: () => {
+                        let tab_sys = this._hubService.getProperty('tab_sys');
+
+                            tab_sys.addTab('user', {user: this.user, canEditable: true});
+
+                    }},
+                {class: "delimiter"},
+
+                {class: "entry", icon: "", label: "Показать фото",
+                    callback: () => {
+                        this.clickContextMenu({event: "photo"});
+                    }
+                },
+                {class: "entry", icon: "", label: "Показать документы",
+                    callback: () => {
+                        this.clickContextMenu({event: "doc"});
+                    }
+                },
+                {class: "entry", label: "Заявка на ипотеку",
+                    callback: () => {
+                        this.workAreaMode = 'mortgage';
+                    }
+                },
+                {class: "delimiter"},
+                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
+                        {class: "entry", disabled: false, label: "Как Контакт",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_person"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Как Организацию",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_company"});
+                            }
+                        },
+                    ]},
+                {class: "submenu", disabled: false , icon: "", label: "Назначить", items: [
+                        {class: "entry", disabled: false, label: "Не назначено",
+                            callback: () => {
+                                this.clickContextMenu({event: "del_agent", agent: null});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "",
+                            callback: () => {
+                                //this.clickContextMenu({event: "add_to_local", agent: this._sessionService.getUser()});
+                            }
+                        }
+                    ].concat(uOpt)},
+                {class: "delimiter"},
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('notes', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('diary', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('chat', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
+                        {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                    ]},
+                {class: "delimiter"},
+
+                {class: "entry", icon: "", label: "Сводка",
+                    callback: () => {
+                        this.workAreaMode = 'svodka';
+                    }
+                },
+                {class: "entry", icon: "", label: "Отчет",
+                    callback: () => {
+                        this.workAreaMode = 'report';
+                    }
+                },
+                {class: "entry", icon: "", label: "История",
+                    callback: () => {
+                        this.workAreaMode = 'history';
+                    }
+                },
+                {class: "submenu", disabled: false, icon: "", label: "Назначить тег", items: [
+                        {class: "tag", icon: "", label: "", offer: this.user == undefined ? this.user : null, tag,
+                            callback: (new_tag) => {
+                                this.clickContextMenu({event: "set_tag", tag: new_tag});
+                            }}
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", disabled: false, icon: "", label: 'Удалить',
+                    callback: () => {
+                        this.clickContextMenu({event: "del_obj"});
+                    }
+                }
+
+            ]
+        };
+
+        this._hubService.shared_var['cm'] = menu;
+        this._hubService.shared_var['cm_hidden'] = false;
+    }
+
+    clickContextMenu(evt: any){
+        let selectedUser = [this.user];
+        selectedUser.forEach(o => {
+            if(evt.event == "del_agent"){
+                o.agentId = null;
+                o.agent = null;
+                this._userService.save(o).subscribe(user =>{
+                    this.user = user;
+                });
+            } else if(evt.event == "del_obj"){
+                this._userService.delete(o).subscribe(
+                    data => {
+                        selectedUser.splice(selectedUser.indexOf(o), 1);
+                    }
+                );
+            } else if(evt.event == "check"){
+
+            } else if(evt.event == "photo"){
+
+            } else if(evt.event == "set_tag"){
+                o.tag = evt.tag;
+                this._userService.save(o).subscribe(user =>{
+                    this.user = user;
+                });
+            } else {
+
+            }
+        });
+    }
     toggleEdit() {
         this.editEnabled = !this.editEnabled;
     }

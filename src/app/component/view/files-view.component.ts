@@ -337,7 +337,7 @@ import {UploadFile} from "../../class/uploadFile";
             display: flex;
             align-items: center;
             justify-content: center;
-            height: calc(100vh - 122px - 155px - 16px);
+            height: calc(100vh - 122px - 135px - 40px);
             width: 100%;
             padding: 20px 0;
         }
@@ -383,11 +383,11 @@ import {UploadFile} from "../../class/uploadFile";
             width: 100%;
         }
         .exit{
-            position: relative;
+            position: absolute;
             width: 46px;
             height: 46px;
-            top: -619px;
-            left: calc(100% - 75px);
+            top: 7px;
+            right: 30px;
             background-size: 100% 100%;
             border-radius: 23px;
         }
@@ -411,7 +411,7 @@ import {UploadFile} from "../../class/uploadFile";
             overflow: hidden;
             position: relative;
             left: calc(50% - 428px);
-            top: -30px;
+            top: 20px;
         }
         .bottom-gal ul{
             list-style: none;

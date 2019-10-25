@@ -451,14 +451,11 @@ import {ObjectBlock} from "../../class/objectBlock";
                 </ui-tab>
                 <ui-tab [title]="'ФИЛИАЛЫ'">
                 </ui-tab>
-                <div more class="more">ЕЩЁ...
-                    <div>
-                        <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">Заметки</div>
-                        <div (click)="openNotebook('daily', $event)" [class.selected]="workAreaMode == 'daily'">Ежедневник</div>
-                        <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
-                        <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">IP-телефония</div>
-                        <div class="delete" (click)="delete()">Удалить организацию</div>
-                    </div>
+
+                <div more class="more" (click)="contextMenu($event);" (offClick)="this._hubService.shared_var['cm_hidden'] = true">ЕЩЁ...
+<!--                    <div>-->
+<!--                        <div class="delete" (click)="delete()">Удалить организацию</div>-->
+<!--                    </div>-->
                 </div>
             </ui-tabs-menu>
         </div>
@@ -490,6 +487,7 @@ export class TabOrganisationComponent implements OnInit, AfterViewInit {
     utilsObj = null;
 
     offers: Offer[];
+    workAreaMode: any;
 
     editEnabled: boolean = false;
 
@@ -602,7 +600,12 @@ export class TabOrganisationComponent implements OnInit, AfterViewInit {
         e.stopPropagation();
 
         let uOpt = [];
-
+        let tag;
+        if (this.organisation != undefined) {
+            tag = this.organisation.tag;
+        } else {
+            tag = null;
+        }
         let menu = {
             pX: e.pageX,
             pY: e.pageY,
@@ -614,44 +617,89 @@ export class TabOrganisationComponent implements OnInit, AfterViewInit {
                     }
                 },
                 {
-                    class: "entry",
-                    disabled: this.organisation.orgRef,
-                    icon: "",
-                    label: "Добавить в организации",
+                    class: "entry", disabled: false, icon: "", label: "Открыть", callback: () => {
+                        let tab_sys = this._hubService.getProperty("tab_sys");
+                            tab_sys.addTab("organisation", {organisation: this.organisation, canEditable: this.canEditable});
+                    }
+                },
+                {class: "delimiter"},
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('notes', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('daily', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('chat', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
+                        {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", icon: "", label: "Сводка",
                     callback: () => {
-                        this.clickContextMenu({event: "add_to_local"});
+                        this.workAreaMode = 'svodka';
+                    }
+                },
+                {class: "entry", icon: "", label: "Отчет",
+                    callback: () => {
+                        this.workAreaMode = 'report';
+                    }
+                },
+                {class: "entry", icon: "", label: "История",
+                    callback: () => {
+                        this.workAreaMode = 'history';
                     }
                 },
                 {
-                    class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: []
-                },
-                {
-                    class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: []
+                    class: "submenu",
+                    icon: "",
+                    label: "Назначить тег",
+                    items: [
+                        {
+                            class: "tag",
+                            icon: "",
+                            label: "",
+                            offer: this.organisation !=  undefined ? this.organisation : null,
+                            tag,
+                            callback: (new_tag) => {
+                                this.clickContextMenu({event: "set_tag", tag: new_tag});
+                            }
+                        }
+                    ]
                 },
                 {class: "delimiter"},
                 {
-                    class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
-                        {class: "entry", disabled: false, label: "Email1"},
-                        {class: "entry", disabled: false, label: "Email2"},
-                        {class: "entry", disabled: false, label: "Email3"}
-                    ]
-                },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
-                        {class: "entry", disabled: false, label: "Номер1"},
-                        {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"}
-                    ]
-                },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Позвонить", items: [
-                        {class: "entry", disabled: false, label: "Номер1"},
-                        {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"}
-                    ]
-                },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: []
+                    class: "entry",  icon: "", label: "Удалить",
+                    callback: () => {
+                        this.clickContextMenu({event: "del_obj"});
+                    }
                 }
             ]
         };

@@ -68,101 +68,151 @@ import {ObjectBlock} from "../../class/objectBlock";
         .digest-list digest-offer:last-of-type {
             border-bottom: 1px solid var(--bottom-border);
         }
+        .map-buttons{
+            position: absolute;
+            top: 20px;
+            left: calc(100% - 180px*3 - 30px);
+            display: flex;
+            z-index: 100;
+        }
+        .map-button{
+            width: 180px;
+            height: 35px;
+            background-color: white;
+            border: 1px solid #DFE1EE;
+            box-shadow: 2px 0 4px #DFE1EE;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: none;
+        }
+        .map-button:first-child{
+            border-right: none;
+        }
+        .map-button:last-child{
+            border: 1px solid #DFE1EE;
+        }
+        .map-button:last-child:hover{
+            border: 1px solid #3b5998;
+        }
+        .map-button:hover{
+            background-color: #3b5998;
+            color: white;
+            cursor: pointer;
+        }
+        .map-button:focus, .map-button:active{
+            background-color: #2B3C63;
+            color: white;
+        }
+        .map-button.activate{
+            background-color: #3b5998;
+            color: white;
+        }
+        .rating {
+            flex-wrap: wrap;
+        }
 
+        .rating > span {
+            width: 200px;
+        }
+
+        .rating > star-mark {
+            width: 76px;
+        }
     `],
     template: `
-        <div class="search-form" *ngIf="workAreaMode != 'photo' && workAreaMode != 'advert'">
-            <input type="text" class="input_line" placeholder="Введите текст запроса"
-                   [style.width]="'calc(100% - 108px)'"
-                   [(ngModel)]="request.request" (keyup)="$event" [disabled]="!editEnabled"
-            ><span class="find_icon"></span>
-            <div (click)="editEnabled ? toggleDraw() : ''" class="deactivate_draw"
-                 [class.activate_draw]="mapDrawAllowed"
-                 [class.inactive_bottom]="!editEnabled"
-            >ОБВЕСТИ
-            </div>
-            <div class="tool-box" *ngIf="mode == 1">
-                <filter-select *ngIf="request.offerTypeCode == 'sale'"
-                               [name]="'Тип сделки'"
-                               [options]="[
-                                  {value: 'sale', label: 'Продажа'},
-                                  {value: 'alternative', label: 'Альтернатива'}
-                    ]"
-                               [value]="{'option' : filter.offerTypeCode}"
-                               (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
-                >
-                </filter-select>
-                <filter-select
-                    [name]="'Статус контакта'" [firstAsName]="true"
-                    [options]="[
-                                  {value: 'all', label: 'Все'},
-                                  {value: 'owner', label: 'Принципал'},
-                                  {value: 'middleman', label: 'Посредник'}
-                    ]"
-                    [value]="{'option' : filter.offerTypeCode}"
-                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
-                >
-                </filter-select>
-                <filter-select
-                    [name]="'Статус объекта'" [firstAsName]="true"
-                    [options]="[
-                                  {value: 'all', label: 'Все объекты'},
-                                  {value: 'my', label: 'Мои объекты'},
-                                  {value: 'our', label: 'Наша компания'}
-                    ]"
-                    [value]="{'option' : filter.offerTypeCode}"
-                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
-                >
-                </filter-select>
-                <filter-select
-                    [name]="'Стадия объекта'" [firstAsName]="true"
-                    [options]="[
-                                  {value: 'all', label: 'Все'},
-                                  {value: 'inactive', label: 'Не активно'},
-                                  {value: 'active', label: 'Активно'},
-                                  {value: 'listing', label: 'Листинг'},
-                                  {value: 'deal', label: 'Сделка'},
-                                  {value: 'suspended', label: 'Приостановлено'},
-                                  {value: 'archive', label: 'Архив'}
-                    ]"
-                    [value]="{'option' : filter.offerTypeCode}"
-                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
-                >
-                </filter-select>
-                <filter-select-tag [value]="filter?.tag" (newValue)="filter.tag = $event;"></filter-select-tag>
-                <filter-select
-                    [name]="'Период'" [firstAsName]="true"
-                    [options]="[
-                                  {value: 'all', label: 'Все'},
-                                  {value: '1', label: '1 день'},
-                                  {value: '3', label: '3 дня'},
-                                  {value: '7', label: 'Неделя'},
-                                  {value: '14', label: '2 недели'},
-                                  {value: '30', label: 'Месяц'},
-                                  {value: '90', label: '3 месяца'}
-                    ]"
-                    [value]="{'option' : filter.offerTypeCode}"
-                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
-                >
-                </filter-select>
-                <filter-select
-                    [name]="'Сортировка'" [firstAsName]="true"
-                    [options]="[
-                                  {value: 'all', label: 'Все'},
-                                  {value: 'inactive', label: 'Не активно'},
-                                  {value: 'active', label: 'Активно'},
-                                  {value: 'listing', label: 'Листинг'},
-                                  {value: 'deal', label: 'Сделка'},
-                                  {value: 'suspended', label: 'Приостановлено'},
-                                  {value: 'archive', label: 'Архив'}
-                    ]"
-                    [value]="{'option' : filter.offerTypeCode}"
-                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"
-                >
-                </filter-select>
-                <div class="found">Найдено: {{hitsCount + " "}}/{{" " + offers?.length }}</div>
-            </div>
-        </div>
+<!--        <div class="search-form" *ngIf="workAreaMode != 'photo' && workAreaMode != 'advert'">-->
+<!--            <input type="text" class="input_line" placeholder="Введите текст запроса"-->
+<!--                   [style.width]="'100%'"-->
+<!--                   [(ngModel)]="request.request" (keyup)="$event" [disabled]="!editEnabled"-->
+<!--            ><span class="find_icon"></span>-->
+<!--&lt;!&ndash;            <div (click)="editEnabled ? toggleDraw() : ''" class="deactivate_draw"&ndash;&gt;-->
+<!--&lt;!&ndash;                 [class.activate_draw]="mapDrawAllowed"&ndash;&gt;-->
+<!--&lt;!&ndash;                 [class.inactive_bottom]="!editEnabled"&ndash;&gt;-->
+<!--&lt;!&ndash;            >ОБВЕСТИ&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--            <div class="tool-box" *ngIf="mode == 1">-->
+<!--                <filter-select *ngIf="request.offerTypeCode == 'sale'"-->
+<!--                               [name]="'Тип сделки'"-->
+<!--                               [options]="[-->
+<!--                                  {value: 'sale', label: 'Продажа'},-->
+<!--                                  {value: 'alternative', label: 'Альтернатива'}-->
+<!--                    ]"-->
+<!--                               [value]="{'option' : filter.offerTypeCode}"-->
+<!--                               (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"-->
+<!--                >-->
+<!--                </filter-select>-->
+<!--                <filter-select-->
+<!--                    [name]="'Статус контакта'" [firstAsName]="true"-->
+<!--                    [options]="[-->
+<!--                                  {value: 'all', label: 'Все'},-->
+<!--                                  {value: 'owner', label: 'Принципал'},-->
+<!--                                  {value: 'middleman', label: 'Посредник'}-->
+<!--                    ]"-->
+<!--                    [value]="{'option' : filter.offerTypeCode}"-->
+<!--                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"-->
+<!--                >-->
+<!--                </filter-select>-->
+<!--                <filter-select-->
+<!--                    [name]="'Статус объекта'" [firstAsName]="true"-->
+<!--                    [options]="[-->
+<!--                                  {value: 'all', label: 'Все объекты'},-->
+<!--                                  {value: 'my', label: 'Мои объекты'},-->
+<!--                                  {value: 'our', label: 'Наша компания'}-->
+<!--                    ]"-->
+<!--                    [value]="{'option' : filter.offerTypeCode}"-->
+<!--                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"-->
+<!--                >-->
+<!--                </filter-select>-->
+<!--                <filter-select-->
+<!--                    [name]="'Стадия объекта'" [firstAsName]="true"-->
+<!--                    [options]="[-->
+<!--                                  {value: 'all', label: 'Все'},-->
+<!--                                  {value: 'inactive', label: 'Не активно'},-->
+<!--                                  {value: 'active', label: 'Активно'},-->
+<!--                                  {value: 'listing', label: 'Листинг'},-->
+<!--                                  {value: 'deal', label: 'Сделка'},-->
+<!--                                  {value: 'suspended', label: 'Приостановлено'},-->
+<!--                                  {value: 'archive', label: 'Архив'}-->
+<!--                    ]"-->
+<!--                    [value]="{'option' : filter.offerTypeCode}"-->
+<!--                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"-->
+<!--                >-->
+<!--                </filter-select>-->
+<!--                <filter-select-tag [value]="filter?.tag" (newValue)="filter.tag = $event;"></filter-select-tag>-->
+<!--                <filter-select-->
+<!--                    [name]="'Период'" [firstAsName]="true"-->
+<!--                    [options]="[-->
+<!--                                  {value: 'all', label: 'Все'},-->
+<!--                                  {value: '1', label: '1 день'},-->
+<!--                                  {value: '3', label: '3 дня'},-->
+<!--                                  {value: '7', label: 'Неделя'},-->
+<!--                                  {value: '14', label: '2 недели'},-->
+<!--                                  {value: '30', label: 'Месяц'},-->
+<!--                                  {value: '90', label: '3 месяца'}-->
+<!--                    ]"-->
+<!--                    [value]="{'option' : filter.offerTypeCode}"-->
+<!--                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"-->
+<!--                >-->
+<!--                </filter-select>-->
+<!--                <filter-select-->
+<!--                    [name]="'Сортировка'" [firstAsName]="true"-->
+<!--                    [options]="[-->
+<!--                                  {value: 'all', label: 'Все'},-->
+<!--                                  {value: 'inactive', label: 'Не активно'},-->
+<!--                                  {value: 'active', label: 'Активно'},-->
+<!--                                  {value: 'listing', label: 'Листинг'},-->
+<!--                                  {value: 'deal', label: 'Сделка'},-->
+<!--                                  {value: 'suspended', label: 'Приостановлено'},-->
+<!--                                  {value: 'archive', label: 'Архив'}-->
+<!--                    ]"-->
+<!--                    [value]="{'option' : filter.offerTypeCode}"-->
+<!--                    (newValue)="filter.offerTypeCode = $event.option; searchParamChanged();"-->
+<!--                >-->
+<!--                </filter-select>-->
+<!--                <div class="found">Найдено: {{hitsCount + " "}}/{{" " + offers?.length }}</div>-->
+<!--            </div>-->
+<!--        </div>-->
 
         <div class="property_face">
             <ui-tag [value]="request?.tag"></ui-tag>
@@ -440,42 +490,615 @@ import {ObjectBlock} from "../../class/objectBlock";
                         <sliding-tag [value]="request?.tag" (newValue)="request.tag = $event"></sliding-tag>
                     </ng-container>
                 </ui-tab>
-                <ui-tab [title]="'УСЛОВИЯ'" *ngIf="request.offerTypeCode != 'rent'" (tabSelect)="update = {}">
+                <ui-tab [title]="'ОБЪЕКТ'">
                     <ng-container *ngIf="!editEnabled">
+                        <div class="show_block"> 
+                            <span>Категория</span>
+                            <span class="view-value">{{ offClass.categoryOptions[request?.categoryCode]?.label}}</span>
+                        </div>
                         <div class="show_block">
+                            <span>{{request.categoryCode != 'land' ? 'Тип дома' : 'Назначение земель'}}</span>
+                            <span
+                                    class="view-value">{{ offClass.buildingTypeOptions[request?.buildingType]?.label}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="request.categoryCode != 'land'">
+                            <span>{{request.categoryCode == 'rezidential' ? "Тип недвижимости" : "Класс здания"}}</span>
+                            <span
+                                    class="view-value">{{ offClass.buildingClassOptions[request?.buildingClass]?.label}}</span>
+                        </div>
+                        <div class="show_block">
+                            <span>Тип объекта</span>
+                            <span class="view-value">{{ offClass.typeCodeOptions[request?.typeCode]?.label}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="request.categoryCode != 'land'">
                             <span>Новостройка</span>
                             <switch-button [value]="request?.newBuilding" [disabled]="true"></switch-button>
                         </div>
+                        <div class="show_block" *ngIf="request.newBuilding && request.categoryCode != 'land'">
+                            <span>Стадия объекта</span>
+                            <span class="view-value">{{ offClass.objectStageOptions[request?.objectStage]?.label}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="request.categoryCode != 'land'">
+                            <span>{{request?.newBuilding ? 'Дата сдачи объекта' : 'Год постройки'}}</span>
+                            <span class="view-value">{{ request.buildYear || 'Неизвестно'}}</span>
+                        </div>
+                        <div class="show_block"
+                             *ngIf="request.categoryCode == 'land' || request.buildingType == 'lowrise_house'">
+                            <span>Удаленность</span>
+                            <span class="view-value">{{ request?.distance || "Неизвестно"}}</span>
+                        </div>
+                        <div class="show_block"
+                             *ngIf="request.categoryCode == 'land' || request.buildingType == 'lowrise_house'">
+                            <span>Наименование поселения</span>
+                            <span class="view-value">{{ request?.settlement || "Неизвестно"}}</span>
+                        </div>
+                        <div class="show_block"
+                             *ngIf="request.categoryCode == 'land' || request.buildingType == 'lowrise_house'">
+                            <span>Охрана</span>
+                            <switch-button [value]="request?.guard" [disabled]="true"></switch-button>
+                        </div>
                         <div class="show_block">
+                            <span>Жилищный комплекс</span>
+                            <span class="view-value">{{ request?.housingComplex || "Неизвестно"}}</span>
+                        </div>                        
+                        <div class="show_block" *ngIf="request.offerTypeCode != 'rent'">
                             <span>Обременение</span>
                             <switch-button [value]="request?.encumbrance" [disabled]="true"></switch-button>
                         </div>
-                        <div class="show_block">
-                            <span>Год постройки</span>
-                            <span class="view-value">{{ request?.buildYear}}</span>
+                        <div class="show_block" *ngIf="request.offerTypeCode != 'rent'">
+                            <span>Подходит под ипотеку</span>
+                            <switch-button [value]="request?.mortgages" [disabled]="true"></switch-button>
                         </div>
-                        <div class="show_block">
-                            <span>Рейтинг</span>
-                            <span class="view-value">{{ request?.rate}}</span>
-                        </div>
-
+                        <ng-container
+                                *ngIf="request.typeCode == 'apartment' || request.typeCode == 'room' || request.typeCode == 'share'">
+                            <div class="show_block">
+                                <span>Материал стен</span>
+                                <span class="view-value">{{ offClass.houseTypeOptions[request?.houseType]?.label}}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Количество комнат</span>
+                                <span class="view-value">{{ request.roomsCount }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request.roomsCount != 1 && request.typeCode != 'room'">
+                                <span>Тип комнат</span>
+                                <span
+                                        class="view-value">{{ offClass.roomSchemeOptions[request?.roomScheme]?.label}}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.floor">
+                                <span>Этаж</span>
+                                <span class="view-value">{{ request.floor }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.floorsCount">
+                                <span>Этажность</span>
+                                <span class="view-value">{{ request.floorsCount }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.levelsCount">
+                                <span>Уровень</span>
+                                <span class="view-value">{{ request.levelsCount }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.squareTotal">
+                                <span>Общая площадь</span>
+                                <span class="view-value">{{ request.squareTotal }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.squareLiving">
+                                <span>Жилая площадь</span>
+                                <span class="view-value">{{ request.squareLiving }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.squareKitchen">
+                                <span>Площадь кухни</span>
+                                <span class="view-value">{{ request.squareKitchen }}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Лоджия</span>
+                                <switch-button [value]="request?.loggia" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Балкон</span>
+                                <switch-button [value]="request?.balcony" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Санузел</span>
+                                <span class="view-value">{{ offClass.bathroomOptions[request?.bathroom]?.label}}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Состояние</span>
+                                <span class="view-value">{{ offClass.conditionOptions[request?.condition]?.label}}</span>
+                            </div>
+                        </ng-container>
+                        <ng-container
+                                *ngIf="request.typeCode == 'house' || request.typeCode == 'cottage' || request.typeCode == 'dacha' || request.typeCode == 'townhouse' || request.typeCode == 'duplex'">
+                            <div class="show_block" *ngIf="request?.floor">
+                                <span>Этаж</span>
+                                <span class="view-value">{{ request.floor }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.floorsCount">
+                                <span>Этажность</span>
+                                <span class="view-value">{{ request.floorsCount }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.levelsCount">
+                                <span>Уровень</span>
+                                <span class="view-value">{{ request.levelsCount }}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Количество комнат</span>
+                                <span class="view-value">{{ request.roomsCount }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request.roomsCount != 1 && request.typeCode != 'room'">
+                                <span>Тип комнат</span>
+                                <span
+                                        class="view-value">{{offClass.roomSchemeOptions[request?.roomScheme]?.label}}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.squareTotal">
+                                <span>Общая площадь</span>
+                                <span class="view-value">{{ request.squareTotal }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.squareLiving">
+                                <span>Жилая площадь</span>
+                                <span class="view-value">{{ request.squareLiving }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.squareKitchen">
+                                <span>Площадь кухни</span>
+                                <span class="view-value">{{ request.squareKitchen }}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Площадь участка</span>
+                                <span
+                                        class="view-value">{{ request?.squareLand + " " + (request?.squareLandType == 0 ? "cот" : "га") }}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Состояние</span>
+                                <span class="view-value">{{ offClass.conditionOptions[request?.condition]?.label}}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Материал стен</span>
+                                <span class="view-value">{{ offClass.houseTypeOptions[request?.houseType]?.label}}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Лоджия</span>
+                                <switch-button [value]="request?.loggia" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Балкон</span>
+                                <switch-button [value]="request?.balcony" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Санузел</span>
+                                <span class="view-value">{{ offClass.bathroomOptions[request?.bathroom]?.label}}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Водоснабжение</span>
+                                <switch-button [value]="request?.waterSupply" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Газификация</span>
+                                <switch-button [value]="request?.gasification" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Электроснабжение</span>
+                                <switch-button [value]="request?.electrification" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Канализация</span>
+                                <switch-button [value]="request?.sewerage" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Отопление</span>
+                                <switch-button [value]="request?.centralHeating" [disabled]="true"></switch-button>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="request.categoryCode == 'land'">
+                            <div class="show_block">
+                                <span>Площадь участка</span>
+                                <span
+                                        class="view-value">{{ request?.squareLand + " " + (request?.squareLandType == 0 ? "cот" : "га") }}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Водоснабжение</span>
+                                <switch-button [value]="request?.waterSupply" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Газификация</span>
+                                <switch-button [value]="request?.gasification" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Электроснабжение</span>
+                                <switch-button [value]="request?.electrification" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Канализация</span>
+                                <switch-button [value]="request?.sewerage" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Отопление</span>
+                                <switch-button [value]="request?.centralHeating" [disabled]="true"></switch-button>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="request.categoryCode == 'commersial'">
+                            <div class="show_block">
+                                <span>Название</span>
+                                <span class="view-value">{{ request?.objectName || "Неизвестно"}}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Материал здания</span>
+                                <span class="view-value">{{ offClass.houseTypeOptions[request?.houseType]?.label}}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.floor"> 
+                                <span>Этаж</span>
+                                <span class="view-value">{{ request.floor }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.floorsCount">
+                                <span>Этажность</span>
+                                <span class="view-value">{{ request.floorsCount }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="request?.levelsCount">
+                                <span>Уровень</span>
+                                <span class="view-value">{{ request.levelsCount }}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Водоснабжение</span>
+                                <switch-button [value]="request?.waterSupply" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Газификация</span>
+                                <switch-button [value]="request?.gasification" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Электроснабжение</span>
+                                <switch-button [value]="request?.electrification" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Канализация</span>
+                                <switch-button [value]="request?.sewerage" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Отопление</span>
+                                <switch-button [value]="request?.centralHeating" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Площадь помещения</span>
+                                <span class="view-value">{{request?.squareTotal }}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Высота потолков</span>
+                                <span class="view-value">{{request?.ceilingHeight }}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Состояние</span>
+                                <span class="view-value">{{ offClass.conditionOptions[request?.condition]?.label}}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Охрана</span>
+                                <switch-button [value]="request?.guard" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Лифт</span>
+                                <switch-button [value]="request?.lift" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Парковка</span>
+                                <switch-button [value]="request?.parking" [disabled]="true"></switch-button>
+                            </div>
+                        </ng-container>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
-                        <div class="show_block">
+                        <sliding-menu [name]="'Категория'" [options]="offClass.categoryOptions"
+                                      [value]="request?.categoryCode"
+                                      (result)="request.categoryCode = $event"
+                        ></sliding-menu>
+                        <sliding-menu
+                                [name]="request?.categoryCode != 'land' ? (request.categoryCode == 'rezidential' ? 'Тип дома' : 'Тип недвижимости') : 'Назначение земель'"
+                                [options]="offClass.buildindTypeByCategory[request.categoryCode]"
+                                [value]="request?.buildingType"
+                                (result)="request.buildingType = $event"
+                        ></sliding-menu>
+                        <sliding-menu [name]="request.categoryCode == 'rezidential' ? 'Тип недвижимости' : 'Класс здания'"
+                                      [options]="offClass.buildindClassByBuildingType[request.buildingType]"
+                                      [value]="request?.buildingClass"
+                                      (result)="request.buildingClass = $event"
+                        ></sliding-menu>
+                        <sliding-menu [name]="'Тип объекта'"
+                                      [options]="request.buildingType != 'lowrise_house' ? offClass.typeCodeByBuildingType[request.buildingType] : offClass.typeCodeByBuildingClass[request.buildingClass]"
+                                      [value]="request?.typeCode"
+                                      (result)="request.typeCode = $event"
+                        ></sliding-menu>
+                        <input-line *ngIf="request.categoryCode == 'land' || request.buildingType == 'lowrise_house'"
+                                    [name]="'Удаленность'" [value]="request?.distance"
+                                    (newValue)="request.distance = $event"
+                        ></input-line>
+                        <input-line *ngIf="request.categoryCode == 'land' || request.buildingType == 'lowrise_house'"
+                                    [name]="'Наименование поселения'" [value]="request?.settlement"
+                                    (newValue)="request.settlement = $event"
+                        ></input-line>
+                        <div class="show_block"
+                             *ngIf="request.categoryCode == 'land' || request.buildingType == 'lowrise_house'">
+                            <span>Охрана</span>
+                            <switch-button [value]="request?.guard" (newValue)="request.guard = $event"></switch-button>
+                        </div>
+                        <input-line [name]="'Жилищный комплекс'" [value]="request?.housingComplex"
+                                    (newValue)="request.housingComplex = $event"
+                        ></input-line>
+                        <div class="show_block" *ngIf="request.categoryCode != 'land'">
                             <span>Новостройка</span>
                             <switch-button [value]="request?.newBuilding"
                                            (newValue)="request.newBuilding = $event"></switch-button>
                         </div>
-                        <div class="show_block">
-                            <span>Обременение</span>
-                            <switch-button [value]="request?.encumbrance"
-                                           (newValue)="request.encumbrance = $event"></switch-button>
-                        </div>
-                        <input-line [name]="'Год постройки'" [value]="request?.buildYear"
-                                    (newValue)="request.buildYear = $event"></input-line>
-                        <input-line [name]="'Рейтинг'" [value]="request?.rate"
-                                    (newValue)="request.rate = $event"></input-line>
+                        <sliding-menu *ngIf="request.newBuilding"
+                                      [name]="'Тип объекта'" [options]="offClass.objectStageOptions"
+                                      [value]="request?.objectStage"
+                                      (result)="request.objectStage = $event"
+                        ></sliding-menu>
+                        <input-line *ngIf="request.categoryCode != 'land'"
+                                    [name]="request?.newBuilding ? 'Дата сдачи объекта' : 'Год постройки'"
+                                    [value]="request?.buildYear"
+                                    (newValue)="request.buildYear = $event"
+                        ></input-line>
+                        <ng-container *ngIf="request.offerTypeCode != 'rent'">
+                            <div class="show_block">
+                                <span>Обременение</span>
+                                <switch-button [value]="request?.encumbrance"
+                                               (newValue)="request.encumbrance = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Подходит под ипотеку</span>
+                                <switch-button [value]="request?.mortgages"
+                                               (newValue)="request.mortgages = $event"></switch-button>
+                            </div>
+                        </ng-container>
+                        <ng-container
+                                *ngIf="request.typeCode == 'apartment' || request.typeCode == 'room' || request.typeCode == 'share'">
+                            <sliding-menu *ngIf="request.newBuilding"
+                                          [name]="'Материал стен'" [options]="offClass.houseTypeOptions"
+                                          [value]="request?.houseType"
+                                          (result)="request.houseType = $event"
+                            ></sliding-menu>
+                            <input-line [name]="'Количество комнат'" [value]="request?.roomsCount"
+                                        (newValue)="request.roomsCount = $event"></input-line>
+                            <sliding-menu *ngIf="request.roomsCount != 1 && request.typeCode != 'room'"
+                                          [name]="'Тип комнат'" [options]="offClass.roomSchemeOptions"
+                                          [value]="request?.roomScheme"
+                                          (result)="request.roomScheme = $event"
+                            ></sliding-menu>
+                            <input-line [name]="'Этаж'" [value]="request?.floor"
+                                        (newValue)="request.floor = $event"></input-line>
+                            <input-line [name]="'Этажность'" [value]="request?.floorsCount"
+                                        (newValue)="request.floorsCount = $event"></input-line>
+                            <input-line [name]="'Уровней'" [value]="request?.levelsCount"
+                                        (newValue)="request.levelsCount = $event"></input-line>
+                            <input-line [name]="'Общая площадь'" [value]="request?.squareTotal"
+                                        (newValue)="request.squareTotal = $event"></input-line>
+                            <input-line [name]="'Жилая площадь'" [value]="request?.squareLiving"
+                                        (newValue)="request.squareLiving = $event"></input-line>
+                            <input-line [name]="'Площадь кухни'" [value]="request?.squareKitchen"
+                                        (newValue)="request.squareKitchen = $event"></input-line>
+                            <ng-container *ngIf="request.buildingType == 'lowrise_house'">
+                                <input-line [name]="'Площадь участка'" [value]="request?.squareLand"
+                                            (newValue)="request.squareLand = $event"></input-line>
+                                <sliding-menu [name]="'Тип площади'" [options]="offClass.squareLandTypeOptions"
+                                              [value]="request?.squareLandType"
+                                              (result)="request.squareLandType = $event"
+                                ></sliding-menu>
+                            </ng-container>
+                            <div class="show_block">
+                                <span>Лоджия</span>
+                                <switch-button [value]="request?.loggia"
+                                               (newValue)="request.loggia = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Балкон</span>
+                                <switch-button [value]="request?.balcony"
+                                               (newValue)="request.balcony = $event"></switch-button>
+                            </div>
+                            <sliding-menu [name]="'Санузел'" [options]="offClass.bathroomOptions"
+                                          [value]="request?.bathroom"
+                                          (result)="request.bathroom = $event"
+                            ></sliding-menu>
+                            <sliding-menu [name]="'Состояние'" [options]="offClass.conditionOptions"
+                                          [value]="request?.condition"
+                                          (result)="request.condition = $event"
+                            ></sliding-menu>
+                        </ng-container>
+                        <ng-container
+                                *ngIf="request.typeCode == 'house' || request.typeCode == 'cottage' || request.typeCode == 'dacha' || request.typeCode == 'townhouse' || request.typeCode == 'duplex'">
+                            <input-line [name]="'Этаж'" [value]="request?.floor"
+                                        (newValue)="request.floor = $event"></input-line>
+                            <input-line [name]="'Этажность'" [value]="request?.floorsCount"
+                                        (newValue)="request.floorsCount = $event"></input-line>
+                            <input-line [name]="'Уровней'" [value]="request?.levelsCount"
+                                        (newValue)="request.levelsCount = $event"></input-line>
+                            <input-line [name]="'Количество комнат'" [value]="request?.roomsCount"
+                                        (newValue)="request.roomsCount = $event"></input-line>
+                            <sliding-menu *ngIf="request.roomsCount != 1 && request.typeCode != 'room'"
+                                          [name]="'Тип комнат'" [options]="offClass.roomSchemeOptions"
+                                          [value]="request?.roomScheme"
+                                          (result)="request.roomScheme = $event"
+                            ></sliding-menu>
+                            <sliding-menu *ngIf="request.newBuilding"
+                                          [name]="'Материал стен'" [options]="offClass.houseTypeOptions"
+                                          [value]="request?.houseType"
+                                          (result)="request.houseType = $event"
+                            ></sliding-menu>
+                            <input-line [name]="'Общая площадь'" [value]="request?.squareTotal"
+                                        (newValue)="request.squareTotal = $event"></input-line>
+                            <input-line [name]="'Жилая площадь'" [value]="request?.squareLiving"
+                                        (newValue)="request.squareLiving = $event"></input-line>
+                            <input-line [name]="'Площадь кухни'" [value]="request?.squareKitchen"
+                                        (newValue)="request.squareKitchen = $event"></input-line>
+                            <input-line [name]="'Площадь участка'" [value]="request?.squareLand"
+                                        (newValue)="request.squareLand = $event"></input-line>
+                            <sliding-menu [name]="'Тип площади'" [options]="offClass.squareLandTypeOptions"
+                                          [value]="request?.squareLandType"
+                                          (result)="request.squareLandType = $event"
+                            ></sliding-menu>
+                            <sliding-menu [name]="'Состояние'" [options]="offClass.conditionOptions"
+                                          [value]="request?.condition"
+                                          (result)="request.condition = $event"
+                            ></sliding-menu>
+                            <sliding-menu [name]="'Материал'" [options]="offClass.houseTypeOptions"
+                                          [value]="request?.houseType"
+                                          (result)="request.houseType = $event"
+                            ></sliding-menu>
+                            <div class="show_block">
+                                <span>Лоджия</span>
+                                <switch-button [value]="request?.loggia"
+                                               (newValue)="request.loggia = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Балкон</span>
+                                <switch-button [value]="request?.balcony"
+                                               (newValue)="request.balcony = $event"></switch-button>
+                            </div>
+                            <sliding-menu [name]="'Санузел'" [options]="offClass.bathroomOptions"
+                                          [value]="request?.bathroom"
+                                          (result)="request.bathroom = $event"
+                            ></sliding-menu>
+                            <div class="show_block">
+                                <span>Водоснабжение</span>
+                                <switch-button [value]="request?.waterSupply"
+                                               (newValue)="request.waterSupply = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Газификация</span>
+                                <switch-button [value]="request?.gasification"
+                                               (newValue)="request.gasification = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Электроснабжение</span>
+                                <switch-button [value]="request?.electrification"
+                                               (newValue)="request.electrification = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Канализация</span>
+                                <switch-button [value]="request?.sewerage"
+                                               (newValue)="request.sewerage = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Отопление</span>
+                                <switch-button [value]="request?.centralHeating"
+                                               (newValue)="request.centralHeating = $event"></switch-button>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="request.categoryCode == 'land'">
+                            <input-line [name]="'Площадь участка'" [value]="request?.squareLand"
+                                        (newValue)="request.squareLand = $event"></input-line>
+                            <sliding-menu [name]="'Тип площади'" [options]="offClass.squareLandTypeOptions"
+                                          [value]="request?.squareLandType"
+                                          (result)="request.squareLandType = $event"
+                            ></sliding-menu>
+                            <div class="show_block">
+                                <span>Водоснабжение</span>
+                                <switch-button [value]="request?.waterSupply"
+                                               (newValue)="request.waterSupply = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Газификация</span>
+                                <switch-button [value]="request?.gasification"
+                                               (newValue)="request.gasification = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Электроснабжение</span>
+                                <switch-button [value]="request?.electrification"
+                                               (newValue)="request.electrification = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Канализация</span>
+                                <switch-button [value]="request?.sewerage"
+                                               (newValue)="request.sewerage = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Отопление</span>
+                                <switch-button [value]="request?.centralHeating"
+                                               (newValue)="request.centralHeating = $event"></switch-button>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="request.categoryCode == 'commersial'">
+                            <input-line [name]="'Название'" [value]="request?.objectName"
+                                        (newValue)="request.objectName = $event"></input-line>
+                            <sliding-menu [name]="'Материал здания'" [options]="offClass.houseTypeOptions"
+                                          [value]="request?.houseType"
+                                          (result)="request.houseType = $event"
+                            ></sliding-menu>
+                            <input-line [name]="'Этаж'" [value]="request?.floor"
+                                        (newValue)="request.floor = $event"></input-line>
+                            <input-line [name]="'Этажность'" [value]="request?.floorsCount"
+                                        (newValue)="request.floorsCount = $event"></input-line>
+                            <input-line [name]="'Уровней'" [value]="request?.levelsCount"
+                                        (newValue)="request.levelsCount = $event"></input-line>
+                            <div class="show_block">
+                                <span>Водоснабжение</span>
+                                <switch-button [value]="request?.waterSupply"
+                                               (newValue)="request.waterSupply = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Газификация</span>
+                                <switch-button [value]="request?.gasification"
+                                               (newValue)="request.gasification = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Электроснабжение</span>
+                                <switch-button [value]="request?.electrification"
+                                               (newValue)="request.electrification = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Канализация</span>
+                                <switch-button [value]="request?.sewerage"
+                                               (newValue)="request.sewerage = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Отопление</span>
+                                <switch-button [value]="request?.centralHeating"
+                                               (newValue)="request.centralHeating = $event"></switch-button>
+                            </div>
+                            <input-line [name]="'Площадь помещения'" [value]="request?.squareTotal"
+                                        (newValue)="request.squareTotal = $event"></input-line>
+                            <input-line [name]="'Высота потолков'" [value]="request?.ceilingHeight"
+                                        (newValue)="request.ceilingHeight = $event"></input-line>
+                            <sliding-menu [name]="'Состояние'" [options]="offClass.conditionOptions"
+                                          [value]="request?.condition"
+                                          (result)="request.condition = $event"
+                            ></sliding-menu>
+                            <div class="show_block">
+                                <span>Охрана</span>
+                                <switch-button [value]="request?.guard" (newValue)="request.guard = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Лифт</span>
+                                <switch-button [value]="request?.lift" (newValue)="request.lift = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Парковка</span>
+                                <switch-button [value]="request?.parking"
+                                               (newValue)="request.parking = $event"></switch-button>
+                            </div>
+                        </ng-container>
                     </ng-container>
+                    <!--                TODO: переместить label внутрь компонента-->
+                    <div class="show_block rating">
+                        <span class="view-label">Месторасположение</span>
+                        <star-mark [value]="this.request.locRating?.map['remoteness']"
+                                   (estimate)="this.request.locRating.map['remoteness']=$event"
+                                   [editable]="editEnabled"
+                        ></star-mark>
+                        <span class="view-label">Транспортная доступность</span>
+                        <star-mark [value]="this.request.locRating?.map['transport']"
+                                   (estimate)="this.request.locRating.map['transport']=$event"
+                                   [editable]="editEnabled"
+                        ></star-mark>
+                        <span class="view-label">Престижность района</span>
+                        <star-mark [value]="this.request.locRating?.map['prestigious']"
+                                   (estimate)="this.request.locRating.map['prestigious']=$event"
+                                   [editable]="editEnabled"
+                        ></star-mark>
+                        <span class="view-label">Экология</span>
+                        <star-mark [value]="this.request.locRating?.map['ecology']"
+                                   (estimate)="this.request.locRating.map['ecology']=$event"
+                                   [editable]="editEnabled"
+                        ></star-mark>
+                        <span class="view-label">Инфраструктура</span>
+                        <star-mark [value]="this.request.locRating?.map['infrastructure']"
+                                   (estimate)="this.request.locRating.map['infrastructure']=$event"
+                                   [editable]="editEnabled"
+                        ></star-mark>
+                    </div>
                     <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="!editEnabled"
                                 (newValue)="request.description = $event" [update]="update"></input-area>
                 </ui-tab>
@@ -630,31 +1253,38 @@ import {ObjectBlock} from "../../class/objectBlock";
                                     (newValue)="request.costInfo = $event" [update]="update"></input-area>
                     </ng-container>
                 </ui-tab>
-                <div more class="more">ЕЩЁ...
-                    <div>
-                        <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Карта</div>
-                        <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на
-                            ипотеку
-                        </div>
-                        <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Документы</div>
-                        <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">
-                            Заметки
-                        </div>
-                        <div (click)="openNotebook('daily', $event)" [class.selected]="workAreaMode == 'daily'">
-                            Ежедневник
-                        </div>
-                        <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>
-                        <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">
-                            IP-телефония
-                        </div>
-                        <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка
-                        </div>
-                        <div (click)="workAreaMode = 'report'" [class.selected]="workAreaMode == 'report'">Отчет</div>
-                        <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История
-                        </div>
-
-                        <div class="delete" (click)="delete()">Удалить заявку</div>
-                    </div>
+                <div more class="more" (click)="showContextMenu($event);" (offClick)="this._hubService.shared_var['cm_hidden'] = true">ЕЩЁ...
+<!--                    <div>-->
+<!--                        <div>Проверить</div>-->
+<!--                        <hr style="margin: 4px 13px;"/>-->
+<!--                        <div (click)="workAreaMode = 'photo'" [class.selected]="workAreaMode == 'photo'">Показать фото</div>-->
+<!--                        <div (click)="workAreaMode = 'map'" [class.selected]="workAreaMode == 'map'">Перейти на карту</div>-->
+<!--                        <div (click)="workAreaMode = 'doc'" [class.selected]="workAreaMode == 'doc'">Показать документы</div>-->
+<!--                        <div (click)="workAreaMode = 'advert'" [class.selected]="workAreaMode == 'advert'">Экспорт заявки в...</div>-->
+<!--                        <div (click)="workAreaMode = 'mortgage'" [class.selected]="workAreaMode == 'mortgage'">Заявка на-->
+<!--                            ипотеку-->
+<!--                        </div>-->
+<!--                        <hr style="margin: 4px 13px;"/>-->
+<!--                        -->
+<!--                        <div (click)="openNotebook('notes', $event)" [class.selected]="workAreaMode == 'notes'">-->
+<!--                            Заметки-->
+<!--                        </div>-->
+<!--                        <div (click)="openNotebook('daily', $event)" [class.selected]="workAreaMode == 'daily'">-->
+<!--                            Ежедневник-->
+<!--                        </div>-->
+<!--                        <div (click)="openNotebook('chat', $event)" [class.selected]="workAreaMode == 'chat'">Чат</div>-->
+<!--                        <div (click)="openNotebook('phone', $event)" [class.selected]="workAreaMode == 'phone'">-->
+<!--                            IP-телефония-->
+<!--                        </div>-->
+<!--                        -->
+<!--                        <div (click)="workAreaMode = 'summary'" [class.selected]="workAreaMode == 'summary'">Сводка-->
+<!--                        </div>-->
+<!--                        <div (click)="workAreaMode = 'report'" [class.selected]="workAreaMode == 'report'">Отчет</div>-->
+<!--                        <div (click)="workAreaMode = 'history'" [class.selected]="workAreaMode == 'history'">История-->
+<!--                        </div>-->
+<!--                        <hr style="margin: 4px 13px;"/>-->
+<!--                        <div class="delete" (click)="delete()">Удалить заявку</div>-->
+<!--                    </div>-->
                 </div>
             </ui-tabs-menu>
             <div class="digest-list" (contextmenu)="showContextMenu($event)" *ngIf="mode == 1">
@@ -681,14 +1311,23 @@ import {ObjectBlock} from "../../class/objectBlock";
                 </ui-tabs-menu>
             </div>
         </div>
-
         <div class="work-area">
             <ng-container [ngSwitch]="workAreaMode">
+                <div class="map-buttons" *ngSwitchCase="'map'" >
+                    <div class="map-button" (click)="editEnabled ? toggleDraw() : ''" [class.activate]="mapDrawAllowed">ОБВЕДИТЕ ЛОКАЦИЮ</div>
+                    <div class="map-button">ИНФРАСТРУКТУРА</div>
+                    <div class="map-button">СВОДКА</div>
+                </div>
+                <adv-view *ngSwitchCase="'advert'" [request]="request"  [mode]="'request'"></adv-view>
                 <yamap-view *ngSwitchCase="'map'" [drawMap]="mapDrawAllowed"
                             (drawFinished)="request.searchArea = $event.coords"
                             [searchArea]="request.searchArea" [offers]="offers"
                 >
                 </yamap-view>
+                <files-view *ngSwitchCase="'photo'" [files]="request.documents" [full]="paneHidden" [type]="'photo'"
+                            [editMode]="editEnabled"
+                            (add)="addFile($event, 'photo')" (delete)="request.documents = $event"
+                            (progressLoad)="displayProgress($event)"></files-view>
                 <files-view *ngSwitchCase="'doc'" [files]="request.documents" [full]="paneHidden" [type]="'doc'"
                             [editMode]="editEnabled"
                             (add)="addFile($event, 'doc')" (delete)="request.documents = $event"
@@ -701,6 +1340,8 @@ import {ObjectBlock} from "../../class/objectBlock";
 export class TabRequestComponent implements OnInit {
     public tab: Tab;
     public request: Request = new Request();
+    public offer: Offer = new Offer();
+    offClass = Offer;
     mode: number = 0;
     progressWidth: number = 0;
     workAreaMode: string = "map";
@@ -709,6 +1350,8 @@ export class TabRequestComponent implements OnInit {
     source: OfferSource = OfferSource.LOCAL;
     offers: Offer[] = [];
     selectedOffers: Offer[] = [];
+    requests: Request[] = [];
+    selectedRequests: Request[] = [];
     contact: Contact = new Contact();
     update: any;
 
@@ -757,8 +1400,10 @@ export class TabRequestComponent implements OnInit {
         }
 
         setTimeout(() => {
+            this.selectedRequests = [this.request];
             if (this.request.id) {
                 this.tab.header = "Заявка";
+
             } else {
                 this.tab.header = "Новая заявка";
             }
@@ -766,6 +1411,7 @@ export class TabRequestComponent implements OnInit {
     }
 
     ngOnInit() {
+
         this.request = this.tab.args.request;
         this.canEditable = this.tab.args.canEditable;
         if (this.request.id == null) {
@@ -780,7 +1426,240 @@ export class TabRequestComponent implements OnInit {
             this.contact.type = "organisation";
         }
     }
+    contextMenu(e) {
+        e.preventDefault();
+        e.stopPropagation();
 
+        let c = this;
+        //let users: User[] = this._userService.listCached("", 0, "");
+        let uOpt = [{class:'entry', label: "На себя", disabled: false, callback: () => {
+                this.clickContextMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
+            }}];
+        for (let op of this._userService.cacheUsers){
+            op.callback = () => {
+                this.clickContextMenu({event: "set_agent", agentId: op.value});
+            };
+            uOpt.push(op);
+        }
+
+        let stateOpt = [];
+        let states = [
+            {value: 'raw', label: 'Не активен'},
+            {value: 'active', label: 'Активен'},
+            {value: 'work', label: 'В работе'},
+            {value: 'suspended', label: 'Приостановлен'},
+            {value: 'archive', label: 'Архив'}
+        ];
+
+        states.forEach(s => {
+            stateOpt.push(
+                {class: "entry", disabled: false, label: s.label, callback: () => {
+                        c.selectedRequests.forEach(o => {
+                            o.stageCode = s.value;
+                            c._requestService.save(o);
+                        });
+                    }
+                }
+            );
+        });
+        let tag;
+        if (this.request.tag != undefined) {
+            tag = this.request.tag;
+        } else  {
+            tag = null;
+        }
+        let menu = {
+            pX: e.pageX,
+            pY: e.pageY,
+            scrollable: false,
+            items: [
+                {class: "entry", disabled: this.selectedRequests.length == 1 ? false : true, icon: "", label: 'Проверить', callback: () => {
+
+                    }},
+                {class: "entry", disabled: false, icon: "", label: 'Открыть', callback: () => {
+                        let tab_sys = this._hubService.getProperty('tab_sys');
+                        this.selectedRequests.forEach(o => {
+                            let canEditable =  this._sessionService.getAccount().id == o.accountId;
+                            tab_sys.addTab('offer', {offer: o, canEditable});
+                        });
+                    }},
+                {class: "delimiter"},
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Показать фото",
+                    callback: () => {
+                        this.workAreaMode = 'photo';
+                    }
+                },
+                {class: "entry", icon: "", label: "Перейти на карту",
+                    callback: () => {
+                        this.workAreaMode = 'map';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Показать документы",
+                    callback: () => {
+                        this.workAreaMode = 'doc';
+                    }
+                },
+                {class: "entry", disabled: false, icon: "", label: "Экспорт заявки в...", callback: () => {
+                        this.workAreaMode = 'advert';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Заявка на ипотеку",
+                    callback: () => {
+                        this.workAreaMode = 'mortgage';
+                    }
+                },
+                {class: "delimiter"},
+                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
+                        {class: "entry", disabled: false, label: "Как Контакт",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_person"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Как Организацию",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_company"});
+                            }
+                        },
+                    ]},
+                {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить", items: [
+                        {class: "entry", disabled: false, label: "Не назначено",
+                            callback: () => {
+                                this.clickContextMenu({event: "del_agent", agent: null});
+                            }
+                        }
+                    ].concat(uOpt)},
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('notes', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('diary', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('chat', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
+                        {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Сводка",
+                    callback: () => {
+                        this.workAreaMode = 'svodka';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Отчет",
+                    callback: () => {
+                        this.workAreaMode = 'report';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "История",
+                    callback: () => {
+                        this.workAreaMode = 'history';
+                    }
+                },
+                {class: "submenu", disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить тег", items: [
+                        {class: "tag", icon: "", label: "", offer: this.selectedRequests.length == 1 ? this.selectedRequests[0] : null, tag,
+                            callback: (new_tag) => {
+                                this.clickContextMenu({event: "set_tag", tag: new_tag});
+                            }}
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", sub_class: 'del', disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
+                    callback: () => {
+                        this.clickContextMenu({event: "del_obj"});
+                    }
+                }
+            ]
+        };
+
+        this._hubService.shared_var['cm'] = menu;
+        this._hubService.shared_var['cm_hidden'] = false;
+    }
+    clickContextMenu(evt: any){
+        this.selectedRequests.forEach(o => {
+            if(evt.event == "add_to_person"){
+                if(!o.person){
+                    /* let pers: Person = new Person();
+                     pers.phoneBlock = PhoneBlock.toFormat(o.phoneBlock);
+                     this.subscription_person = this._personService.save(pers).subscribe(
+                         data => {
+                             o.person = data;
+                             o.personId = data.id;
+                             /*this.offers.forEach(t => {
+                                 if(t.phones_import)
+                             });
+                             let tabSys = this._hubService.getProperty('tab_sys');
+                             tabSys.addTab('person', {person: o.person, canEditable: true});
+                         }
+                     );*/
+                }
+            }
+            else if(evt.event == "add_to_company"){
+            } else if(evt.event == "set_agent"){
+                o.agentId = evt.agentId;
+                let temp_ag = o.agent;
+                o.agent = null;
+                this._requestService.save(o).subscribe(request => {
+                    this.requests[this.requests.indexOf(o)] = request;
+                    this.selectedRequests[this.selectedRequests.indexOf(o)] = request;
+                });
+                o.agent = temp_ag;
+
+            } else if(evt.event == "del_agent"){
+                o.agentId = null;
+                o.agent = null;
+                this._requestService.save(o).subscribe(request =>{
+                    this.requests[this.requests.indexOf(o)] = request;
+                    this.selectedRequests[this.selectedRequests.indexOf(o)] = request;
+                });
+            } else if(evt.event == "del_obj"){
+                this._requestService.delete(o).subscribe(
+                    data => {
+                        this.selectedRequests.splice(this.selectedRequests.indexOf(o), 1);
+                        this.requests.splice(this.requests.indexOf(o), 1);
+                    }
+                );
+            } else if(evt.event == "check"){
+                //this.openPopup = {visible: true, task: "check", value: PhoneBlock.getAsString(o.phoneBlock, " "), person: o.person};
+            } else if(evt.event == "set_tag"){
+                o.tag = evt.tag;
+                this._requestService.save(o).subscribe(request =>{
+                    this.requests[this.requests.indexOf(o)] = request;
+                    this.selectedRequests[this.selectedRequests.indexOf(o)] = request;
+                });
+            }
+        });
+    }
+    updateSelected() {
+        setTimeout(() => {
+            this.selectedOffers = [this.offer];
+        }, 200);
+    }
     agentChanged(event) {
         this.request.agentId = event == "null" ? null : event;
         if (this.request.agentId != null) {
@@ -857,10 +1736,6 @@ export class TabRequestComponent implements OnInit {
     }
 
     chechForm() {
-        if (this.request.request.length < 1) {
-            alert("Введите текст запроса");
-            return false;
-        }
         if (PhoneBlock.getNotNullData(this.contact.phoneBlock) == "") {
             alert("Не указан контактный телефон");
             return false;
@@ -879,7 +1754,7 @@ export class TabRequestComponent implements OnInit {
     getOffers() {
         this.offers = [];
         this.selectedOffers = [];
-        this._offerService.list(0, 100, this.source, this.filter, null, this.request.request, this.request.searchArea).subscribe(
+        this._offerService.list(0, 100, this.source, this.filter, null, "", this.request.searchArea).subscribe(
             offers => {
                 this.offers = offers.list;
             },
@@ -938,118 +1813,138 @@ export class TabRequestComponent implements OnInit {
                 }
             );
         });
-        let tag = this.selectedOffers[0].tag || null;
+        let tag;
+        if (this.request.tag != undefined) {
+            tag = this.request.tag;
+        } else  {
+            tag = null;
+        }
         let menu = {
             pX: e.pageX,
             pY: e.pageY,
             scrollable: false,
             items: [
-                {
-                    class: "entry",
-                    disabled: this.selectedOffers.length != 1,
-                    icon: "",
-                    label: "Проверить",
-                    callback: () => {
+                {class: "entry", disabled: this.selectedRequests.length == 1 ? false : true, icon: "", label: 'Проверить', callback: () => {
 
-                    }
-                },
-                {
-                    class: "entry", disabled: false, icon: "", label: "Открыть", callback: () => {
-                        let tab_sys = this._hubService.getProperty("tab_sys");
-                        this.selectedOffers.forEach(o => {
-                            let canEditable = this._sessionService.getAccount().id == o.accountId;
-                            tab_sys.addTab("offer", {offer: o, canEditable});
+                    }},
+                {class: "entry", disabled: false, icon: "", label: 'Открыть', callback: () => {
+                        let tab_sys = this._hubService.getProperty('tab_sys');
+                        this.selectedRequests.forEach(o => {
+                            let canEditable =  this._sessionService.getAccount().id == o.accountId;
+                            tab_sys.addTab('offer', {offer: o, canEditable});
                         });
+                    }},
+                {class: "delimiter"},
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Показать фото",
+                    callback: () => {
+                        this.workAreaMode = 'photo';
                     }
                 },
-                {
-                    class: "entry", disabled: !this.utilsObj.canImpact(this.selectedOffers), icon: "", label: "Удалить",
+                {class: "entry", icon: "", label: "Перейти на карту",
                     callback: () => {
-                        this.clickMenu({event: "del_obj"});
+                        this.workAreaMode = 'map';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Показать документы",
+                    callback: () => {
+                        this.workAreaMode = 'doc';
+                    }
+                },
+                {class: "entry", disabled: false, icon: "", label: "Экспорт заявки в...", callback: () => {
+                        this.workAreaMode = 'advert';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Заявка на ипотеку",
+                    callback: () => {
+                        this.workAreaMode = 'mortgage';
                     }
                 },
                 {class: "delimiter"},
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
-                        {
-                            class: "entry", disabled: false, label: "Как Контакт",
+                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
+                        {class: "entry", disabled: false, label: "Как Контакт",
                             callback: () => {
-                                this.clickMenu({event: "add_to_person"});
+                                this.clickContextMenu({event: "add_to_person"});
                             }
                         },
-                        {
-                            class: "entry", disabled: false, label: "Как Организацию",
+                        {class: "entry", disabled: false, label: "Как Организацию",
                             callback: () => {
-                                this.clickMenu({event: "add_to_company"});
+                                this.clickContextMenu({event: "add_to_company"});
                             }
-                        }
-                    ]
-                },
-                {
-                    class: "submenu",
-                    disabled: !this.utilsObj.canImpact(this.selectedOffers),
-                    icon: "",
-                    label: "Назначить",
-                    items: [
-                        {
-                            class: "entry", disabled: false, label: "Не назначено",
+                        },
+                    ]},
+                {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить", items: [
+                        {class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
-                                this.clickMenu({event: "del_agent", agent: null});
+                                this.clickContextMenu({event: "del_agent", agent: null});
                             }
                         }
-                    ].concat(uOpt)
-                },
-                {
-                    class: "entry", disabled: false, icon: "", label: "Добавить задачу", items: []
-                },
-                {
-                    class: "entry", disabled: false, icon: "", label: "Добавить заметку", items: []
-                },
-                {class: "delimiter"},
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
-                        {class: "entry", disabled: false, label: "Email1"},
-                        {class: "entry", disabled: false, label: "Email2"},
-                        {class: "entry", disabled: false, label: "Email3"}
-                    ]
-                },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
-                        {class: "entry", disabled: false, label: "Номер1"},
-                        {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"}
-                    ]
-                },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Позвонить", items: [
-                        {class: "entry", disabled: false, label: "Номер1"},
-                        {class: "entry", disabled: false, label: "Номер2"},
-                        {class: "entry", disabled: false, label: "Номер3"}
-                    ]
-                },
-                {
-                    class: "submenu", disabled: false, icon: "", label: "Написать в чат", items: []
-                },
-                {class: "delimiter"},
-                {
-                    class: "submenu",
-                    disabled: !this.utilsObj.canImpact(this.selectedOffers),
-                    icon: "",
-                    label: "Назначить тег",
-                    items: [
-                        {
-                            class: "tag",
-                            icon: "",
-                            label: "",
-                            offer: this.selectedOffers.length == 1 ? this.selectedOffers[0] : null,
-                            tag,
-                            callback: (new_tag) => {
-                                this.clickMenu({event: "set_tag", tag: new_tag});
-                            }
-                        }
-                    ]
-                }
+                    ].concat(uOpt)},
+                {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('notes', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "entry", disabled: false, icon: "", label: "Добавить задачу", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('diary', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "submenu", disabled: false, icon: "", label: "Написать в чат", callback: (event) => {
+                        let block = this._hubService.getProperty('notebook');
+                        block.setMode('chat', event);
+                        block.setShow(true, event);
+                    }},
+                {class: "submenu", disabled: false, icon: "", label: "Позвонить",  items: [
+                        {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
 
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
+                                let block = this._hubService.getProperty('notebook');
+
+                                block.setMode("phone", event);
+                                block.setShow(true, event);
+                            }
+                        },
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Сводка",
+                    callback: () => {
+                        this.workAreaMode = 'svodka';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "Отчет",
+                    callback: () => {
+                        this.workAreaMode = 'report';
+                    }
+                },
+                {class: "entry", disabled: this.selectedRequests.length != 1, icon: "", label: "История",
+                    callback: () => {
+                        this.workAreaMode = 'history';
+                    }
+                },
+                {class: "submenu", disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить тег", items: [
+                        {class: "tag", icon: "", label: "", offer: this.selectedRequests.length == 1 ? this.selectedRequests[0] : null, tag,
+                            callback: (new_tag) => {
+                                this.clickContextMenu({event: "set_tag", tag: new_tag});
+                            }}
+                    ]},
+                {class: "delimiter"},
+                {class: "entry", sub_class: 'del', disabled:  !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: 'Удалить',
+                    callback: () => {
+                        this.clickContextMenu({event: "del_obj"});
+                    }
+                }
             ]
         };
 

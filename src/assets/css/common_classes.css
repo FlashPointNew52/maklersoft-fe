@@ -105,7 +105,7 @@ input::placeholder {
     font-family: 'Segoe MDL2 Assets';
     line-height: 30px;
     position: absolute;
-    right: 124px;
+    right: 15px;
 }
 
 .find_icon_right:before {
@@ -130,6 +130,7 @@ input::placeholder {
 
 .activate_draw {
     background-color: #0a145b;
+    color: white;
 }
 
 .inactive_bottom {
@@ -246,6 +247,15 @@ input::placeholder {
     box-sizing: border-box;
     position: relative;
 }
+.source_menu.list{
+    overflow: unset;
+    padding: 0;
+    position: fixed;
+    width: calc(220px * 3);
+    left: calc(50% - 330px);
+    height: 35px;
+    top: 142px;
+}
 
 .source_menu > div {
     min-width: 104px;
@@ -257,6 +267,7 @@ input::placeholder {
     border: solid rgba(59, 89, 152, 1) 1px;
     border-right: 1px solid white;
     color: #2B3C63;
+    background-color: white;
     cursor: pointer;
 }
 
