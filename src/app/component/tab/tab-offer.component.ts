@@ -25,6 +25,7 @@ import {Person} from "../../entity/person";
 import {Organisation} from "../../entity/organisation";
 import {AddressBlock} from "../../class/addressBlock";
 import {Contact} from "../../entity/contact";
+import {ConditionsBlock} from "../../class/conditionsBlock";
 
 
 @Component({
@@ -216,7 +217,7 @@ import {Contact} from "../../entity/contact";
             <div class="source_menu">
                 <div [class.active]="mode == 0" (click)="mode = 0">ПРЕДЛОЖЕНИЕ</div>
                 <div [class.active]="mode == 1" class="last"
-                     (click)="mode = 1; filter.offerTypeCode = offer.offerTypeCode; workAreaMode = 'map'">ЗАЯВКИ
+                     (click)="mode = 1; filter.offerTypeCode = offer.offerTypeCode; workAreaMode = 'map'">ЛИСТИНГ
                 </div>
                 <div class="edit_ready" *ngIf="mode == 0">
                     <span class="link" *ngIf="!editEnabled && canEditable" (click)="toggleEdit()">Изменить</span>
@@ -232,17 +233,14 @@ import {Contact} from "../../entity/contact";
                 <ui-tab [title]="'ГЛАВНАЯ'">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
-                            <span>Дата создания</span>
-                            <span class="view-value">{{ utils.getDateInCalendar(offer.addDate) }}</span>
-                        </div>
-                        <div class="show_block">
-                            <span>Предложение</span>
+                            <span>Предложение от...</span>
                             <span class="view-value">{{conClass.typeOptions[contact.type]?.label}}</span>
                         </div>
                         <div class="show_block">
                             <span>{{contact.type == 'person' ? 'ФИО' : 'Название организации'}}</span>
                             <span class="view-value link">{{ contact?.name}}</span>
                         </div>
+                        <hr class="line">
                         <div class="show_block" *ngIf="contact?.phoneBlock?.main">
                             <span>Личный телефон</span>
                             <span
@@ -317,13 +315,9 @@ import {Contact} from "../../entity/contact";
                             <span>Соцсети</span>
                             <view-social [block]="contact?.socialBlock"></view-social>
                         </div>
+                        <hr class="line">
                         <div class="show_block">
-                            <span>Источник</span>
-                            <span
-                                class="view-value">{{ canEditable ? conClass.sourceCodeOptions[contact?.sourceCode]?.label : "Общая база"}}</span>
-                        </div>
-                        <div class="show_block">
-                            <span>Статус</span>
+                            <span>Статус контакта</span>
                             <span class="view-value">{{ contact?.isMiddleman ? "Посредник" : "Принципал"}}</span>
                         </div>
                         <div class="show_block">
@@ -331,39 +325,23 @@ import {Contact} from "../../entity/contact";
                             <span class="view-value">{{ conClass.typeCodeOptions[contact?.typeCode]?.label}}</span>
                         </div>
                         <div class="show_block">
-                            <span>Лояльность</span>
+                            <span>Лояльность контакта</span>
                             <span class="view-value">{{ conClass.loyaltyOptions[contact?.loyalty]?.label}}</span>
                         </div>
                         <div class="show_block">
                             <span>Стадия контакта</span>
                             <span class="view-value">{{ conClass.stageCodeOptions[contact?.stageCode]?.label}}</span>
                         </div>
-                        <div class="show_block">
-                            <span>Сделка</span>
-                            <span
-                                class="view-value">{{ offClass.offerTypeCodeOptions[offer.offerTypeCode]?.label}}</span>
-                        </div>
-                        <div class="show_block">
-                            <span>Стадия объекта</span>
-                            <span class="view-value">{{ offClass.stageCodeOptions[offer?.stageCode]?.label}}</span>
-                        </div>
-                        <div class="show_block" *ngIf="offer.accountId == this._sessionService.getUser().accountId">
-                            <span>Источник объекта</span>
-                            <span class="view-value" *ngIf="offer.sourceMedia && offer.sourceUrl"><a
-                                href="{{offer.sourceUrl}}"
-                                target="_blank">{{offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</a></span>
-                            <span class="view-value"
-                                  *ngIf="offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</span>
-                            <span class="view-value"
-                                  *ngIf="!offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceOptions[offer?.sourceCode]?.label}}</span>
-                        </div>
+                        <hr class="line">
+                        <hidden-text [name]="'Права третьих лиц'" [value]="offer?.thirdPartyRights"></hidden-text>
+                        <hr class="line">
                         <div class="show_block">
                             <span>Ответственный</span>
                             <span class="view-value" [class.link]="offer.agentId">{{ offer.agent?.name || 'Не назначено'}}</span>
                         </div>
                         <ng-container *ngIf="block.getAsArray(offer.contractBlock)?.length == 0">
                             <div class="show_block">
-                                <span>Договор</span>
+                                <span>Наличие договора</span>
                                 <span class="view-value">Нет</span>
                             </div>
                         </ng-container>
@@ -386,9 +364,11 @@ import {Contact} from "../../entity/contact";
                                 <span class="view-value">{{ offer.contractBlock?.terminated}}</span>
                             </div>
                         </ng-container>
+                        <hr class="line">
+                        <hidden-text [name]="'Создать заметку'" [value]="offer?.conditionInfo"></hidden-text>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
-                        <sliding-menu [name]="'Предложение'" [options]="conClass.typeOptions"
+                        <sliding-menu [name]="'Предложение от...'" [options]="conClass.typeOptions"
                                       [value]="contact?.type"
                                       (result)="contact.type = $event"
                         ></sliding-menu>
@@ -396,6 +376,7 @@ import {Contact} from "../../entity/contact";
                                     [value]="contact?.name"
                                     (newValue)="contact.name = $event"
                         ></input-line>
+                        <hr class="line">
                         <multiselect-menu
                             [name]="'Телефон контакта'" [block]="contact?.phoneBlock" [addName]="'Добавить телефон'"
                             [params]="{ 'main': {label: 'Личный', mask: ' (000) 000-00-00', prefix: '+7', placeholder: 'Телефон'},
@@ -442,11 +423,8 @@ import {Contact} from "../../entity/contact";
                                 }"
                             (newData)="contact.socialBlock = $event"
                         ></multiselect-menu>
-                        <sliding-menu [name]="'Источник'" [options]="conClass.sourceCodeOptions"
-                                      [value]="contact?.sourceCode"
-                                      (result)="contact.sourceCode = $event"
-                        ></sliding-menu>
-                        <sliding-menu [name]="'Статус'" [options]="conClass.middlemanOptions"
+                        <hr class="line">
+                        <sliding-menu [name]="'Статус контакта'" [options]="conClass.middlemanOptions"
                                       [value]="contact.isMiddleman ? 'middleman' : 'owner'"
                                       (result)="contact.isMiddleman = $event == 'middleman'"
                         ></sliding-menu>
@@ -454,7 +432,7 @@ import {Contact} from "../../entity/contact";
                                       [value]="contact?.typeCode"
                                       (result)="contact.typeCode = $event"
                         ></sliding-menu>
-                        <sliding-menu [name]="'Лояльность'" [options]="conClass.loyaltyOptions"
+                        <sliding-menu [name]="'Лояльность контакта'" [options]="conClass.loyaltyOptions"
                                       [value]="contact?.loyalty"
                                       (result)="contact.loyalty = $event"
                         ></sliding-menu>
@@ -462,20 +440,16 @@ import {Contact} from "../../entity/contact";
                                       [value]="contact?.stageCode"
                                       (result)="contact.stageCode = $event"
                         ></sliding-menu>
-                        <sliding-menu [name]="'Сделка'" [options]="offClass.offerTypeCodeOptions"
-                                      [value]="offer?.offerTypeCode"
-                                      (result)="offer.offerTypeCode = $event"
-                        ></sliding-menu>
-                        <sliding-menu [name]="'Стадия объекта'" [options]="offClass.stageCodeOptions"
-                                      [value]="offer?.stageCode"
-                                      (result)="offer.stageCode = $event"
-                        ></sliding-menu>
+                        <hr class="line">
+                        <input-area [name]="'Права третьих лиц'" [value]="offer?.thirdPartyRights" [update]="update"
+                                    (newValue)="offer.thirdPartyRights = $event"></input-area>
+                        <hr class="line">
                         <sliding-menu [name]="'Ответственный'" [options]="agentOpts"
                                       [value]="offer?.agentId || null"
                                       (result)="agentChanged($event)"
                         ></sliding-menu>
                         <multiselect-menu
-                            [name]="'Договор'" [block]="offer?.contractBlock" [addName]="'Добавить данные'"
+                            [name]="'Наличие договора'" [block]="offer?.contractBlock" [addName]="'Добавить данные'"
                             [params]="{ 'number': {label: 'Номер', placeholder: 'Номер договора'},
                                     'begin' : {label: 'Дата начала', placeholder: 'Дата'},
                                     'end': {label: 'Дата конца', placeholder: 'Дата'},
@@ -485,10 +459,41 @@ import {Contact} from "../../entity/contact";
                             (newData)="offer.contractBlock = $event"
                         ></multiselect-menu>
                         <sliding-tag [value]="offer?.tag" (newValue)="offer.tag = $event"></sliding-tag>
+                        <hr class="line">
+                        <input-area [name]="'Создать заметку'" [value]="offer?.conditionInfo" [update]="update"
+                                    (newValue)="offer.conditionInfo = $event"></input-area>
                     </ng-container>
                 </ui-tab>
-                <ui-tab [title]="'ОБЪЕКТ'">
+                <ui-tab [title]="'ОБЪЕКТ'" (tabSelect)="update = {}">
                     <ng-container *ngIf="!editEnabled">
+                        <div class="show_block">
+                            <span>Дата создания</span>
+                            <span class="view-value">{{ utils.getDateInCalendar(offer.addDate) }}</span>
+                        </div>
+                        <div class="show_block" *ngIf="offer.addDate != offer.changeDate">
+                            <span>Дата изменения</span>
+                            <span class="view-value">{{ utils.getDateInCalendar(offer.changeDate) }}</span>
+                        </div>
+                        <div class="show_block">
+                            <span>Тип сделки</span>
+                            <span
+                                class="view-value">{{ offClass.offerTypeCodeOptions[offer.offerTypeCode]?.label}}</span>
+                        </div>
+                        <div class="show_block">
+                            <span>Стадия сделки</span>
+                            <span class="view-value">{{ offClass.stageCodeOptions[offer?.stageCode]?.label}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="offer.accountId == this._sessionService.getUser().accountId || !offer.accountId">
+                            <span>Тип добавления</span>
+                            <span class="view-value" *ngIf="offer.sourceMedia && offer.sourceUrl"><a
+                                href="{{offer.sourceUrl}}"
+                                target="_blank">{{offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</a></span>
+                            <span class="view-value"
+                                  *ngIf="offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceMediaOptions[offer?.sourceMedia]?.label}}</span>
+                            <span class="view-value"
+                                  *ngIf="!offer.sourceMedia && !offer.sourceUrl">{{ offClass.sourceOptions[offer?.sourceCode]?.label}}</span>
+                        </div>
+                        <hr class="line">
                         <div class="show_block">
                             <span>Категория</span>
                             <span class="view-value">{{ offClass.categoryOptions[offer?.categoryCode]?.label}}</span>
@@ -507,6 +512,7 @@ import {Contact} from "../../entity/contact";
                             <span>Тип объекта</span>
                             <span class="view-value">{{ offClass.typeCodeOptions[offer?.typeCode]?.label}}</span>
                         </div>
+                        <hidden-text [name]="'Документы на объект'" [value]="offer?.documentsStr"></hidden-text>
                         <div class="show_block" *ngIf="offer.categoryCode != 'land'">
                             <span>Новостройка</span>
                             <switch-button [value]="offer?.newBuilding" [disabled]="true"></switch-button>
@@ -519,22 +525,22 @@ import {Contact} from "../../entity/contact";
                             <span>{{offer?.newBuilding ? 'Дата сдачи объекта' : 'Год постройки'}}</span>
                             <span class="view-value">{{ offer.buildYear || 'Неизвестно'}}</span>
                         </div>
+                        <div class="show_block" *ngIf="offer.offerTypeCode != 'rent'">
+                            <span>Обременение</span>
+                            <switch-button [value]="offer?.encumbrance" [disabled]="true"></switch-button>
+                        </div>
                         <div class="show_block"
                              *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'">
                             <span>Удаленность</span>
                             <span class="view-value">{{ offer?.distance || "Неизвестно"}}</span>
                         </div>
+                        <hr class="line">
                         <div class="show_block"
                              *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'">
                             <span>Наименование поселения</span>
                             <span class="view-value">{{ offer?.settlement || "Неизвестно"}}</span>
                         </div>
-                        <div class="show_block"
-                             *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'">
-                            <span>Охрана</span>
-                            <switch-button [value]="offer?.guard" [disabled]="true"></switch-button>
-                        </div>
-                        <div class="show_block">
+                        <div class="show_block" *ngIf="offer.categoryCode != 'land' && offer.buildingType != 'lowrise_house'">
                             <span>Жилищный комплекс</span>
                             <span class="view-value">{{ offer?.housingComplex || "Неизвестно"}}</span>
                         </div>
@@ -543,11 +549,11 @@ import {Contact} from "../../entity/contact";
                             <span class="view-value">{{offer.addressBlock?.region}}</span>
                         </div>
                         <div class="show_block" *ngIf="offer.addressBlock?.city">
-                            <span>Населённый пункт</span>
+                            <span>Нас. пункт</span>
                             <span class="view-value">{{offer.addressBlock?.city}}</span>
                         </div>
                         <div class="show_block" *ngIf="offer.addressBlock?.admArea">
-                            <span>Административный район</span>
+                            <span>Адм. район</span>
                             <span class="view-value">{{offer.addressBlock?.admArea}}</span>
                         </div>
                         <div class="show_block" *ngIf="offer.addressBlock?.area">
@@ -574,14 +580,44 @@ import {Contact} from "../../entity/contact";
                             <span>Остановка</span>
                             <span class="view-value">{{offer.addressBlock?.busStop}}</span>
                         </div>
-                        <div class="show_block" *ngIf="offer.offerTypeCode != 'rent'">
-                            <span>Обременение</span>
-                            <switch-button [value]="offer?.encumbrance" [disabled]="true"></switch-button>
+                        <!--                TODO: переместить label внутрь компонента-->
+                        <div class="show_block rating">
+                            <span class="view-label">Месторасположение</span>
+                            <star-mark [value]="this.offer.locRating?.map['remoteness']"
+                                       (estimate)="this.offer.locRating.map['remoteness']=$event"
+                                       [editable]="false"
+                            ></star-mark>
+                            <span class="view-label">Транспортная доступность</span>
+                            <star-mark [value]="this.offer.locRating?.map['transport']"
+                                       (estimate)="this.offer.locRating.map['transport']=$event"
+                                       [editable]="false"
+                            ></star-mark>
+                            <span class="view-label">Престижность района</span>
+                            <star-mark [value]="this.offer.locRating?.map['prestigious']"
+                                       (estimate)="this.offer.locRating.map['prestigious']=$event"
+                                       [editable]="false"
+                            ></star-mark>
+                            <span class="view-label">Экология</span>
+                            <star-mark [value]="this.offer.locRating?.map['ecology']"
+                                       (estimate)="this.offer.locRating.map['ecology']=$event"
+                                       [editable]="false"
+                            ></star-mark>
+                            <span class="view-label">Инфраструктура</span>
+                            <star-mark [value]="this.offer.locRating?.map['infrastructure']"
+                                       (estimate)="this.offer.locRating.map['infrastructure']=$event"
+                                       [editable]="false"
+                            ></star-mark>
                         </div>
-                        <div class="show_block" *ngIf="offer.offerTypeCode != 'rent'">
-                            <span>Подходит под ипотеку</span>
-                            <switch-button [value]="offer?.mortgages" [disabled]="true"></switch-button>
+                        <div class="show_block"
+                             *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'">
+                            <span>Охраняемая территория</span>
+                            <switch-button [value]="offer?.guard" [disabled]="true"></switch-button>
                         </div>
+                        <div class="show_block" *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'">
+                            <span>Гостевая парковка</span>
+                            <switch-button [value]="offer?.parking" [disabled]="true"></switch-button>
+                        </div>
+                        <hr class="line">
                         <ng-container
                             *ngIf="offer.typeCode == 'apartment' || offer.typeCode == 'room' || offer.typeCode == 'share'">
                             <div class="show_block">
@@ -605,8 +641,8 @@ import {Contact} from "../../entity/contact";
                                 <span>Этажность</span>
                                 <span class="view-value">{{ offer.floorsCount }}</span>
                             </div>
-                            <div class="show_block" *ngIf="offer?.levelsCount">
-                                <span>Уровень</span>
+                            <div class="show_block" *ngIf="offer?.levelsCount && offer.buildingType != 'lowrise_house'">
+                                <span>Уровней</span>
                                 <span class="view-value">{{ offer.levelsCount }}</span>
                             </div>
                             <div class="show_block" *ngIf="offer?.squareTotal">
@@ -630,6 +666,10 @@ import {Contact} from "../../entity/contact";
                                 <switch-button [value]="offer?.balcony" [disabled]="true"></switch-button>
                             </div>
                             <div class="show_block">
+                                <span>Терраса</span>
+                                <switch-button [value]="offer?.terrace" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
                                 <span>Санузел</span>
                                 <span class="view-value">{{ offClass.bathroomOptions[offer?.bathroom]?.label}}</span>
                             </div>
@@ -640,17 +680,9 @@ import {Contact} from "../../entity/contact";
                         </ng-container>
                         <ng-container
                             *ngIf="offer.typeCode == 'house' || offer.typeCode == 'cottage' || offer.typeCode == 'dacha' || offer.typeCode == 'townhouse' || offer.typeCode == 'duplex'">
-                            <div class="show_block" *ngIf="offer?.floor">
-                                <span>Этаж</span>
-                                <span class="view-value">{{ offer.floor }}</span>
-                            </div>
-                            <div class="show_block" *ngIf="offer?.floorsCount">
-                                <span>Этажность</span>
-                                <span class="view-value">{{ offer.floorsCount }}</span>
-                            </div>
-                            <div class="show_block" *ngIf="offer?.levelsCount">
-                                <span>Уровень</span>
-                                <span class="view-value">{{ offer.levelsCount }}</span>
+                            <div class="show_block">
+                                <span>Материал стен</span>
+                                <span class="view-value">{{ offClass.houseTypeOptions[offer?.houseType]?.label}}</span>
                             </div>
                             <div class="show_block">
                                 <span>Количество комнат</span>
@@ -659,7 +691,15 @@ import {Contact} from "../../entity/contact";
                             <div class="show_block" *ngIf="offer.roomsCount != 1 && offer.typeCode != 'room'">
                                 <span>Тип комнат</span>
                                 <span
-                                    class="view-value">{{ offClass.roomSchemeOptions[offer?.roomScheme]?.label}}</span>
+                                        class="view-value">{{ offClass.roomSchemeOptions[offer?.roomScheme]?.label}}</span>
+                            </div>
+                            <div class="show_block" *ngIf="offer?.floor">
+                                <span>Этаж</span>
+                                <span class="view-value">{{ offer.floor }}</span>
+                            </div>
+                            <div class="show_block" *ngIf="offer?.floorsCount">
+                                <span>Этажей</span>
+                                <span class="view-value">{{ offer.floorsCount }}</span>
                             </div>
                             <div class="show_block" *ngIf="offer?.squareTotal">
                                 <span>Общая площадь</span>
@@ -679,14 +719,6 @@ import {Contact} from "../../entity/contact";
                                     class="view-value">{{ offer?.squareLand + " " + (offer?.squareLandType == 0 ? "cот" : "га") }}</span>
                             </div>
                             <div class="show_block">
-                                <span>Состояние</span>
-                                <span class="view-value">{{ offClass.conditionOptions[offer?.condition]?.label}}</span>
-                            </div>
-                            <div class="show_block">
-                                <span>Материал стен</span>
-                                <span class="view-value">{{ offClass.houseTypeOptions[offer?.houseType]?.label}}</span>
-                            </div>
-                            <div class="show_block">
                                 <span>Лоджия</span>
                                 <switch-button [value]="offer?.loggia" [disabled]="true"></switch-button>
                             </div>
@@ -695,8 +727,16 @@ import {Contact} from "../../entity/contact";
                                 <switch-button [value]="offer?.balcony" [disabled]="true"></switch-button>
                             </div>
                             <div class="show_block">
+                                <span>Терраса</span>
+                                <switch-button [value]="offer?.terrace" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
                                 <span>Санузел</span>
                                 <span class="view-value">{{ offClass.bathroomOptions[offer?.bathroom]?.label}}</span>
+                            </div>
+                            <div class="show_block">
+                                <span>Состояние</span>
+                                <span class="view-value">{{ offClass.conditionOptions[offer?.condition]?.label}}</span>
                             </div>
                             <div class="show_block">
                                 <span>Водоснабжение</span>
@@ -800,20 +840,28 @@ import {Contact} from "../../entity/contact";
                                 <span class="view-value">{{ offClass.conditionOptions[offer?.condition]?.label}}</span>
                             </div>
                             <div class="show_block">
-                                <span>Охрана</span>
-                                <switch-button [value]="offer?.guard" [disabled]="true"></switch-button>
-                            </div>
-                            <div class="show_block">
                                 <span>Лифт</span>
                                 <switch-button [value]="offer?.lift" [disabled]="true"></switch-button>
                             </div>
-                            <div class="show_block">
-                                <span>Парковка</span>
-                                <switch-button [value]="offer?.parking" [disabled]="true"></switch-button>
-                            </div>
                         </ng-container>
+                        <hidden-text [name]="'Дополнительное описание'" [value]="offer?.description"></hidden-text>
+                        <hr class="line">
+                        <hidden-text [name]="'Создать заметку'" [value]="offer?.conditionInfo"></hidden-text>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
+                        <sliding-menu [name]="'Тип сделки'" [options]="offClass.offerTypeCodeOptions"
+                                      [value]="offer?.offerTypeCode"
+                                      (result)="offer.offerTypeCode = $event; checkConditions();"
+                        ></sliding-menu>
+                        <sliding-menu [name]="'Стадия сделки'" [options]="offClass.stageCodeOptions"
+                                      [value]="offer?.stageCode"
+                                      (result)="offer.stageCode = $event"
+                        ></sliding-menu>
+                        <sliding-menu [name]="'Тип добавления:'" [options]="offClass.sourceOptions"
+                                      [value]="offer?.sourceCode"
+                                      (result)="offer.sourceCode = $event"
+                        ></sliding-menu>
+                        <hr class="line">
                         <sliding-menu [name]="'Категория'" [options]="offClass.categoryOptions"
                                       [value]="offer?.categoryCode"
                                       (result)="offer.categoryCode = $event"
@@ -834,34 +882,15 @@ import {Contact} from "../../entity/contact";
                                       [value]="offer?.typeCode"
                                       (result)="offer.typeCode = $event"
                         ></sliding-menu>
-                        <input-line *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'"
-                                    [name]="'Удаленность'" [value]="offer?.distance"
-                                    (newValue)="offer.distance = $event"
-                        ></input-line>
-                        <input-line *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'"
-                                    [name]="'Наименование поселения'" [value]="offer?.settlement"
-                                    (newValue)="offer.settlement = $event"
-                        ></input-line>
-                        <div class="show_block"
-                             *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'">
-                            <span>Охрана</span>
-                            <switch-button [value]="offer?.guard" (newValue)="offer.guard = $event"></switch-button>
-                        </div>
-                        <address-input [block]="offer?.addressBlock"
-                                       [addressType]="offer.categoryCode == 'commersial' ? 'office': 'apartment'"
-                                       (newData)="offer.addressBlock = $event.address; $event.location ? offer.location = $event.location : null; $event.location ? updateSelected() : null;"
-                                       [name]="'Адрес предложения'"
-                        ></address-input>
-                        <input-line [name]="'Жилищный комплекс'" [value]="offer?.housingComplex"
-                                    (newValue)="offer.housingComplex = $event"
-                        ></input-line>
+                        <input-area [name]="'Документы на объект'" [value]="offer?.documentsStr" [update]="update"
+                                    (newValue)="offer.documentsStr = $event"></input-area>
                         <div class="show_block" *ngIf="offer.categoryCode != 'land'">
                             <span>Новостройка</span>
                             <switch-button [value]="offer?.newBuilding"
                                            (newValue)="offer.newBuilding = $event"></switch-button>
                         </div>
                         <sliding-menu *ngIf="offer.newBuilding"
-                                      [name]="'Тип объекта'" [options]="offClass.objectStageOptions"
+                                      [name]="'Стадия объекта'" [options]="offClass.objectStageOptions"
                                       [value]="offer?.objectStage"
                                       (result)="offer.objectStage = $event"
                         ></sliding-menu>
@@ -876,23 +905,73 @@ import {Contact} from "../../entity/contact";
                                 <switch-button [value]="offer?.encumbrance"
                                                (newValue)="offer.encumbrance = $event"></switch-button>
                             </div>
+                        </ng-container>
+                        <input-line *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'"
+                                    [name]="'Удаленность'" [value]="offer?.distance"
+                                    (newValue)="offer.distance = $event"
+                        ></input-line>
+                        <hr class="line">
+                        <input-line *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'"
+                                    [name]="'Наименование поселения'" [value]="offer?.settlement"
+                                    (newValue)="offer.settlement = $event"
+                        ></input-line>
+                        <input-line [name]="'Жилищный комплекс'" [value]="offer?.housingComplex" *ngIf="offer.categoryCode != 'land' && offer.buildingType != 'lowrise_house'"
+                                    (newValue)="offer.housingComplex = $event"
+                        ></input-line>
+                        <address-input [block]="offer?.addressBlock"
+                                       [addressType]="offer.categoryCode == 'commersial' ? 'office': 'apartment'"
+                                       (newData)="offer.addressBlock = $event.address; $event.location ? offer.location = $event.location : null; $event.location ? updateSelected() : null;"
+                                       [name]="'Адрес предложения'"
+                        ></address-input>
+                        <div class="show_block rating">
+                            <span class="view-label">Месторасположение</span>
+                            <star-mark [value]="this.offer.locRating?.map['remoteness']"
+                                       (estimate)="this.offer.locRating.map['remoteness']=$event"
+                                       [editable]="true"
+                            ></star-mark>
+                            <span class="view-label">Транспортная доступность</span>
+                            <star-mark [value]="this.offer.locRating?.map['transport']"
+                                       (estimate)="this.offer.locRating.map['transport']=$event"
+                                       [editable]="true"
+                            ></star-mark>
+                            <span class="view-label">Престижность района</span>
+                            <star-mark [value]="this.offer.locRating?.map['prestigious']"
+                                       (estimate)="this.offer.locRating.map['prestigious']=$event"
+                                       [editable]="true"
+                            ></star-mark>
+                            <span class="view-label">Экология</span>
+                            <star-mark [value]="this.offer.locRating?.map['ecology']"
+                                       (estimate)="this.offer.locRating.map['ecology']=$event"
+                                       [editable]="true"
+                            ></star-mark>
+                            <span class="view-label">Инфраструктура</span>
+                            <star-mark [value]="this.offer.locRating?.map['infrastructure']"
+                                       (estimate)="this.offer.locRating.map['infrastructure']=$event"
+                                       [editable]="true"
+                            ></star-mark>
+                        </div>
+                        <ng-container *ngIf="offer.categoryCode == 'land' || offer.buildingType == 'lowrise_house'">
                             <div class="show_block">
-                                <span>Подходит под ипотеку</span>
-                                <switch-button [value]="offer?.mortgages"
-                                               (newValue)="offer.mortgages = $event"></switch-button>
+                                <span>Охраняемая территория</span>
+                                <switch-button [value]="offer?.guard" (newValue)="offer.guard = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Гостевая парковка</span>
+                                <switch-button [value]="offer?.parking"
+                                               (newValue)="offer.parking = $event"></switch-button>
                             </div>
                         </ng-container>
+                        <hr class="line">
                         <ng-container
                             *ngIf="offer.typeCode == 'apartment' || offer.typeCode == 'room' || offer.typeCode == 'share'">
-                            <sliding-menu *ngIf="offer.newBuilding"
+                            <sliding-menu
                                           [name]="'Материал стен'" [options]="offClass.houseTypeOptions"
                                           [value]="offer?.houseType"
                                           (result)="offer.houseType = $event"
                             ></sliding-menu>
                             <input-line [name]="'Количество комнат'" [value]="offer?.roomsCount"
                                         (newValue)="offer.roomsCount = $event"></input-line>
-                            <sliding-menu *ngIf="offer.roomsCount != 1 && offer.typeCode != 'room'"
-                                          [name]="'Тип комнат'" [options]="offClass.roomSchemeOptions"
+                            <sliding-menu [name]="'Тип комнат'" [options]="offClass.roomSchemeOptions"
                                           [value]="offer?.roomScheme"
                                           (result)="offer.roomScheme = $event"
                             ></sliding-menu>
@@ -900,7 +979,7 @@ import {Contact} from "../../entity/contact";
                                         (newValue)="offer.floor = $event"></input-line>
                             <input-line [name]="'Этажность'" [value]="offer?.floorsCount"
                                         (newValue)="offer.floorsCount = $event"></input-line>
-                            <input-line [name]="'Уровней'" [value]="offer?.levelsCount"
+                            <input-line [name]="'Уровней'" [value]="offer?.levelsCount" *ngIf="offer.buildingType != 'lowrise_house'"
                                         (newValue)="offer.levelsCount = $event"></input-line>
                             <input-line [name]="'Общая площадь'" [value]="offer?.squareTotal"
                                         (newValue)="offer.squareTotal = $event"></input-line>
@@ -924,7 +1003,11 @@ import {Contact} from "../../entity/contact";
                             <div class="show_block">
                                 <span>Балкон</span>
                                 <switch-button [value]="offer?.balcony"
-                                               (newValue)="offer.balcony = $event"></switch-button>
+                                               ></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Терраса</span>
+                                <switch-button [value]="offer?.terrace" (newValue)="offer.terrace = $event"></switch-button>
                             </div>
                             <sliding-menu [name]="'Санузел'" [options]="offClass.bathroomOptions"
                                           [value]="offer?.bathroom"
@@ -937,12 +1020,10 @@ import {Contact} from "../../entity/contact";
                         </ng-container>
                         <ng-container
                             *ngIf="offer.typeCode == 'house' || offer.typeCode == 'cottage' || offer.typeCode == 'dacha' || offer.typeCode == 'townhouse' || offer.typeCode == 'duplex'">
-                            <input-line [name]="'Этаж'" [value]="offer?.floor"
-                                        (newValue)="offer.floor = $event"></input-line>
-                            <input-line [name]="'Этажность'" [value]="offer?.floorsCount"
-                                        (newValue)="offer.floorsCount = $event"></input-line>
-                            <input-line [name]="'Уровней'" [value]="offer?.levelsCount"
-                                        (newValue)="offer.levelsCount = $event"></input-line>
+                            <sliding-menu [name]="'Материал стен'" [options]="offClass.houseTypeOptions"
+                                          [value]="offer?.houseType"
+                                          (result)="offer.houseType = $event"
+                            ></sliding-menu>
                             <input-line [name]="'Количество комнат'" [value]="offer?.roomsCount"
                                         (newValue)="offer.roomsCount = $event"></input-line>
                             <sliding-menu *ngIf="offer.roomsCount != 1 && offer.typeCode != 'room'"
@@ -950,11 +1031,10 @@ import {Contact} from "../../entity/contact";
                                           [value]="offer?.roomScheme"
                                           (result)="offer.roomScheme = $event"
                             ></sliding-menu>
-                            <sliding-menu *ngIf="offer.newBuilding"
-                                          [name]="'Материал стен'" [options]="offClass.houseTypeOptions"
-                                          [value]="offer?.houseType"
-                                          (result)="offer.houseType = $event"
-                            ></sliding-menu>
+                            <input-line [name]="'Этаж'" [value]="offer?.floor"
+                                        (newValue)="offer.floor = $event"></input-line>
+                            <input-line [name]="'Этажей'" [value]="offer?.floorsCount"
+                                        (newValue)="offer.floorsCount = $event"></input-line>
                             <input-line [name]="'Общая площадь'" [value]="offer?.squareTotal"
                                         (newValue)="offer.squareTotal = $event"></input-line>
                             <input-line [name]="'Жилая площадь'" [value]="offer?.squareLiving"
@@ -967,27 +1047,25 @@ import {Contact} from "../../entity/contact";
                                           [value]="offer?.squareLandType"
                                           (result)="offer.squareLandType = $event"
                             ></sliding-menu>
-                            <sliding-menu [name]="'Состояние'" [options]="offClass.conditionOptions"
-                                          [value]="offer?.condition"
-                                          (result)="offer.condition = $event"
-                            ></sliding-menu>
-                            <sliding-menu [name]="'Материал'" [options]="offClass.houseTypeOptions"
-                                          [value]="offer?.houseType"
-                                          (result)="offer.houseType = $event"
-                            ></sliding-menu>
                             <div class="show_block">
                                 <span>Лоджия</span>
-                                <switch-button [value]="offer?.loggia"
-                                               (newValue)="offer.loggia = $event"></switch-button>
+                                <switch-button [value]="offer?.loggia" [disabled]="true"></switch-button>
                             </div>
                             <div class="show_block">
                                 <span>Балкон</span>
-                                <switch-button [value]="offer?.balcony"
-                                               (newValue)="offer.balcony = $event"></switch-button>
+                                <switch-button [value]="offer?.balcony" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Терраса</span>
+                                <switch-button [value]="offer?.terrace" [disabled]="true"></switch-button>
                             </div>
                             <sliding-menu [name]="'Санузел'" [options]="offClass.bathroomOptions"
                                           [value]="offer?.bathroom"
                                           (result)="offer.bathroom = $event"
+                            ></sliding-menu>
+                            <sliding-menu [name]="'Состояние'" [options]="offClass.conditionOptions"
+                                          [value]="offer?.condition"
+                                          (result)="offer.condition = $event"
                             ></sliding-menu>
                             <div class="show_block">
                                 <span>Водоснабжение</span>
@@ -1095,54 +1173,21 @@ import {Contact} from "../../entity/contact";
                                           (result)="offer.condition = $event"
                             ></sliding-menu>
                             <div class="show_block">
-                                <span>Охрана</span>
-                                <switch-button [value]="offer?.guard" (newValue)="offer.guard = $event"></switch-button>
-                            </div>
-                            <div class="show_block">
                                 <span>Лифт</span>
                                 <switch-button [value]="offer?.lift" (newValue)="offer.lift = $event"></switch-button>
                             </div>
-                            <div class="show_block">
-                                <span>Парковка</span>
-                                <switch-button [value]="offer?.parking"
-                                               (newValue)="offer.parking = $event"></switch-button>
-                            </div>
                         </ng-container>
+                        <input-area [name]="'Дополнительное описание'" [value]="offer?.description" [update]="update"
+                                    (newValue)="offer.description = $event"></input-area>
+                        <hr class="line">
+                        <input-area [name]="'Создать заметку'" [value]="offer?.conditionInfo" [update]="update"
+                                    (newValue)="offer.conditionInfo = $event"></input-area>
                     </ng-container>
-                    <!--                TODO: переместить label внутрь компонента-->
-                    <div class="show_block rating">
-                        <span class="view-label">Месторасположение</span>
-                        <star-mark [value]="this.offer.locRating?.map['remoteness']"
-                                   (estimate)="this.offer.locRating.map['remoteness']=$event"
-                                   [editable]="editEnabled"
-                        ></star-mark>
-                        <span class="view-label">Транспортная доступность</span>
-                        <star-mark [value]="this.offer.locRating?.map['transport']"
-                                   (estimate)="this.offer.locRating.map['transport']=$event"
-                                   [editable]="editEnabled"
-                        ></star-mark>
-                        <span class="view-label">Престижность района</span>
-                        <star-mark [value]="this.offer.locRating?.map['prestigious']"
-                                   (estimate)="this.offer.locRating.map['prestigious']=$event"
-                                   [editable]="editEnabled"
-                        ></star-mark>
-                        <span class="view-label">Экология</span>
-                        <star-mark [value]="this.offer.locRating?.map['ecology']"
-                                   (estimate)="this.offer.locRating.map['ecology']=$event"
-                                   [editable]="editEnabled"
-                        ></star-mark>
-                        <span class="view-label">Инфраструктура</span>
-                        <star-mark [value]="this.offer.locRating?.map['infrastructure']"
-                                   (estimate)="this.offer.locRating.map['infrastructure']=$event"
-                                   [editable]="editEnabled"
-                        ></star-mark>
-                    </div>
-                    <input-area [name]="'Дополнительно'" [value]="offer?.description" [disabled]="!editEnabled"
-                                (newValue)="offer.description = $event" [update]="update"></input-area>
                 </ui-tab>
                 <ui-tab [title]="'УСЛОВИЯ'" *ngIf="offer.offerTypeCode == 'rent'" (tabSelect)="update = {}">
                     <ng-container *ngIf="!editEnabled">
-                        <conditions-switches [block]="offer.conditions" [disabled]="true"></conditions-switches>
+                        <conditions-switches [block]="offer?.conditions" [disabled]="true"></conditions-switches>
+                        <hr class="line">
                         <div class="show_block">
                             <span>Дата заезда</span>
                             <span class="view-value">{{ offer?.arrivalDate}}</span>
@@ -1151,45 +1196,175 @@ import {Contact} from "../../entity/contact";
                             <span>Период проживания</span>
                             <span class="view-value">{{ offer?.period}}</span>
                         </div>
+                        <hr class="line">
+                        <hidden-text [name]="'Создать заметку'" [value]="offer?.conditionInfo"></hidden-text>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <conditions-switches [block]="offer.conditions" [disabled]="false"></conditions-switches>
+                        <hr class="line">
                         <input-line [name]="'Дата заезда'" [value]="offer?.arrivalDate"
                                     (newValue)="offer.arrivalDate = $event"></input-line>
                         <input-line [name]="'Период проживания'" [value]="offer?.period"
                                     (newValue)="offer.period = $event"></input-line>
+                        <hr class="line">
+                        <input-area [name]="'Создать заметку'" [value]="offer?.conditionInfo" [update]="update"
+                                    (newValue)="offer.conditionInfo = $event"></input-area>
                     </ng-container>
-                    <input-area [name]="'Дополнительно'" [value]="offer?.conditionInfo"
-                                (newValue)="offer.conditionInfo = $event" [disabled]="!editEnabled"
-                                [update]="update"></input-area>
+                    
                 </ui-tab>
                 <ui-tab [title]="'ЦЕНА'" (tabSelect)="update = {}">
                     <ng-container *ngIf="!editEnabled">
                         <div class="show_block">
-                            <span>Цена объекта</span>
-                            <span
-                                class="view-value">{{ offer.ownerPrice ? offer.ownerPrice + " тыс. руб." : "Неизвестно"}}</span>
+                            <span>{{offer.offerTypeCode == 'rent' ? 'Стоимость аренды' : 'Цена продажи'}}</span>
+                            <span class="view-value">{{ offer.ownerPrice ? utils.getNumWithDellimet(offer.ownerPrice * 1000) + " Р" : "Неизвестно"}}</span>
+                        </div>
+                        <div class="show_block" *ngIf="offer.offerTypeCode != 'rent'">
+                            <span>Стоимость 1 кв.м</span>
+                            <span class="view-value">{{ offer.ownerPrice ? utils.getNumWithDellimet(utils.ceil(offer.ownerPrice/offer.squareTotal) * 1000) + " Р" : "Неизвестно"}}</span>
                         </div>
                         <div class="show_block">
-                            <span>Комиссия</span>
-                            <span
-                                class="view-value">{{ offer?.comission }} {{offClass.commisionTypeOption[offer.commisionType]}}</span>
+                            <span>Форма расчёта</span>
+                            <span class="view-value">{{offClass.paymentTypeOption[offer.paymentType]?.label}}</span>
+                        </div>
+                        <ng-container *ngIf="offer.offerTypeCode != 'rent'">
+                            <div class="show_block">
+                                <span>Требуется аванс/задаток</span>
+                                <switch-button [value]="offer?.prepayment" (newValue)="offer.prepayment = $event"
+                                               [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Возможна ипотека</span>
+                                <switch-button [value]="offer?.mortgages" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Возможен сертификат</span>
+                                <switch-button [value]="offer?.certificate" [disabled]="true"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Возможен материнский капитал</span>
+                                <switch-button [value]="offer?.maternityCapital" [disabled]="true"></switch-button>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="offer.offerTypeCode == 'rent'">
+                            <div class="show_block">
+                                <span>Требуется страховой депозит</span>
+                                <switch-button [value]="offer?.deposit" (newValue)="offer.deposit = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Требуется залог</span>
+                                <switch-button [value]="offer?.prepayment" (newValue)="offer.prepayment = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Счетчик на электроэнергию</span>
+                                <switch-button [value]="offer?.electrificPay" (newValue)="offer.electrificPay = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Счетчик на воду</span>
+                                <switch-button [value]="offer?.waterPay" (newValue)="offer.waterPay = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Счетчик на газ</span>
+                                <switch-button [value]="offer?.gasPay" (newValue)="offer.gasPay = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Отопление</span>
+                                <switch-button [value]="offer?.heatingPay" (newValue)="offer.heatingPay = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Комунальные платежи</span>
+                                <switch-button [value]="offer?.utilityBills" (newValue)="offer.utilityBills = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                        </ng-container>
+                        <hr class="line">
+                        <div class="show_block">
+                            <span>Комиссия агента</span>
+                            <span class="view-value">{{ offer.commission ? utils.getNumWithDellimet(offer.commission) : '' }} {{offer.commission ? offClass.commisionTypeOption[offer.commisionType]?.label : ''}}</span>
                         </div>
                         <div class="show_block">
                             <span>MLS</span>
-                            <span class="view-value">{{ offer?.mlsPrice }} тыс. руб.</span>
+                            <span class="view-value">{{ offer.mlsPrice ? utils.getNumWithDellimet(offer.mlsPrice) : ''}} {{offer.mlsPrice ? offClass.commisionTypeOption[offer.mlsPriceType]?.label : ''}}</span>
                         </div>
+                        <hr class="line">
+                        <hidden-text [name]="'Создать заметку'" [value]="offer?.costInfo"></hidden-text>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
                         <input-line
-                            [name]="'Цена объекта, тыс. руб.'" [value]="offer?.ownerPrice"
-                            (newValue)="offer.ownerPrice = $event"
+                            [name]="offer.offerTypeCode == 'rent' ? 'Стоимость аренды' : 'Цена продажи'" [value]="offer?.ownerPrice * 1000"
+                            (newValue)="offer.ownerPrice = $event / 1000"
                         ></input-line>
+                        <sliding-menu [name]="'Форма расчёта'" [options]="offClass.paymentTypeOption"
+                                      [value]="offer?.paymentType"
+                                      (result)="offer.paymentType = $event"
+                        ></sliding-menu>
+                        <ng-container *ngIf="offer.offerTypeCode != 'rent'">
+                            <div class="show_block">
+                                <span>Требуется аванс/задаток</span>
+                                <switch-button [value]="offer?.prepayment" (newValue)="offer.prepayment = $event"
+                                               [disabled]="false"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Возможна ипотека</span>
+                                <switch-button [value]="offer?.mortgages" [disabled]="false" (newValue)="offer.mortgages = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Возможен сертификат</span>
+                                <switch-button [value]="offer?.certificate" [disabled]="false" (newValue)="offer.certificate = $event"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Возможен материнский капитал</span>
+                                <switch-button [value]="offer?.maternityCapital" [disabled]="false" (newValue)="offer.maternityCapital = $event"></switch-button>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="offer.offerTypeCode == 'rent'">
+                            <div class="show_block">
+                                <span>Требуется страховой депозит</span>
+                                <switch-button [value]="offer?.deposit" (newValue)="offer.deposit = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Требуется залог</span>
+                                <switch-button [value]="offer?.prepayment" (newValue)="offer.prepayment = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Счетчик на электроэнергию</span>
+                                <switch-button [value]="offer?.electrificPay" (newValue)="offer.electrificPay = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Счетчик на воду</span>
+                                <switch-button [value]="offer?.waterPay" (newValue)="offer.waterPay = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Счетчик на газ</span>
+                                <switch-button [value]="offer?.gasPay" (newValue)="offer.gasPay = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Отопление</span>
+                                <switch-button [value]="offer?.heatingPay" (newValue)="offer.heatingPay = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                            <div class="show_block">
+                                <span>Комунальные платежи</span>
+                                <switch-button [value]="offer?.utilityBills" (newValue)="offer.utilityBills = $event"
+                                               [disabled]="!editEnabled"></switch-button>
+                            </div>
+                        </ng-container>
+                        <hr class="line">
                         <input-line
-                            [name]="'Комиссия'" [value]="offer?.comission"
-                            (newValue)="offer.comission = $event"
+                            [name]="'Комиссия агента'" [value]="offer?.commission"
+                            (newValue)="offer.commission = $event"
                         ></input-line>
-                        <sliding-menu [name]="'Тип комиссии'" [options]="offClass.commisionTypeOption"
+                        <sliding-menu [name]="'Тип комиссии'" [options]="offClass.commisionTypeOption" *ngIf="offer.commission"
                                       [value]="offer?.commisionType"
                                       (result)="offer.commisionType = $event"
                         ></sliding-menu>
@@ -1197,45 +1372,13 @@ import {Contact} from "../../entity/contact";
                             [name]="'MLS'" [value]="offer?.mlsPrice"
                             (newValue)="offer.mlsPrice = $event"
                         ></input-line>
-                        <sliding-menu [name]="'Тип MLS'" [options]="offClass.commisionTypeOption"
+                        <sliding-menu [name]="'Тип MLS'" [options]="offClass.commisionTypeOption" *ngIf="offer.mlsPrice"
                                       [value]="offer?.mlsPriceType"
                                       (result)="offer.mlsPriceType = $event"
                         ></sliding-menu>
+                        <hr class="line">
+                        <input-area [name]="'Создать заметку'" [value]="offer?.costInfo" (newValue)="offer.costInfo = $event" [update]="update"></input-area>
                     </ng-container>
-                    <ng-container *ngIf="offer.offerTypeCode == 'rent'">
-                        <div class="show_block">
-                            <span>Депозит</span>
-                            <switch-button [value]="offer?.prepayment" (newValue)="offer.prepayment = $event"
-                                           [disabled]="!editEnabled"></switch-button>
-                        </div>
-                        <div class="show_block">
-                            <span>Счетчик на электроэнергию</span>
-                            <switch-button [value]="offer?.electrificPay" (newValue)="offer.electrificPay = $event"
-                                           [disabled]="!editEnabled"></switch-button>
-                        </div>
-                        <div class="show_block">
-                            <span>Счетчик на воду</span>
-                            <switch-button [value]="offer?.waterPay" (newValue)="offer.waterPay = $event"
-                                           [disabled]="!editEnabled"></switch-button>
-                        </div>
-                        <div class="show_block">
-                            <span>Счетчик на газ</span>
-                            <switch-button [value]="offer?.gasPay" (newValue)="offer.gasPay = $event"
-                                           [disabled]="!editEnabled"></switch-button>
-                        </div>
-                        <div class="show_block">
-                            <span>Отопление</span>
-                            <switch-button [value]="offer?.heatingPay" (newValue)="offer.heatingPay = $event"
-                                           [disabled]="!editEnabled"></switch-button>
-                        </div>
-                        <div class="show_block">
-                            <span>Комунальные платежи</span>
-                            <switch-button [value]="offer?.utilityBills" (newValue)="offer.utilityBills = $event"
-                                           [disabled]="!editEnabled"></switch-button>
-                        </div>
-                    </ng-container>
-                    <input-area [name]="'Дополнительно'" [value]="offer?.costInfo" (newValue)="offer.costInfo = $event"
-                                [disabled]="!editEnabled" [update]="update"></input-area>
                 </ui-tab>
 <!--                (click)="showContextMenu($event);"-->
                 <div more class="more" (click)="showContextMenu($event);" (offClick)="this._hubService.shared_var['cm_hidden'] = true">ЕЩЁ...
@@ -1444,7 +1587,6 @@ export class TabOfferComponent implements OnInit {
         e.stopPropagation();
 
         let c = this;
-        //let users: User[] = this._userService.listCached("", 0, "");
         let uOpt = [{class:'entry', label: "На себя", disabled: false, callback: () => {
                 this.clickContextMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
             }}];
@@ -1480,13 +1622,6 @@ export class TabOfferComponent implements OnInit {
             items: [
                 {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: 'Проверить', callback: () => {
                         this.openPopup = {visible: true, task: "check"};
-                    }},
-                {class: "entry", disabled: false, icon: "", label: 'Открыть', callback: () => {
-                        let tab_sys = this._hubService.getProperty('tab_sys');
-                        this.selectedOffers.forEach(o => {
-                            let canEditable = this.source == OfferSource.IMPORT ? false : (this._sessionService.getUser().accountId == o.accountId);
-                            tab_sys.addTab('offer', {offer: o, canEditable});
-                        });
                     }},
                 {class: "delimiter"},
                 {class: "entry", disabled: false, icon: "", label: 'Перейти в источник',
@@ -1531,6 +1666,31 @@ export class TabOfferComponent implements OnInit {
                         this.workAreaMode = 'mortgage';
                     }
                 },
+                {class: "delimiter"},
+                {class: "submenu", disabled: false, icon: "", label: "Добавить как...", items: [
+                        {class: "entry", disabled: this.source == OfferSource.LOCAL, label: "Предложение",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_local"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Контакт",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_person"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Организацию",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_company"});
+                            }
+                        },
+                    ]},
+                {class: "submenu", disabled: !(this.source != OfferSource.LOCAL || this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить на...", items: [
+                        {class: "entry", disabled: this.source != OfferSource.LOCAL, label: "Не назначено",
+                            callback: () => {
+                                this.clickContextMenu({event: "del_agent", agent: null});
+                            }
+                        }
+                    ].concat(uOpt)},
                 {class: "delimiter"},
                 {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
                         let block = this._hubService.getProperty('notebook');
@@ -1743,7 +1903,10 @@ export class TabOfferComponent implements OnInit {
         }, 200);
     }
 
-
+    checkConditions(){
+        if(this.offer.offerTypeCode == 'rent' && !this.offer.conditions)
+            this.offer.conditions = new ConditionsBlock();
+    }
 
     save() {
         if (!this.checkForm())
@@ -1757,7 +1920,7 @@ export class TabOfferComponent implements OnInit {
             }
         }
         this.offer.locRating.map["average"] = middleRat.count > 0 ? middleRat.value / middleRat.count : 0;
-
+        //this.offer.ownerPrice = this.offer.ownerPrice / 1000;
         if (this.contact.type == "person") {
             this._personService.save(this.contact as Person).subscribe(person => {
                 if (person) {
@@ -1769,8 +1932,9 @@ export class TabOfferComponent implements OnInit {
                     this.contact.type = "person";
                     this._offerService.save(this.offer).subscribe(offer => {
                         setTimeout(() => {
+                            let type = this.offer.id ? 'update' : 'new';
                             this.offer = offer;
-                            this.tab.setEvent({type: 'update', value: this.offer});
+                            this.tab.setEvent({type, value: this.offer});
                         });
                         this.updateSelected();
                         this.toggleEdit();
@@ -1789,8 +1953,9 @@ export class TabOfferComponent implements OnInit {
                     this.contact.type = "organisation";
                     this._offerService.save(this.offer).subscribe(offer => {
                         setTimeout(() => {
+                            let type = this.offer.id ? 'update' : 'new';
                             this.offer = offer;
-                            this.tab.setEvent({type: 'update', value: this.offer});
+                            this.tab.setEvent({type, value: this.offer});
                         });
                         this.updateSelected();
                         this.toggleEdit();

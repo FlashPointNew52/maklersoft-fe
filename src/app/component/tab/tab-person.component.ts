@@ -69,7 +69,7 @@ import {Contact} from "../../entity/contact";
         .work-area {
             float: right;
             height: calc(100vh - 122px);
-            width: 100vw;
+            width: calc(100vw - 400px);
             display: flex;
             flex-direction: column;
             flex-wrap: wrap;
@@ -417,7 +417,7 @@ import {Contact} from "../../entity/contact";
                         ></multiselect-menu>
                         <sliding-tag [value]="person?.tag" (newValue)="person.tag = $event"></sliding-tag>
                     </ng-container>
-                    <input-area [name]="'Дополнительно'" [value]="person?.description" [disabled]="!editEnabled"
+                    <input-area [name]="'Дополнительно'" [value]="person?.description"
                                 (newValue)="person.description = $event" [update]="update"></input-area>
                 </ui-tab>
                 <ui-tab [title]="'ПРЕДЛОЖЕНИЯ'" (tabSelect)="listOffers()">
@@ -475,7 +475,7 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
     block = ObjectBlock;
     utils = Utils;
     utilsObj = null;
-    workAreaMode: any;
+    workAreaMode: any = 'rating';
     organisationsOpts: any[] = [];
     agentOpts: any = {
         null: {label: "Не назначено"}
@@ -558,8 +558,9 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
         setTimeout(() => {
             this._personService.save(this.person).subscribe(
                 person => {
+                    let type = this.person.id ? 'update' : 'new';
                     this.person = person;
-                    this.tab.setEvent({type: 'update', value: this.person});
+                    this.tab.setEvent({type, value: this.person});
                     this.toggleEdit();
                 }
             );
@@ -603,16 +604,16 @@ export class TabPersonComponent implements OnInit, AfterViewInit {
             this.person.agent = null;
         }
     }
-    addFile(event, array) {
+    /*addFile(event, array) {
         if (array == "photo")
             this.person.photos.length > 0 ? this.person.photos = [].concat(this.person.photos).concat(event) : this.person.photos = event;
         else if (array == "doc")
             this.person.documents.length > 0 ? this.person.documents = [].concat(this.person.documents).concat(event) : this.person.documents = event;
+    }*/
+    addFile(event){
+        this.person.photo = event[0].href;
+        this.person.photoMini = event[0].href;
     }
-    // addFile(event){
-    //     this.person.photo = event[0].href;
-    //     this.person.photoMini = event[0].href;
-    // }
 
     displayProgress(event) {
         this.progressWidth = event;

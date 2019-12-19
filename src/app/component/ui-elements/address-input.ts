@@ -66,7 +66,7 @@ import {SuggestionService} from "../../service/suggestion.service";
     styles: [`
         .menu_header {
             width: 100%;
-            padding: 0 40px 0 25px;
+            padding: 0 30px;
             display: inline-flex;
             justify-content: space-between;
             cursor: pointer;
@@ -192,7 +192,7 @@ export class AddressInputComponent implements AfterViewInit, OnChanges {
                 this._suggestionService.kladr_list(query, type, parent).subscribe(data => {
                     this.sgList = data;
                 });
-            }, 500);
+            }, 200);
         }
     }
 

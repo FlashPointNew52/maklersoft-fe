@@ -168,14 +168,16 @@ export class SessionService {
                 let data = JSON.parse(JSON.stringify(raw));
                 if (data.result == "OK"){
                     ret_subj.next(true);
-                } else if (data.result == "FAIL" && data.msg == "001:Wrong format phone")
+                } else {
+                    this.handle_errors(data.msg);
+                }/*if (data.result == "FAIL" && data.msg == "001:Wrong format phone")
                     this._hubService.getProperty("modal-window").showMessage("Неверный формат телефона",  null);
                 else if (data.result == "FAIL" && data.msg == "200:No phones or emails")
                     this._hubService.getProperty("modal-window").showMessage("Не указаны телефон или емайл",  null);
                 else if (data.result == "FAIL" && data.msg == "300:User with such email or phone already exists")
                     this._hubService.getProperty("modal-window").showMessage("Пользователь с таким телефоном или адресом уже существует. Воспользуйтесь восстановленим пароля",  null);
                 else
-                    this._hubService.getProperty("modal-window").showMessage("Системная ошибка! Обратитесь в службу поддержки",  null);
+                    this._hubService.getProperty("modal-window").showMessage("Системная ошибка! Обратитесь в службу поддержки",  null);*/
                 ret_subj.complete();
             },
             err => this.handle_errors(err)

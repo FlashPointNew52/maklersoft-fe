@@ -17,6 +17,7 @@ import {Organisation} from "../../entity/organisation";
 import {SessionService} from "../../service/session.service";
 import {PhoneBlock} from "../../class/phoneBlock";
 import {Utils} from "../../class/utils";
+import {User} from "../../entity/user";
 
 @Component({
     selector: 'tab-list-offer',
@@ -89,7 +90,7 @@ import {Utils} from "../../class/utils";
     `],
     template: `
 
-        <div class="search-form" *ngIf="workAreaMode != 'advert' && workAreaMode != 'photo'">
+        <div class="search-form" *ngIf="workAreaMode != 'advert' && workAreaMode != 'photo' && workAreaMode != 'doc'">
             <input type="text" class="input_line" placeholder="Введите поисковый запрос" [style.width]="'100%'"
                    [(ngModel)]="searchQuery" (keyup)="searchStringChanged($event)"
             ><span class="find_icon"></span>
@@ -139,7 +140,7 @@ import {Utils} from "../../class/utils";
                     (newValue)="filter.attachment = $event; searchParamChanged();"
                 >
                 </filter-select>
-                <filter-select
+                <filter-select *ngIf="source == 1"
                     [name]="'Стадия объекта'" [firstAsName]="true"
                     [options]="[
                         {value: 'all', label: 'Все'},
@@ -156,7 +157,7 @@ import {Utils} from "../../class/utils";
                 </filter-select>
                 <filter-select-tag *ngIf="source == 1" [value]="filter?.tag" (newValue)="filter.tag = $event; searchParamChanged();"></filter-select-tag>
                 <filter-select
-                    [name]="'Период'" [firstAsName]="true"
+                    [name]="'Период'" [firstAsName]="false"
                     [options]="[
                                   {value: 'all', label: 'Все'},
                                   {value: '1', label: '1 день'},
@@ -170,25 +171,16 @@ import {Utils} from "../../class/utils";
                     (newValue)="filter.addDate = $event; searchParamChanged();"
                 >
                 </filter-select>
-<!--                <ui-filter-select class="view-value edit-value"-->
-<!--                                  [options]=" this.source == 1 ? localSort : importSort"-->
-<!--                                  [value]="getSort()"-->
-<!--                                  (onChange)="setSort($event.option, $event.subvalue); searchParamChanged($event);"-->
-<!--                >-->
-<!--                </ui-filter-select>-->
                 <filter-select
-                    [name]="'Сортировка'" [firstAsName]="true"
+                    [name]="'Сортировка'" [firstAsName]="false"
                     [options]="[
-                                  {value: 'all', label: 'Все'},
-                                  {value: 'inactive', label: 'Не активно'},
-                                  {value: 'active', label: 'Активно'},
-                                  {value: 'listing', label: 'Листинг'},
-                                  {value: 'deal', label: 'Сделка'},
-                                  {value: 'suspended', label: 'Приостановлено'},
-                                  {value: 'archive', label: 'Архив'}
+                                  {value: 'recomended', label: 'Рекомендованные'},
+                                  {value: 'addDate', label: 'По новизне'},
+                                  {value: 'ownerPriceASC', label: 'Цена: от низкой к высокой'},
+                                  {value: 'ownerPriceDESC', label: 'Цена: от высокой к низклй'}
                     ]"
-                    [value]="{'option' : 'all'}"
-                    (newValue)="$event; searchParamChanged();"
+                    [value]="{'option' : sort}"
+                    (newValue)="sort = $event; searchParamChanged();"
                 >
                 </filter-select>
                 <div class="found">Найдено: {{hitsCount+" "}}/{{" "+offers?.length }}</div>
@@ -212,7 +204,7 @@ import {Utils} from "../../class/utils";
                                 [active]="selectedOffers.indexOf(offer) > -1"
                                 [class.selected]="selectedOffers.indexOf(offer) > -1"
                                 [class.alreadyAdd]="offer.offerRef && source == 0"
-                                [dateType] = "sort.changeDate ? 'changeDate' : sort.assignDate ? 'assignDate' : 'addDate'"
+                                [dateType] = "'addDate'"
                                 (click)="select($event, offer, i); workAreaMode = 'map'"
                                 (contextmenu)="select($event, offer, i); contextCheck()"
                                 (dblclick)="dblClick(offer)"
@@ -221,7 +213,7 @@ import {Utils} from "../../class/utils";
             </div>
         </div>
         <div class="work-area">
-            
+
             <ng-container [ngSwitch]="workAreaMode">
                 <div class="map-buttons" *ngSwitchCase="'map'">
                     <div class="map-button" (click)="toggleDraw()" [class.activate]="mapDrawAllowed">ОБВЕДИТЕ ЛОКАЦИЮ</div>
@@ -238,7 +230,7 @@ import {Utils} from "../../class/utils";
                             (showSameOffers) = "showSameOffers($event)"
                 >
                 </yamap-view>
-                <adv-view *ngSwitchCase="'advert'" [offers]="selectedOffers"
+                <adv-view *ngSwitchCase="'advert'" [offers]="selectedOffers" [mode]="'offer'"
                 ></adv-view>
                 <files-view [full]="paneHidden" [files]="selectedOffers[0].photos" [type]="'photo'" [editMode]="false" *ngSwitchCase="'photo'"></files-view>
                 <files-view [full]="paneHidden" [files]="selectedOffers[0].documents" [type]="'doc'" [editMode]="false" *ngSwitchCase="'doc'"></files-view>
@@ -259,17 +251,14 @@ export class TabListOfferComponent implements OnInit{
     filter: any = {
         isMiddleman: 'all',
         attachment: 'all',
-        stateCode: 'all',
+        stageCode: 'all',
         contactType: 'all',
-        addDate: '30',
+        addDate: 'all',
         offerTypeCode: 'sale',
         tag: null,
     };
 
-    sort: any = {addDate: "DESC"};
-
-    importSort = Offer.importSort;
-    localSort = Offer.localSort;
+    sort: any = 'addDate';
 
     paneHidden: boolean = false;
 
@@ -335,7 +324,7 @@ export class TabListOfferComponent implements OnInit{
     }
     listOffers(down: number, event: any = null) {
             this.canLoad = down;
-            this._offerService.list(this.page, this.perPage, this.source, this.filter, this.sort, this.searchQuery, this.searchArea).subscribe(
+            this._offerService.list(this.page, this.perPage, this.source, this.filter, Offer.sort[this.sort], this.searchQuery, this.searchArea).subscribe(
                 data => setTimeout(() => {
                     this.hitsCount = data.hitsCount || (this.hitsCount > 0 ? this.hitsCount : 0);
                     if (this.page == 0 && down == 1) {
@@ -378,7 +367,6 @@ export class TabListOfferComponent implements OnInit{
         this.listOffers(1);
     }
 
-
     toggleLeftPane() {
         this.paneHidden = !this.paneHidden;
     }
@@ -388,33 +376,15 @@ export class TabListOfferComponent implements OnInit{
         e.stopPropagation();
 
         let c = this;
-        //let users: User[] = this._userService.listCached("", 0, "");
         let uOpt = [{class:'entry', label: "На себя", disabled: false, callback: () => {
-            this.clickContextMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
-          }}];
+                this.clickContextMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
+            }}];
         for (let op of this._userService.cacheUsers){
-          op.callback = () => {
-            this.clickContextMenu({event: "set_agent", agentId: op.value});
-          };
-          uOpt.push(op);
+            op.callback = () => {
+                this.clickContextMenu({event: "set_agent", agentId: op.value});
+            };
+            uOpt.push(op);
         }
-        /*uOpt.push(
-            {class: "entry", disabled: false, label: "Не задано", callback: function() {
-                c.selectedOffers.forEach(o => {
-                    o.agentId = null;
-                    o.agent = null;
-                    c._offerService.save(o);
-                })
-            }},
-        )*/
-        /*users.forEach(u => {
-            if(u.id != this._sessionService.getUser().id)
-            uOpt.push(
-                {class: "entry", disabled: false, label: u.name, callback: () => {
-                    this.clickMenu({event: "add_to_local", agent: u});
-                }},
-            );
-        });*/
 
         let stateOpt = [];
         let states = [
@@ -424,16 +394,7 @@ export class TabListOfferComponent implements OnInit{
             {value: 'suspended', label: 'Приостановлен'},
             {value: 'archive', label: 'Архив'}
         ];
-        //let stageOpt = [];
-        /*let stages = [
-            {value: 'contact', label: 'Первичный контакт'},
-            {value: 'pre_deal', label: 'Заключение договора'},
-            {value: 'show', label: 'Показ'},
-            {value: 'prep_deal', label: 'Подготовка договора'},
-            {value: 'decision', label: 'Принятие решения'},
-            {value: 'negs', label: 'Переговоры'},
-            {value: 'deal', label: 'Сделка'}
-        ];*/
+
         states.forEach(s => {
             stateOpt.push(
                 {class: "entry", disabled: false, label: s.label, callback() {
@@ -444,19 +405,7 @@ export class TabListOfferComponent implements OnInit{
                 }}
             );
         });
-        /*stages.forEach(s => {
-            stageOpt.push(
-                {class: "entry", disabled: false, label: s.label, callback: function() {
-                    c.selectedOffers.forEach(o => {
-                        o.stageCode = s.value;
-                        c._offerService.save(o);
-                    });
-                            setTimeout(function () {
-                                c.listOffers(1);
-                            }, 1200);
-                }}
-            );
-        });*/
+
         let tag = this.selectedOffers[0].tag || null;
         let menu = {
             pX: e.pageX,
@@ -528,6 +477,31 @@ export class TabListOfferComponent implements OnInit{
                     }
                 },
                 {class: "delimiter"},
+                {class: "submenu", disabled: false, icon: "", label: "Добавить как...", items: [
+                        {class: "entry", disabled: this.source == OfferSource.LOCAL, label: "Предложение",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_local"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Контакт",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_person"});
+                            }
+                        },
+                        {class: "entry", disabled: false, label: "Организацию",
+                            callback: () => {
+                                this.clickContextMenu({event: "add_to_company"});
+                            }
+                        },
+                    ]},
+                {class: "submenu", disabled: !(this.source != OfferSource.LOCAL || this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить на...", items: [
+                        {class: "entry", disabled: this.source != OfferSource.LOCAL, label: "Не назначено",
+                            callback: () => {
+                                this.clickContextMenu({event: "del_agent", agent: null});
+                            }
+                        }
+                    ].concat(uOpt)},
+                {class: "delimiter"},
                 {class: "entry", disabled: false, icon: "", label: "Добавить заметку", callback: (event) => {
                         let block = this._hubService.getProperty('notebook');
 
@@ -571,60 +545,6 @@ export class TabListOfferComponent implements OnInit{
                             }
                         },
                     ]},
-                // {class: "delimiter"},
-                // {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
-                //     {class: "entry", disabled: this.source == OfferSource.LOCAL, label: "Как Предложение",
-                //         callback: () => {
-                //             this.clickContextMenu({event: "add_to_local"});
-                //         }
-                //     },
-                //     {class: "entry", disabled: false, label: "Как Контакт",
-                //         callback: () => {
-                //             this.clickContextMenu({event: "add_to_person"});
-                //         }
-                //     },
-                //     {class: "entry", disabled: false, label: "Как Организацию",
-                //         callback: () => {
-                //             this.clickContextMenu({event: "add_to_company"});
-                //         }
-                //     },
-                // ]},
-                // {class: "submenu", disabled: !(this.source == OfferSource.LOCAL && this.utilsObj.canImpact(this.selectedOffers)), icon: "", label: "Назначить", items: [
-                //     {class: "entry", disabled: false, label: "Не назначено",
-                //       callback: () => {
-                //         this.clickContextMenu({event: "del_agent", agent: null});
-                //       }
-                //     }
-                // ].concat(uOpt)},
-                // {class: "delimiter"},
-                // {class: "submenu", disabled: false, icon: "", label: "Отправить E-mail", items: [
-                //     {class: "entry", disabled: false, label: "Email1"},
-                //     {class: "entry", disabled: false, label: "Email2"},
-                //     {class: "entry", disabled: false, label: "Email3"},
-                // ]},
-                // {class: "submenu", disabled: false, icon: "", label: "Отправить SMS", items: [
-                //     {class: "entry", disabled: false, label: "Номер1", callback: (event) => {
-                //             let block = this._hubService.getProperty('notebook');
-                //
-                //             block.setMode("chat", event);
-                //             block.setShow(true, event);
-                //         }
-                //     },
-                //     {class: "entry", disabled: false, label: "Номер2", callback: (event) => {
-                //             let block = this._hubService.getProperty('notebook');
-                //
-                //             block.setMode("chat", event);
-                //             block.setShow(true, event);
-                //         }
-                //     },
-                //     {class: "entry", disabled: false, label: "Номер3", callback: (event) => {
-                //             let block = this._hubService.getProperty('notebook');
-                //
-                //             block.setMode("chat", event);
-                //             block.setShow(true, event);
-                //         }
-                //     },
-                // ]},
                 {class: "delimiter"},
                 {class: "entry", disabled: this.selectedOffers.length != 1, icon: "", label: "Сводка",
                     callback: () => {
@@ -661,7 +581,6 @@ export class TabListOfferComponent implements OnInit{
     }
 
     select(event: MouseEvent, offer: Offer, i: number) {
-
         if (event.button == 2) {    // right click
             if (this.selectedOffers.indexOf(offer) == -1) { // if not over selected items
                 this.lastClckIdx = i;
@@ -691,29 +610,8 @@ export class TabListOfferComponent implements OnInit{
         }
     }
 
-    offerSelected(offer: Offer) {
-
-    }
-
     dblClick(offer: Offer) {
         this.openOffer(offer);
-    }
-
-    tStart(event, offer: Offer) {
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-        clearTimeout(this.to);
-        this.to = setTimeout(() => {
-            this.openOffer(offer);
-        }, 1000);
-    }
-
-    tEnd(event, offer: Offer) {
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-        clearTimeout(this.to);
     }
 
     openOffer(offer: Offer) {
@@ -777,30 +675,6 @@ export class TabListOfferComponent implements OnInit{
         this.listOffers(1);
     }
 
-    sortChanged(e) {
-        if (e.order == 0) {
-            delete this.sort[e.field];
-        } else {
-            if (e.order == 1) {
-                this.sort[e.field] = "ASC";
-            } else {
-                this.sort[e.field] = "DESC";
-            }
-        }
-        /*for (var i = 0; i < localStorage.length; i++) {
-            let name : string = localStorage.key(i);
-            if(name.indexOf('offer_page') > -1)
-                localStorage.removeItem(name);
-        }*/
-        this.page = 0;
-        this.listOffers(1);
-    }
-
-    setSort(val1, val2){
-        this.sort = {};
-        this.sort[val1] = val2;
-    }
-
     markerClick(o: Offer) {
         //r.selected = !r.selected;
         // scroll to object !?
@@ -825,44 +699,9 @@ export class TabListOfferComponent implements OnInit{
             this.source = OfferSource.IMPORT;
         }
         this.offers = [];
-        //this.searchArea = [];
         this.selectedOffers = [];
         this.page = 0;
-        /*this.sort={};
-        let tfStr = localStorage.getItem('tableFields'+this.source);
-        if (tfStr) {
-            let tf = JSON.parse(tfStr);
-
-            for (var fid in tf) {
-                if(tf[fid].s != 0){
-                    if (tf[fid].s == 1) {
-                        this.sort[fid] = "ASC";
-                    } else {
-                        this.sort[fid] = "DESC";
-                    }
-                }
-                /*this.fields.forEach(f => {
-                    if (f.id == fid) {
-                        f.visible = tf[fid].v;
-                        f.sort = tf[fid].s;
-                    }
-                });*/
-        /*    }
-        }*/
-
         this.listOffers(1);
-    }
-
-    getInputWidth(){
-        if(this.tableMode)
-            return '100%';
-        else return '90%';
-    }
-
-    getSearchPosition(){
-        if(this.tableMode)
-            return '10px';
-        else return '85px';
     }
 
     clickContextMenu(evt: any){
@@ -989,11 +828,6 @@ export class TabListOfferComponent implements OnInit{
     }, 10)*/
 
     }
-    getSort(){
-        for (let k in this.sort) {
-            return {option: k , subvalue: this.sort[k]};
-        }
-    }
 
     showSameOffers(event){
         if(event.show && this.selectedOffers.length > 0 && this.source == OfferSource.LOCAL){
@@ -1014,7 +848,9 @@ export class TabListOfferComponent implements OnInit{
 
     private eventTabs(tab: any) {
         tab.getEvent().subscribe(event =>{
-            if(event.type == "update"){
+            if(event.type == "new"){
+
+            } else if(event.type == "update"){
                 for(let i = 0; i < this.offers.length; ++i){
                     if(this.offers[i].id == event.value.id){
                         this.selectedOffers[this.selectedOffers.indexOf(this.offers[i])] = event.value;

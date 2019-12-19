@@ -152,22 +152,4 @@ export class OfferService {
 
         return ret_subj;
     }
-    publish(photo, url, index) {
-        const body = {url: url, photo: photo, index: index};
-        let _resourceUrl =  this.RS + '/publish';
-
-        let ret_subj = <AsyncSubject<any>>new AsyncSubject();
-
-        this._http.post(_resourceUrl, JSON.stringify(body)).pipe(
-            map((res: Response) => res)).subscribe(
-
-            data => {
-                ret_subj.next(data);
-                ret_subj.complete();
-            },
-            err => console.log(err)
-        );
-        console.log(ret_subj);
-        return ret_subj;
-    }
 }

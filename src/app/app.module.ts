@@ -79,6 +79,7 @@ import {FilterSelectTagComponent} from "./component/ui-elements/filter-select-ta
 import {ModalWindowComponent} from "./component/modal-window.component";
 import {AddressInputComponent} from "./component/ui-elements/address-input";
 import {ViewSocialsComponent} from "./component/ui-elements/view-socials";
+import {HiddenTextComponent} from "./component/ui-elements/hidden-text";
 
 const appRoutes: Routes = [
     {path: "admin", loadChildren: "app/admin.module#AdminModule"},
@@ -160,7 +161,8 @@ const appRoutes: Routes = [
         FilterSelectComponent,
         FilterSelectTagComponent,
         ModalWindowComponent,
-        AddressInputComponent
+        AddressInputComponent,
+        HiddenTextComponent
     ],
     imports: [
         MatDatepickerModule, MatNativeDateModule, MatMomentDateModule,

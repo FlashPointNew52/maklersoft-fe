@@ -107,20 +107,25 @@ export class Utils{
             sameElse: moment(date* 1000).format("D MMMM, YYYY")
         });
     }
+
     public static getTitleDateForGraph(number: number) {
         return moment(number).format("D MMMM, YYYY");
     }
+
     public static getNumWithDellimet(n){
         n += "";
         n = new Array(4 - n.length % 3).join("U") + n;
         return n.replace(/([0-9U]{3})/g, "$1 ").replace(/U/g, "");
     }
+
     public static getCurrentTime(number: number) {
         return moment(number).get('hour') + ':' + moment(number).get('minute');
     }
+
     public static getFullCurrentTime(number: number) {
         return moment(number).get('hour') + ':' + moment(number).get('minute')+ ':' + moment(number).get('second');
     }
+
     public static getNumWithWhitespace(str){
         if(!str) return "";
         return str.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
@@ -167,6 +172,10 @@ export class Utils{
               return false;
         }
         return true;
+    }
+
+    public static ceil(num){
+        return Math.ceil(num);
     }
 
     public findContact(structure: any, contact: any){

@@ -1,13 +1,13 @@
 import {
     Component,
     ViewChild,
-    ElementRef, OnChanges, SimpleChanges
+    ElementRef, OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewInit
 } from "@angular/core";
 import {Output, EventEmitter} from '@angular/core';
 
 @Component({
     selector: 'input-area',
-    inputs: ['name','value', 'disabled', 'update'],
+    inputs: ['name','value', 'update'],
     styles: [`
         textarea{
             border: 0;
@@ -18,11 +18,12 @@ import {Output, EventEmitter} from '@angular/core';
             overflow: hidden;
             outline: none;
             resize: none;
+            min-height: 10px;
         }
 
         .label{
             position: absolute;
-            top: 0;
+            top: 6px;
             height: 10px;
             left: 0;
             transition: 0.5s;
@@ -35,14 +36,18 @@ import {Output, EventEmitter} from '@angular/core';
             transition: 0.5s;
         }
         
+        .empty{
+            line-height: 13px;
+            font-size: 10px;
+        }
+        
     `],
     template: `
         <textarea [class.focus]="value?.length > 0" (focus)="setClass($event, 'focus')" #textarea [(ngModel)]="value"
-                  (blur)="removeClass($event, 'focus')" (keyup) = "edit()"
-                  (change)="resize()" (cut)="delayedResize()" (paste)="delayedResize()" (drop)="delayedResize()" (keydown)="delayedResize()"
-                  [readOnly]="disabled"
-                  
-        ></textarea>
+                  (blur)="removeClass($event, 'focus')" (keyup) = "edit()" [class.empty]="!value || value?.length < 1"
+                  (change)="resize()" (cut)="delayedResize()" (paste)="delayedResize()" (drop)="delayedResize()" (keydown)="delayedResize()"                  
+        >
+        </textarea>
         <span class="label">{{name}}</span>
     `
 })
@@ -51,14 +56,19 @@ import {Output, EventEmitter} from '@angular/core';
 export class InputAreaComponent implements OnChanges{
     public name: string;
     public value: string = "";
-    public disabled: boolean = false;
     public update: any;
+    height: number = 30;
+    baseHeight: number = 30;
 
     @ViewChild("textarea", { static: true }) textarea: ElementRef;
     @Output() newValue: EventEmitter<any> = new EventEmitter();
 
+    constructor(){}
+
     public ngOnChanges(changes: SimpleChanges): void {
-        setTimeout(() => this.resize(), 100);
+        setTimeout(() => {
+            this.resize()}, 100
+        );
     }
 
     setClass(event, className) {

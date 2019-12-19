@@ -366,7 +366,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                         ></sliding-menu>
                         <sliding-tag [value]="user?.tag" (newValue)="user.tag = $event"></sliding-tag>
                     </ng-container>
-                    <input-area [name]="'Дополнительно'" [value]="user?.description" [disabled]="!editEnabled" (newValue)="user.description = $event" [update]="update"></input-area>
+                    <input-area [name]="'Дополнительно'" [value]="user?.description" (newValue)="user.description = $event" [update]="update"></input-area>
                 </ui-tab>
                 <ui-tab [title]="'ОБЩАЯ'">
                     <ng-container *ngIf="!editEnabled">
@@ -717,8 +717,9 @@ export class TabUserComponent implements OnInit, AfterViewInit {
         if(this.user.organisation)
             this.user.organisationId = this.user.organisation.id;
         this._userService.save(this.user).subscribe(user => {
+            let type = this.user.id ? 'update' : 'new';
             this.user = user;
-            this.tab.setEvent({type: 'update', value: this.user});
+            this.tab.setEvent({type, value: this.user});
             this.toggleEdit();
         });
     }

@@ -13,16 +13,27 @@ import {map} from 'rxjs/operators';
 import * as moment from 'moment';
 import {Utils} from '../../class/utils';
 import {User} from '../../entity/user';
-declare  var     VK: any;
+import {SocialService} from "../../service/social.service";
+declare var VK: any;
 
 @Component({
     selector: 'adv-view',
     inputs: ['offers', 'editMode', 'mode', 'request'],
     styles: [`
+        .block-title{
+            position: absolute;
+            left: calc(50% - 100px);
+            top: -75px;
+            display: flex;
+        }
+        .block-title div{
+            margin-right: 15px;
+            font-size: 20px;
+        }
         .adv_header{
             color: #244f2e;
             background-color: #8bb18e;
-            height: 35px;
+            height: 40px;
             font-size: 12px;
             align-items: center;
             padding-left: 20px;
@@ -72,7 +83,7 @@ declare  var     VK: any;
             left: 1px;
         }
         .button > div.clicked{
-            display: block;        
+            display: block;
         }
         .name{
             font-size: 12px;
@@ -83,7 +94,7 @@ declare  var     VK: any;
         table{
             width: 100%;
             display: block;
-            height: 100%; 
+            height: 100%;
         }
 
         thead, tbody{
@@ -148,10 +159,10 @@ declare  var     VK: any;
         .adv-button{
             flex: 0 0 25%;
             border: 1px solid var(--color-adv-gr);
-            color: var(--color-adv-gr1); 
-            height: 35px; 
+            color: var(--color-adv-gr1);
+            height: 35px;
             line-height: 35px;
-            text-align: center; 
+            text-align: center;
             cursor: pointer;
         }
         .adv-button.selected, .adv-button:hover{
@@ -159,11 +170,11 @@ declare  var     VK: any;
             color: white;
             border-right: 1px solid white !important;
         }
-        
+
         .adv-button:first-child{
             border-right: 1px solid var(--color-adv-gr);
         }
-        
+
         .adv-button:nth-child(2n){
             border-left: none;
         }
@@ -189,7 +200,7 @@ declare  var     VK: any;
         .block-title div:first-child{
             margin-right: 15px;
         }
-        .block-title div{ 
+        .block-title div{
             font-size: 20px;
         }
         .soc_block{
@@ -259,7 +270,7 @@ declare  var     VK: any;
         .more-adv.open{
             display: unset;
         }
-        .socs{ 
+        .socs{
             display: none;
             flex-direction: column;
             width: 100%;
@@ -284,7 +295,7 @@ declare  var     VK: any;
         .objects {
             overflow: hidden;
             flex: 0 0 calc(100% - 122px);
-            height: 80px;
+            height: 95px;
         }
         .carousel {
             display: none;
@@ -325,7 +336,7 @@ declare  var     VK: any;
             background-color: #D8E0D9;
         }
         .carousel-arrowL:hover > .car-line, .carousel-arrowR:hover > .car-line{
-            background-color: #8DA390; 
+            background-color: #8DA390;
         }
         .carousel-arrowL > .car-line:first-child{
             transform: rotate(60deg) translate(67px,33px);
@@ -383,14 +394,14 @@ declare  var     VK: any;
         /*.group-box.posted{*/
         /*    background-color: #F3F7F4;*/
         /*}*/
-        
+
         .group-pic{
             width: 35px;
             height: 35px;
             border-radius: 25px;
             margin-left: 15px;
         }
-      
+
         .head-groups > .title{
             color: #244F2E;
             margin-right: 30px;
@@ -465,53 +476,52 @@ declare  var     VK: any;
             background-color: #b2c1b4;
         }
         .carousel-li > .block{
-            height: 80px;
+            height: 95px;
             width: 300px;
-            display: flex;
             margin-right: 15px;
-            border: 1px solid #D8E0D9;
-        }
-        .block.selected{
-            background-color: #b2c1b4;            
+            background-color: #d8e0d9;
         }
         
+        .carousel-li > .block.selected{
+            background-color: #577d60;
+        }
+
         .car-img{
-            width: 116px;
-            height: 80px;
-            min-width: 116px;
-            background-size: 116px 80px;
+            float: left;
+            width: 50px;
+            line-height: 90px;
+            height: 90px;
+            font-size: 36px;
+            text-align: center;
         }
-        .car-img.one{
-            background-image: url('../../../assets/adv_img1.jpg')
-        }
-        .car-img.one.selected{
-            background-image: linear-gradient(45deg, #30774247, #30774247), url(../../../assets/adv_img1.jpg);
-        }
-        .car-img.two{
-            background-image: url('../../../assets/adv_img2.jpg')
-        }
-        .car-img.two.selected{
-            background-image: linear-gradient(45deg, #30774247, #30774247), url(../../../assets/adv_img2.jpg);
-        }
-        .car-img.three{
-            background-image: url('../../../assets/adv_img3.jpg')
-        }
-        .car-img.three.selected{
-            background-image: linear-gradient(45deg, #30774247, #30774247), url(../../../assets/adv_img3.jpg);
-        }
+        
         .description{
             display: flex;
             flex-direction: column;
-            padding: 15px 15px 0 20px;
+            padding: 15px 12px 0 0;
             z-index: 6;
         }
+        
         .description > div:first-child{
-            color: #8DA390;
-        }
-        .description > div:last-child{
-            color: #244F2E;
+            height: 12px;
+            line-height: 12px;
             font-weight: bold;
+            color: #244F2E;
         }
+
+        .description > div:last-child{
+            color: #69866D;
+            margin-top: 3px;
+        }
+
+        .block.selected .description > div:first-child, .block.selected .car-img{
+            color: #f3f7f4;
+        }
+
+        .block.selected .description > div:last-child{
+            color: #DCE8DD;
+        }
+        
         .filter-block{
             width: 300px;
             height: 80px;
@@ -526,10 +536,13 @@ declare  var     VK: any;
         .main-socs.open{
             display: block;
         }
-        
+
     `],
     template: `
         <div class="main-adv">
+            <div class="block-title" >
+                <div>ЭКСПОРТ ПРЕДЛОЖЕНИЯ В...</div>
+            </div>
             <div class="block-title">
                 <div *ngIf="mode == 'offer'">ЭКСПОРТ ПРЕДЛОЖЕНИЯ В...</div>
                 <div *ngIf="mode == 'offer'">({{offers.length}})</div>
@@ -615,18 +628,16 @@ declare  var     VK: any;
                                 <ul id="carousel-ul{{i}}" *ngIf="stampsArr.length != 0">
                                     <li *ngFor="let stamp_block of stampsArr; let q = index" class="carousel-li carousel-li{{i}}" (click)="stamp = q+1">
                                         <div class="block" [class.selected]="stamp == q+1" >
-                                            <div class="car-img"
-                                                 [ngStyle]="stamp == q+1 ? {'background-image' : 'linear-gradient(45deg,  #307742a6, #307742a6), url(' + stamp_block.href + ')', 'opacity' : '0.55'} : {'background-image' : ' url(' + stamp_block.href + ')'}">
-                                            </div>
+                                            <div class="car-img">{{q+1}}</div>
                                             <div class="description">
                                                 <div>{{stamp_block.name}}</div>
                                                 <div>{{stamp_block.description}}</div>
                                             </div>
                                         </div>
-                                        
+
                                     </li>
                                 </ul>
-                            </div> 
+                            </div>
                             <div class="carousel-arrowR" (click)="next(i)">
                                 <div class="car-line"></div>
                                 <div class="car-line"></div>
@@ -641,14 +652,14 @@ declare  var     VK: any;
                                 <div class="radio-button" (click)=" group_mode = 2;loading();get_groups_vk(i);stamp = 0;">
                                     <div class="radio-circle" *ngIf="group_mode == 2"></div>
                                 </div>
-                                <div class="title" *ngIf="i != 3">МОИ ГРУППЫ <div style="margin-left: 10px"></div></div>                                
-                                <div class="title" *ngIf="i == 3">МОИ ГРУППЫ <div style="margin-left: 10px">{{groups.length == 0 ? '' : '(' + groups.length + ')'}}</div></div>                                
+                                <div class="title" *ngIf="i != 3">МОИ ГРУППЫ <div style="margin-left: 10px"></div></div>
+                                <div class="title" *ngIf="i == 3">МОИ ГРУППЫ <div style="margin-left: 10px">{{groups.length == 0 ? '' : '(' + groups.length + ')'}}</div></div>
                                 <div class="radio-button" (click)="group_mode = 3;loading();stamp = 0;">
                                     <div class="radio-circle" *ngIf="group_mode == 3"></div>
                                 </div>
                                 <div class="title" *ngIf="i != 3">ОПУБЛИКОВАНО <div style="margin-left: 10px"></div></div>
                                 <div class="title" *ngIf="i == 3">ОПУБЛИКОВАНО <div style="margin-left: 10px">{{group.counter == 0 ? '' : '(' + group.counter + ')'}}</div></div>
-                                
+
                                 <input type="text" class="input-groups" placeholder="Введите запрос" [style.width]="'380px'"
                                        style="margin-left: auto"><span class="find_icon" style="position: relative; top: -15px;"></span>
                             </div>
@@ -665,8 +676,8 @@ declare  var     VK: any;
                                         <span class="group-type" [class.posted]="gr?.stamps.indexOf(this.stamp) != -1">{{gr.type}}</span> <span class="group-name" [class.posted]="gr?.stamps.indexOf(this.stamp) != -1">{{gr.name}}</span>
                                     </div>
                                     <div class="stamps"><div [ngStyle]="gr?.stamps.indexOf(this.stamp) != -1 ? {'color' : '#BAD1BC'} : { 'color': ''}">{{gr.stamp_names}}</div></div>
-                                    <div class="publish" (click)="sendInGroup(gr, i)" *ngIf="gr?.stamps.indexOf(this.stamp) == -1"> 
-                                        ОПУБЛИКОВАТЬ 
+                                    <div class="publish" (click)="sendInGroup(gr, i)" *ngIf="gr?.stamps.indexOf(this.stamp) == -1">
+                                        ОПУБЛИКОВАТЬ
                                     </div>
                                     <div class="published" *ngIf="gr?.stamps.indexOf(this.stamp) != -1">ОПУБЛИКОВАНО</div>
                                 </div>
@@ -717,28 +728,28 @@ export class AdvView implements OnInit, OnChanges, AfterViewInit {
     soc_pages = [
         {
             name: "Одноклассники",
-            img: "../../../assets/socials/ok_1.png",
+            img: "../../../assets/socials/ok.png",
             active: false,
             counter: Number.parseInt(localStorage.getItem('ok_counter'), 10),
             stampsPos: 0
         },
         {
             name: "Фейсбук",
-            img: "../../../assets/socials/facebook_1.png",
+            img: "../../../assets/socials/facebook.png",
             active: false,
             counter: Number.parseInt(localStorage.getItem('facebook_counter'), 10),
             stampsPos: 0
         },
         {
             name: "Твиттер",
-            img: "../../../assets/socials/twitter_1.png",
+            img: "../../../assets/socials/twitter.png",
             active: false,
             counter: Number.parseInt(localStorage.getItem('twitter_counter'), 10),
             stampsPos: 0
         },
         {
             name: "Вконтакте",
-            img: "../../../assets/socials/vk_1.png",
+            img: "../../../assets/socials/vk.png",
             active: false,
             counter: Number.parseInt(localStorage.getItem('vk_counter'), 10),
             stampsPos: 0
@@ -799,7 +810,7 @@ export class AdvView implements OnInit, OnChanges, AfterViewInit {
         private _http: HttpClient,
         private _sessionService: SessionService,
         private _configService: ConfigService,
-        private _offerService: OfferService
+        private _socialService: SocialService
     ){
 
     }
@@ -809,34 +820,34 @@ export class AdvView implements OnInit, OnChanges, AfterViewInit {
         if (this.mode == 'offer') {
             this.stampsArr = [
                 {
-                    href: this.offers[0].photos.length != 0 ? this.offers[0].photos[0].href : '',
-                    name: "Публичная страница",
-                    description:"Презентация объекта " + this.offers[0].addressBlock.street + " " + this.offers[0].addressBlock.building
+                    href: '',
+                    name: "ПРЕЗЕНТАЦИЯ ОБЪЕКТА",
+                    description: "Полное опиание объекта, условия, фотографии..."
                 },
                 {
-                    href: this.offers[0].photos.length != 0 ? this.offers[0].photos[0].href : '',
-                    name: "Публичная страница",
-                    description:"Сводная информация " + this.offers[0].addressBlock.street + " " + this.offers[0].addressBlock.building
+                    href: '',
+                    name: "СВОДНАЯ ИНФОРМАЦИЯ",
+                    description: "Аналогичные предложения, от принципалов от посредников, сравнение по критериям..."
                 },
                 {
-                    href: this.offers[0].photos.length != 0 ? this.offers[0].photos[0].href : '',
-                    name: "Публичная страница",
-                    description:"Инфраструктура " + this.offers[0].addressBlock.street + " " + this.offers[0].addressBlock.building
+                    href: '',
+                    name: "ИНФРАСТРУКТУРА",
+                    description: "Наличие и расположение объекта относительно инфраструктуры... "
                 },
                 {
-                    href: this.offers[0].photos.length != 0 ? this.offers[0].photos[0].href : '',
-                    name: "Публичная страница",
-                    description:"Спрос в этой локации " + this.offers[0].addressBlock.street + " " + this.offers[0].addressBlock.building
+                    href: '',
+                    name: "СПРОС В ЛОКАЦИИ",
+                    description:"Количество показов, Отказов, Причины, Конверсия,аналогичные объекты и их цены"
                 },
                 {
-                    href: '../../../../assets/adv_img2.png',
-                    name: "Публичная страница",
-                    description:"Моя презентация"
+                    href: '',
+                    name: "МОЯ ПРЕЗЕНТАЦИЯ",
+                    description:"Количество показов, Отказов, Причины, Конверсия,аналогичные объекты и их цены"
                 },
                 {
-                    href: '../../../../assets/adv_img3.png',
-                    name: "Публичная страница",
-                    description:"Презентация нашей компании"
+                    href: '',
+                    name: "ПРЕЗЕНТАЦИЯ КОМПАНИИ",
+                    description:"Количество показов, Отказов, Причины, Конверсия,аналогичные объекты и их цены"
                 }
             ];
         }
@@ -1104,7 +1115,7 @@ export class AdvView implements OnInit, OnChanges, AfterViewInit {
                                     }
                                     for (let i = 0; i < phlen; i++) {
                                         console.log(i, ' photo ', obj.photos[i].href);
-                                        this._offerService.publish(obj.photos[i].href, answer.response.upload_url, i).pipe(
+                                        this._socialService.publish(obj.photos[i].href, answer.response.upload_url, i).pipe(
                                             map((res: Response) => res)).subscribe(
                                             raw => {
                                                 let data = JSON.parse(JSON.stringify(raw));

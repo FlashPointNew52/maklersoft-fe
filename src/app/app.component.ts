@@ -16,6 +16,7 @@ import {SuggestionService} from "./service/suggestion.service";
 import {NotebookService} from "./service/notebook.service";
 import {CommentService} from "./service/comment.service";
 import {RatingService} from "./service/rating.service";
+import {SocialService} from "./service/social.service";
 
 @Component({
   selector: 'app-root',
@@ -32,7 +33,7 @@ import {RatingService} from "./service/rating.service";
   styles: [``],
   providers: [HubService, ConfigService, SuggestionService, UserService, OrganisationService, PersonService, CommentService, RatingService,
       RequestService, OfferService, TaskService, AnalysisService, HistoryService, AccountService,
-      SessionService, UploadService, NotebookService]
+      SessionService, UploadService, NotebookService, SocialService]
 })
 export class AppComponent {
     constructor(protected _hubService: HubService) {

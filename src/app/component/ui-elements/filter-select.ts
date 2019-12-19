@@ -21,6 +21,7 @@ import {Output, EventEmitter} from '@angular/core';
             min-width: 20px;
             margin-right: 15px;
             cursor: pointer;
+            z-index: 999;
         }
         .filter{
             display: none;
@@ -74,7 +75,11 @@ export class FilterSelectComponent implements OnInit, OnChanges {
             this.alterName = "" + this.name;
         }
         if(changes.options && changes.options.currentValue){
-
+            for(let opt of changes.options.currentValue){
+                //console.log(opt.value, this.value);
+                if(opt && opt.value && opt.value == this.value.option)
+                    this.selected = opt;
+            }
         }
 
     }

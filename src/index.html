@@ -1,53 +1,48 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Maklersoft</title>
-    <base href="/">
+      <meta charset="utf-8">
+      <title>Maklersoft</title>
+      <base href="/">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link type="text/css" rel="stylesheet" href="assets/css/common_classes.css">
-    <link type="text/css" rel="stylesheet" href="assets/css/yamap_styles.css">
-    <link type="text/css" rel="stylesheet" href="assets/css/fonts.css">
-    <link type="text/css" rel="stylesheet" href="assets/css/icons.css">
-    <link type="text/css" rel="stylesheet" href="assets/css/common_colors.css">
-    <link type="text/css" rel="stylesheet" href="assets/css/tag_colors.css">
+      <link rel="icon" type="image/x-icon" href="favicon.ico">
+      <link type="text/css" rel="stylesheet" href="assets/css/common_classes.css">
+      <link type="text/css" rel="stylesheet" href="assets/css/yamap_styles.css">
+      <link type="text/css" rel="stylesheet" href="assets/css/fonts.css">
+      <link type="text/css" rel="stylesheet" href="assets/css/icons.css">
+      <link type="text/css" rel="stylesheet" href="assets/css/common_colors.css">
+      <link type="text/css" rel="stylesheet" href="assets/css/tag_colors.css">
 
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAi9zTbzWtEhLVZ8syBV6l7d3QMNLRokVY&libraries=places" async defer>
-    </script>-->
-    <script src="https://vk.com/js/api/openapi.js?162" type="text/javascript"></script>
-    <script src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-        google.charts.load('current', {'packages': ['corechart', 'timeline', 'line']});
-    </script>
-    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+      <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+      <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAi9zTbzWtEhLVZ8syBV6l7d3QMNLRokVY&libraries=places" async defer>
+      </script>-->
+      <script src="https://www.gstatic.com/charts/loader.js" ></script>
+      <script type="text/javascript">
+          google.charts.load('current', {'packages':['corechart','timeline','line']});
+      </script>
+      <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
 </head>
 <body>
-<div id="vk_api_transport"></div>
-<script type="text/javascript">
-    window.vkAsyncInit = function() {
-        VK.init({
-            apiId: 7138237
-        });
-    };
+    <div id="vk_api_transport"></div>
+    <script type="text/javascript">
+        window.vkAsyncInit = function() {
+            VK.init({
+                apiId: 7138237
+            });
+        };
 
-    setTimeout(function() {
-        var el = document.createElement("script");
-        el.type = "text/javascript";
-        el.src = "https://vk.com/js/api/openapi.js?162";
-        el.async = true;
-        document.getElementById("vk_api_transport").appendChild(el);
-    }, 0);
-</script>
-<app-root>
-    <div
-        style="height: 100vh; width: 100vw;  display: flex;  align-items: center;  justify-content: center;  font-family: Helvetica, sans-serif;  font-size: 26px;  color: #72727d;">
-        Loading Maklersoft....
-    </div>
-</app-root>
+        setTimeout(function() {
+            var el = document.createElement("script");
+            el.type = "text/javascript";
+            el.src = "https://vk.com/js/api/openapi.js?162";
+            el.async = true;
+            document.getElementById("vk_api_transport").appendChild(el);
+        }, 0);
+    </script>
+    <app-root><div style="height: 100vh; width: 100vw;  display: flex;  align-items: center;  justify-content: center;  font-family: Helvetica, sans-serif;  font-size: 26px;  color: #72727d;" >Loading Maklersoft....</div></app-root>
+
 </body>
 </html>

@@ -19,7 +19,7 @@ import {Output, EventEmitter} from '@angular/core';
     styles: [`
         .menu_header{
             width: 100%;
-            padding: 0 40px 0 25px;
+            padding: 0 30px;
             display: inline-flex;
             justify-content: space-between;
             cursor: pointer;
@@ -50,7 +50,7 @@ import {Output, EventEmitter} from '@angular/core';
 })
 
 
-export class SlidingMenuComponent {
+export class SlidingMenuComponent implements OnInit{
     public options: any = {};
     public name: string = "";
     public value: any;
@@ -59,6 +59,10 @@ export class SlidingMenuComponent {
 
     objectKeys = Object.keys;
     hidden: boolean = true;
+
+    ngOnInit(): void {
+
+    }
 
     @Output() result: EventEmitter<any> = new EventEmitter();
 

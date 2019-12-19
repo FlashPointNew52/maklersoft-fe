@@ -72,10 +72,10 @@ import {RatingService} from "../../service/rating.service";
             appearance: none;
             width: 5px;
             height: 15px;
-            background: #3f51b5; 
-            cursor: pointer; 
+            background: #3f51b5;
+            cursor: pointer;
         }
-        
+
         .rating_graph {
             width: 120px;
             height: 120px;
@@ -114,22 +114,22 @@ import {RatingService} from "../../service/rating.service";
         <div class="rating_set">
             <div class="container">
                 <span>Готовность к совершению сделки</span><span>{{rating.mark1}}</span>
-                <input type="range" min="0" max="5" step="1" [style.background]="'linear-gradient(90deg, #3f51b5 ' + rating.mark1 * 20 + '%, #c7c7c7 0%)'"
+                <input type="range" min="0" max="5" step="1" [style.background]="'linear-gradient(90deg, #3f51b5 ' + (rating?.mark1 || 0) * 20 + '%, #c7c7c7 0%)'"
                        [(ngModel)]="rating.mark1" (ngModelChange)="send_rate($event, 1)">
             </div>
             <div class="container">
                 <span>Лояльность</span><span>{{rating.mark2}}</span>
-                <input type="range" min="0" max="5" step="1" [style.background]="'linear-gradient(90deg, #3f51b5 ' + rating.mark2 * 20 + '%, #c7c7c7 0%)'"
+                <input type="range" min="0" max="5" step="1" [style.background]="'linear-gradient(90deg, #3f51b5 ' + (rating?.mark2 || 0) * 20 + '%, #c7c7c7 0%)'"
                        [(ngModel)]="rating.mark2" (ngModelChange)="send_rate($event, 2)">
             </div>
             <div class="container">
                 <span>Ответственность</span><span>{{rating.mark3}}</span>
-                <input type="range" min="0" max="5" step="1" [style.background]="'linear-gradient(90deg, #3f51b5 ' + rating.mark3 * 20 + '%, #c7c7c7 0%)'"
+                <input type="range" min="0" max="5" step="1" [style.background]="'linear-gradient(90deg, #3f51b5 ' + (rating?.mark3 || 0) * 20 + '%, #c7c7c7 0%)'"
                        [(ngModel)]="rating.mark3" (ngModelChange)="send_rate($event, 3)">
             </div>
             <div class="container">
                 <span>Компетентность</span><span>{{rating.mark4}}</span>
-                <input type="range" min="0" max="5" step="1" [style.background]="'linear-gradient(90deg, #3f51b5 ' + rating.mark4 * 20 + '%, #c7c7c7 0%)'"
+                <input type="range" min="0" max="5" step="1" [style.background]="'linear-gradient(90deg, #3f51b5 ' + (rating?.mark4 || 0) * 20 + '%, #c7c7c7 0%)'"
                        [(ngModel)]="rating.mark4" (ngModelChange)="send_rate($event, 4)">
             </div>
         </div>
@@ -144,7 +144,7 @@ import {RatingService} from "../../service/rating.service";
                         style="transition: stroke-dasharray 2s;"
                 ></circle>
             </svg>
-            <div class="middle_rate"><span>{{obj.rate | number: '1.0-1'}}</span>
+            <div class="middle_rate"><span>{{obj.rate | number: '1.0-1' || 0}}</span>
                 <span>Общий<br>рейтинг</span>
             </div>
         </div>
@@ -215,7 +215,7 @@ export class RatingViewComponent implements OnInit, AfterViewInit {
     }
 
     getDash() {
-        let percentValue = (this.obj.rate / 5) * 2 * 61 * Math.PI;
+        let percentValue = (this.obj.rate ? this.obj.rate : 0 ) / 5 * 2 * 61 * Math.PI;
         return percentValue + " " + (2 * 61 * Math.PI);
     }
 }

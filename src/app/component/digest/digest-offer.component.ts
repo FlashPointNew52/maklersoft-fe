@@ -17,7 +17,7 @@ import {Person} from "../../entity/person";
             background-color: white;
             font-size: 12px;
             position: relative;
-            padding: 16px 20px 13px 30px;
+            padding: 16px 30px 13px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -128,6 +128,10 @@ import {Person} from "../../entity/person";
         .row5 > .price > span:first-child{
             font-size: 14px;
         }
+        
+        .row1 > .black{
+            color: var(--color-black);
+        }
 
     `],
     template: `
@@ -140,7 +144,7 @@ import {Person} from "../../entity/person";
                     (( "+7" + pb.getNotNullData(offer.phoneBlock) | mask: '+0 (000) 000-00-00') || "") }}
                 </a>
 
-                <span *ngIf="!(offer.agentId || offer.personId || offer.companyId)">
+                <span *ngIf="!(offer.agentId || offer.personId || offer.companyId)" class="black">
                     {{  "+7" + pb.getNotNullData(offer?.phoneBlock) || "" | mask: '+0 (000) 000-00-00'}}
                 </span>
 

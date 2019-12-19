@@ -31,9 +31,8 @@ export class Offer {
 
     price: number;                  //цена
     ownerPrice: number;             //цена владельца
-    agencyPrice: number;            //цена агентства
-    leaseDepositL: number;
-    comission: number;              //коммисия
+    deposit: boolean;
+    commission: number;              //коммисия
     commisionType: string;           //Тип комиссии
 
     description: string;            //дополнительное описание
@@ -66,13 +65,13 @@ export class Offer {
 
     location: GeoPoint;             //координаты
 
-    photos: UploadFile[];         //url фото
-    documents: UploadFile[];         //url документов
-
+    photos: UploadFile[];           //url фото
+    documents: UploadFile[];        //url документов
+    documentsStr: string;
     sourceCode: string;             //источник объекта
 
     offerTypeCode: string;          //Предложение (аренда/продажа)
-    rentType: string;              //Тип Аренды
+    rentType: string;               //Тип Аренды
     categoryCode: string;           //категория недвижимости
     buildingType: string;           //тип дома
     buildingClass: string;          //тип недвижимости
@@ -99,6 +98,7 @@ export class Offer {
 
     balcony: boolean;               //есть балкон
     loggia: boolean;                //есть лоджия
+    terrace: boolean;               //есть терраса
     guard: boolean;                 //есть охрана
     waterSupply: boolean;           //есть водоснабжение
     gasification: boolean;          //есть газ
@@ -116,12 +116,14 @@ export class Offer {
 
     encumbrance: boolean;            //обременение
     mortgages: boolean;              //под ипотеку
-
+    certificate: boolean;
+    maternityCapital: boolean;
     tag: string;                    //тэг
 
     mediatorCompany: string;      //информация продавца
-
+    thirdPartyRights: string;
     prepayment: boolean;           //предоплата
+    paymentType: boolean;          //Тип расчета
     electrificPay: boolean;        //плата за электричество
     waterPay: boolean;             //плата за воду
     gasPay: boolean;               //плата за газ
@@ -154,6 +156,7 @@ export class Offer {
         this.locRating.map = {average : 0};
         this.conditions = new ConditionsBlock();
         this.agentId = null;
+        this.location = new GeoPoint({lat: 0, lon: 0});
     }
 
     public static offerTypeCodeOptions = {
@@ -271,6 +274,7 @@ export class Offer {
             elite: {label: 'Элит класс'},
             business: {label: 'Бизнес класс'},
             economy: {label: 'Эконом класс'},
+            new: {label: 'Новая планировка'},
             improved: {label: 'Улучшенная'},
             brezhnev: {label: 'Брежневка'},
             khrushchev: {label: 'Хрущевка'},
@@ -282,6 +286,7 @@ export class Offer {
             elite: {label: 'Элит класс'},
             business: {label: 'Бизнес класс'},
             economy: {label: 'Эконом класс'},
+            new: {label: 'Новая планировка'},
             improved: {label: 'Улучшенная'},
             brezhnev: {label: 'Брежневка'},
             individual: {label: 'Индивидуальная'}
@@ -290,6 +295,7 @@ export class Offer {
             elite: {label: 'Элит класс'},
             business: {label: 'Бизнес класс'},
             economy: {label: 'Эконом класс'},
+            new: {label: 'Новая планировка'},
             improved: {label: 'Улучшенная'},
             small_apartm: {label: 'Малосемейка'},
             dormitory: {label: 'Общежитие'},
@@ -344,7 +350,13 @@ export class Offer {
 
     public static commisionTypeOption = {
         percent:  {label: '%%'},
-        fix: {label: 'тыс. руб.'}
+        fix: {label: 'Р'}
+    };
+
+    public static paymentTypeOption = {
+        all:  {label: 'Все'},
+        cashless:  {label: 'Безналичный'},
+        cash: {label: 'Наличный'}
     };
 
     public static typeCodeByBuildingType = {
@@ -525,11 +537,13 @@ export class Offer {
     };
 
     public static roomSchemeOptions = {
-        separate: {label: 'Раздельные'},
-        adjoining: {label: 'Смежные'},
-        adjoin_separate: {label: 'Смежно-раздельные'},
+        standart: {label: 'Стандартный'},
+        replan: {label: 'Перепланированный'},
         studio: {label: 'Студия'},
-        free: {label: 'Свободная'},
+        separate: {label: 'Раздельный'},
+        adjoining: {label: 'Смежный'},
+        adjoin_separate: {label: 'Смежно-раздельный'},
+        free: {label: 'Свободный'},
         other: {label: 'Другое'}
     };
 
@@ -579,62 +593,12 @@ export class Offer {
         mkv:  {label: "Мир квартир"}
     };
 
-    public static importSort = [
-        // {class:'submenu', value: 'address', label: 'Адресу', items:  [
-        //     {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-        //     {class: 'entry', value: 'DESC', label: 'По убыванию'}
-        //   ]},
-        {class:'submenu', value: 'addDate', label: 'Добавлено', items:  [
-            {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-            {class: 'entry', value: 'DESC', label: 'По убыванию'}
-          ]},
-
-        {class:'submenu', value: 'changeDate', label: 'Изменено' , items: [
-            {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-            {class: 'entry', value: 'DESC', label: 'По убыванию'}
-          ]},
-
-        {class:'submenu', value: 'ownerPrice', label: 'Цене', items: [
-            {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-            {class: 'entry', value: 'DESC', label: 'По убыванию'}
-          ]}
-    ];
-
-  public static localSort = [
-      // {class:'submenu', value: 'address', label: 'Адресу', items:  [
-      //     {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-      //     {class: 'entry', value: 'DESC', label: 'По убыванию'}
-      //   ]},
-      {class:'submenu', value: 'requests', label: 'Заявкам', items:  [
-          {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-          {class: 'entry', value: 'DESC', label: 'По убыванию'}
-        ]},
-      {class:'submenu', value: 'addDate', label: 'Добавлено', items:  [
-          {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-          {class: 'entry', value: 'DESC', label: 'По убыванию'}
-        ]},
-      {class:'submenu', value: 'assignDate', label: 'Назначено', items:  [
-          {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-          {class: 'entry', value: 'DESC', label: 'По убыванию'}
-        ]},
-      {class:'submenu', value: 'changeDate', label: 'Изменено' , items: [
-          {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-          {class: 'entry', value: 'DESC', label: 'По убыванию'}
-        ]},
-      {class:'submenu', value: 'sourceMedia', label: 'Рейтингу', items: [
-          {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-          {class: 'entry', value: 'DESC', label: 'По убыванию'}
-        ]},
-      {class:'submenu', value: 'ownerPrice', label: 'Цене', items: [
-          {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-          {class: 'entry', value: 'DESC', label: 'По убыванию'}
-        ]},
-      {class:'submenu', value: 'MLS', label: 'MLS', items: [
-          {class: 'entry', value: 'ASC', label: 'По возрастанию'},
-          {class: 'entry', value: 'DESC', label: 'По убыванию'}
-        ]}
-  ];
-
+    public static sort = {
+        recomended: {addDate: "DESC"},
+        addDate: {addDate: "DESC"},
+        ownerPriceASC: {ownerPrice: "ASC"},
+        ownerPriceDESC: {ownerPrice: "DESC"}
+    }
 
     public static getDigest(o: Offer) {
         let digest = [];

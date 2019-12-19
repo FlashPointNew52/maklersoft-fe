@@ -1099,7 +1099,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                                    [editable]="editEnabled"
                         ></star-mark>
                     </div>
-                    <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="!editEnabled"
+                    <input-area [name]="'Дополнительно'" [value]="request?.description"
                                 (newValue)="request.description = $event" [update]="update"></input-area>
                 </ui-tab>
                 <ui-tab [title]="'УСЛОВИЯ'" *ngIf="request.offerTypeCode == 'rent'" (tabSelect)="update = {}">
@@ -1117,7 +1117,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                             <span>Рейтинг</span>
                             <span class="view-value">{{ request?.rate}}</span>
                         </div>
-                        <input-area [name]="'Дополнительно'" [value]="request?.description" [disabled]="true"
+                        <input-area [name]="'Дополнительно'" [value]="request?.description"
                                     [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
@@ -1160,7 +1160,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                             <span>Комиссия</span>
                             <switch-button [value]="request?.commission" [disabled]="true"></switch-button>
                         </div>
-                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" [disabled]="true"
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo"
                                     [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
@@ -1221,7 +1221,7 @@ import {ObjectBlock} from "../../class/objectBlock";
                             <span>Комиссия</span>
                             <switch-button [value]="request?.commission" [disabled]="true"></switch-button>
                         </div>
-                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo" [disabled]="true"
+                        <input-area [name]="'Дополнительно'" [value]="request?.costInfo"
                                     [update]="update"></input-area>
                     </ng-container>
                     <ng-container *ngIf="editEnabled">
@@ -1432,7 +1432,7 @@ export class TabRequestComponent implements OnInit {
 
         let c = this;
         //let users: User[] = this._userService.listCached("", 0, "");
-        let uOpt = [{class:'entry', label: "На себя", disabled: false, callback: () => {
+        let uOpt = [{class:'entry', label: "Себя", disabled: false, callback: () => {
                 this.clickContextMenu({event: "set_agent", agentId: this._sessionService.getUser().id});
             }}];
         for (let op of this._userService.cacheUsers){
@@ -1509,19 +1509,19 @@ export class TabRequestComponent implements OnInit {
                     }
                 },
                 {class: "delimiter"},
-                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
-                        {class: "entry", disabled: false, label: "Как Контакт",
+                {class: "submenu", disabled: false, icon: "", label: "Добавить как...", items: [
+                        {class: "entry", disabled: false, label: "Контакт",
                             callback: () => {
                                 this.clickContextMenu({event: "add_to_person"});
                             }
                         },
-                        {class: "entry", disabled: false, label: "Как Организацию",
+                        {class: "entry", disabled: false, label: "Организацию",
                             callback: () => {
                                 this.clickContextMenu({event: "add_to_company"});
                             }
                         },
                     ]},
-                {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить", items: [
+                {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить на...", items: [
                         {class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
                                 this.clickContextMenu({event: "del_agent", agent: null});
@@ -1707,9 +1707,9 @@ export class TabRequestComponent implements OnInit {
                     this.contact = person;
                     this.contact.type = "person";
                     this._requestService.save(this.request).subscribe(request => {
+                        let type = this.request.id ? 'update' : 'new';
                         this.request = request;
-                        this.tab.setEvent({type: 'update', value: this.request});
-
+                        this.tab.setEvent({type, value: this.request});
                         this.toggleEdit();
                     });
                 }
@@ -1725,8 +1725,9 @@ export class TabRequestComponent implements OnInit {
                     this.contact.type = "organisation";
                     this._requestService.save(this.request).subscribe(request => {
                         setTimeout(() => {
+                            let type = this.request.id ? 'update' : 'new';
                             this.request = request;
-                            this.tab.setEvent({type: 'update', value: this.request});
+                            this.tab.setEvent({type, value: this.request});
                         });
                         this.toggleEdit();
                     });

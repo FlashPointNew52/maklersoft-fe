@@ -53,12 +53,13 @@ import {ConditionsBlock} from "../../class/conditionsBlock";
             <span>Телевизор</span>
             <switch-button [value]="block.tv" [disabled]="disabled" (newValue)="block.tv = $event"></switch-button>
         </div>
+        <hr class="line">
         <div class="{{class}}">
-            <span>Животные</span>
+            <span>Возможно с животными</span>
             <switch-button [value]="block.with_animals" [disabled]="disabled" (newValue)="block.with_animals = $event"></switch-button>
         </div>
         <div class="{{class}}">
-            <span>С детьми</span>
+            <span>Возможно с детьми</span>
             <switch-button [value]="block.with_children" [disabled]="disabled" (newValue)="block.with_children = $event"></switch-button>
         </div>
     `,

@@ -17,15 +17,16 @@ import {PhoneBlock} from "../../class/phoneBlock";
             text-overflow: ellipsis;
             background-color: transparent;
             font-size: 12px;
+            margin: 10px 0 0;
             padding: 0;
             width: 100%;
         }
 
         .label {
             position: absolute;
-            top: 0;
+            top: 6px;
             height: 10px;
-            left: 0;
+            left: 30px;
             transition: 0.5s;
             z-index: -1;
         }
@@ -39,7 +40,7 @@ import {PhoneBlock} from "../../class/phoneBlock";
 
         .focus + .label {
             font-size: 10px;
-            top: -9px;
+            top: -1px;
             transition: 0.5s;
         }
 

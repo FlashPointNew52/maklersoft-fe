@@ -29,7 +29,7 @@ import {Output, EventEmitter} from '@angular/core';
     styles: [`
         .menu_header{
             width: 100%;
-            padding: 0 40px 0 25px;
+            padding: 0 30px;
             display: inline-flex;
             justify-content: space-between;
             cursor: pointer;

@@ -22,7 +22,7 @@ import {Tags} from "../../class/tags";
     styles: [`
         .menu_header{
             width: 100%;
-            padding: 0 40px 0 25px;
+            padding: 0 30px;
             display: inline-flex;
             justify-content: space-between;
             cursor: pointer;
@@ -44,7 +44,7 @@ import {Tags} from "../../class/tags";
 
         .hidden_menu > div{
             padding: 0 40px 0 50px;
-            line-height: 25px;
+            line-height: 30px;
         }
 
         .hidden_menu .selected, .hidden_menu > div:hover{
@@ -55,7 +55,7 @@ import {Tags} from "../../class/tags";
             width: 30px;
             height: 13px;
             float: left;
-            margin: 6px 15px 6px 0;
+            margin: 8px 15px 6px 0;
         }
 
     `]

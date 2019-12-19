@@ -12,6 +12,7 @@ import {UserService} from "../../service/user.service";
 import {SessionService} from "../../service/session.service";
 import {PersonService} from "../../service/person.service";
 import {OrganisationService} from "../../service/organisation.service";
+import {Offer} from "../../entity/offer";
 
 
 @Component({
@@ -110,18 +111,15 @@ import {OrganisationService} from "../../service/organisation.service";
                 >
                 </filter-select>
                 <filter-select
-                    [name]="'Сортировка'" [firstAsName]="true"
-                    [options]="[
-                                  {value: 'all', label: 'Все'},
-                                  {value: 'inactive', label: 'Не активно'},
-                                  {value: 'active', label: 'Активно'},
-                                  {value: 'listing', label: 'Листинг'},
-                                  {value: 'deal', label: 'Сделка'},
-                                  {value: 'suspended', label: 'Приостановлено'},
-                                  {value: 'archive', label: 'Архив'}
+                        [name]="'Сортировка'" [firstAsName]="false"
+                        [options]="[
+                                  {value: 'recomended', label: 'Рекомендованные'},
+                                  {value: 'addDate', label: 'По новизне'},
+                                  {value: 'ownerPriceASC', label: 'Цена: от низкой к высокой'},
+                                  {value: 'ownerPriceDESC', label: 'Цена: от высокой к низклй'}
                     ]"
-                    [value]="{'option' : 'all'}"
-                    (newValue)="$event; searchParamChanged();"
+                        [value]="{'option' : sort}"
+                        (newValue)="sort = $event; searchParamChanged();"
                 >
                 </filter-select>
                 <div class="found">Найдено: {{hitsCount+" "}}/{{" "+requests?.length }}</div>
@@ -187,7 +185,7 @@ export class TabListRequestComponent implements OnInit {
 
     };
 
-    sort: any = {};
+    sort: any = 'addDate';
 
     lastClckIdx: number = 0;
     utilsObj = null;
@@ -224,7 +222,7 @@ export class TabListRequestComponent implements OnInit {
 
 
     listRequests() {
-        this._requestService.list(this.page, this.perPage, this.filter, this.sort, this.searchQuery, []).subscribe(
+        this._requestService.list(this.page, this.perPage, this.filter, Offer.sort[this.sort], this.searchQuery, []).subscribe(
             data => {
                 this.requests = data.list;
                 this.hitsCount = data.hitsCount;
@@ -241,18 +239,6 @@ export class TabListRequestComponent implements OnInit {
     searchParamChanged() {
         this.page = 0;
         this.listRequests();
-    }
-
-    getSort(){
-        for(let k in this.sort) {
-            if (this.sort.hasOwnProperty(k))
-                return {option: k , subvalue: this.sort[k]};
-        }
-    }
-
-    setSort(val1, val2){
-        this.sort = {};
-        this.sort[val1] = val2;
     }
 
     scroll(e) {
@@ -343,19 +329,19 @@ export class TabListRequestComponent implements OnInit {
                     }
                 },
                 {class: "delimiter"},
-                {class: "submenu", disabled: false, icon: "", label: "Добавить", items: [
-                        {class: "entry", disabled: false, label: "Как Контакт",
+                {class: "submenu", disabled: false, icon: "", label: "Добавить как...", items: [
+                        {class: "entry", disabled: false, label: "Контакт",
                             callback: () => {
                                 this.clickContextMenu({event: "add_to_person"});
                             }
                         },
-                        {class: "entry", disabled: false, label: "Как Организацию",
+                        {class: "entry", disabled: false, label: "Организацию",
                             callback: () => {
                                 this.clickContextMenu({event: "add_to_company"});
                             }
                         },
                     ]},
-                {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить", items: [
+                {class: "submenu", disabled: !this.utilsObj.canImpact(this.selectedRequests), icon: "", label: "Назначить на...", items: [
                         {class: "entry", disabled: false, label: "Не назначено",
                             callback: () => {
                                 this.clickContextMenu({event: "del_agent", agent: null});
@@ -557,7 +543,9 @@ export class TabListRequestComponent implements OnInit {
 
     private eventTabs(tab: any) {
         tab.getEvent().subscribe(event =>{
-            if(event.type == "update"){
+            if(event.type == "new"){
+
+            } else if(event.type == "update"){
                 for(let i = 0; i < this.requests.length; ++i){
                     if(this.requests[i].id == event.value.id){
                         this.selectedRequests[this.selectedRequests.indexOf(this.requests[i])] = event.value;

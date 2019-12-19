@@ -514,7 +514,9 @@ export class TabListOrganisationComponent implements OnInit {
 
     private eventTabs(tab: any) {
         tab.getEvent().subscribe(event =>{
-            if(event.type == "update"){
+            if(event.type == "new"){
+
+            } else if(event.type == "update"){
                 for(let i = 0; i < this.organisations.length; ++i){
                     if(this.organisations[i].id == event.value.id){
                         this.selectedOrg[this.selectedOrg.indexOf(this.organisations[i])] = event.value;
