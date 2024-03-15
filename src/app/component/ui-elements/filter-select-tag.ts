@@ -22,6 +22,7 @@ import {Tags} from "../../class/tags";
             min-width: 20px;
             margin-right: 15px;
             cursor: pointer;
+            z-index: 999;
         }
 
         :host > span{
@@ -31,7 +32,7 @@ import {Tags} from "../../class/tags";
             float: right;
             margin: 3px 0 0 10px;
         }
-        
+
         .filter{
             display: none;
             background-color: var(--box-backgroung);

@@ -213,7 +213,7 @@ import * as moment from "./component/notebook/chat-view.component";
                 <div class="fields" *ngIf="typeWindow == 0">
                     <input [(ngModel)]="org_name" placeholder="НАЗВАНИЕ ОРГАНИЗАЦИИ">
                     <input [(ngModel)]="user_name" placeholder="ФИО">
-                    <input [(ngModel)]="phone" placeholder="ТЕЛЕФОН">
+                    <input [(ngModel)]="phone" placeholder="ТЕЛЕФОН" [mask]="' (000) 000-00-00'" [prefix] = "'+7'">
                     <input [(ngModel)]="mail" placeholder="E-MAIL">
                     <div>
                         <input [(ngModel)]="agreement" type="checkbox">
@@ -222,14 +222,14 @@ import * as moment from "./component/notebook/chat-view.component";
                     <input class="submit" type="submit" value="ЗАРЕГИСТРИРОВАТЬСЯ" (click)="registr()">
                 </div>
                 <div class="fields" *ngIf="typeWindow == 1">
-                    <input [(ngModel)]="phone" mask="+0 (000) 000-00-00" placeholder="НОМЕР ТЕЛЕФОНА">
+                    <input [(ngModel)]="phone" placeholder="НОМЕР ТЕЛЕФОНА" [mask]="' (000) 000-00-00'" [prefix] = "'+7'">
                     <input [(ngModel)]="password" placeholder="ПАРОЛЬ" (keydown)="checkKeyPress($event)">
                     <div class="link_button" (click)="typeWindow = 2">Забыли пароль?</div>
                     <input class="submit" type="submit" value="ВОЙТИ В СИСТЕМУ" (click)="_login()"
                            style="margin-top: 35px">
                 </div>
                 <div class="fields" *ngIf="typeWindow == 2">
-                    <input [(ngModel)]="phone" mask="+0 (000) 000-00-00" [attr.placeholder]="'НОМЕР ТЕЛЕФОНА'"
+                    <input [(ngModel)]="phone" [attr.placeholder]="'НОМЕР ТЕЛЕФОНА'" [mask]="' (000) 000-00-00'" [prefix] = "'+7'"
                            [attr.disabled]="isFindPhone ? '' : null">
                     <input [(ngModel)]="temp_code" placeholder="КОД ВОССТАНОВЛЕНИЯ" *ngIf="isFindPhone">
                     <input [(ngModel)]="password" type="password" placeholder="НОВЫЙ ПАРОЛЬ" *ngIf="isFindPhone">
@@ -258,7 +258,7 @@ export class LoginScreenComponent implements OnInit{
 
     org_name: string = "";
     user_name: string = "";
-    phone: string = "7";
+    phone: string = "";
     mail: string = "";
     agreement: boolean = false;
     isFindPhone: boolean = false;
@@ -271,7 +271,7 @@ export class LoginScreenComponent implements OnInit{
                 private _hubService: HubService
     ) {
         this.authorized = _sessionService.authorized;
-        this.phone = "7";
+        this.phone = "";
         this.password = "";
     }
 
@@ -312,7 +312,7 @@ export class LoginScreenComponent implements OnInit{
 
     get_code() {
         this._sessionService.get_code(this.phone).subscribe(result => {
-            if (result == null) {
+            if (result) {
                 this.isFindPhone = true;
                 this.password = "";
             }
@@ -338,7 +338,7 @@ export class LoginScreenComponent implements OnInit{
             return;
         }
         this._sessionService.check_code(this.phone, this.temp_code, this.password).subscribe(result => {
-            if (result == null) {
+            if (result) {
                 this._hubService.getProperty("modal-window").showMessage("Пароль успешно изменен", null);
                 this.temp_code = "";
                 this.confirm_password = "";
@@ -367,7 +367,7 @@ export class LoginScreenComponent implements OnInit{
             return;
         }
         this._sessionService.registrate(this.org_name, this.user_name, this.mail, this.phone).subscribe(res => {
-            if (res == null) {
+            if (res) {
                 this._hubService.getProperty("modal-window").showMessage("Регистрация прошла успешно! Для входа используйте пароль, отправленный Вам в SMS и на почтовый адрес.", null);
                 this.typeWindow = 1;
             }

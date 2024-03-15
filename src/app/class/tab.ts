@@ -40,7 +40,8 @@ export class Tab {
     }
 
     setEvent(event: any){
-        this.event.next(event);
+        if(this.event)
+            this.event.next(event);
     }
 
     sendEvent(){

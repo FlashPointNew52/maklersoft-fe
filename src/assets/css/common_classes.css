@@ -177,7 +177,7 @@ input::placeholder {
 .head > span {
     font-size: 22px;
     display: block;
-    margin: 45px 0 0 25px;
+    margin: 45px 30px 0;
     line-height: 22px;
     color: #252f32;
     text-transform: uppercase;
@@ -243,7 +243,7 @@ input::placeholder {
     justify-content: center;
     font-size: 12px;
     overflow: hidden;
-    padding: 20px 25px 0;
+    padding: 20px 30px 0;
     box-sizing: border-box;
     position: relative;
 }
@@ -333,7 +333,7 @@ input::placeholder {
 .source_menu .edit_ready {
     height: 16px;
     width: 100%;
-    padding-right: 25px;
+    padding-right: 30px;
     box-sizing: border-box;
     font-size: 12px;
     line-height: 16px;
@@ -385,13 +385,17 @@ ui-tabs-menu ui-tab {
     overflow: auto;
 }
 
+ui-tabs-menu ui-tab:not(:empty){
+    height: 100%;
+}
+
 ui-tabs-menu.without_buttons ui-tab {
     max-height: calc(100% - 85px);
 }
 
 ui-tabs-menu > ui-tab:not(:empty):after {
     content: "";
-    height: 12px;
+    height: 25px;
     display: block;
 }
 
@@ -461,11 +465,28 @@ sliding-menu:hover > .menu_header > span, multiselect-menu:hover > .menu_header 
     color: white;
 }
 
-input-line, input-area {
+input-line {
+    position: relative;
+    width: 100%;
+    display: block;
+    padding: 0 30px;
+    height: 30px;
+}
+
+input-area {
     position: relative;
     width: calc(100% - 50px);
     display: block;
-    margin: 7px 25px 0 25px;
+    margin: 0px 30px;
+    min-height: 30px;
+}
+
+hidden-text {
+    min-height: 30px;
+    width: 100%;
+    display: block;
+    padding: 0 30px;
+    position: relative;
 }
 
 .input-line::placeholder {
@@ -475,9 +496,10 @@ input-line, input-area {
 .show_block {
     min-height: 30px;
     width: 100%;
-    padding: 0 40px 0 25px;
+    padding: 0 30px 0 30px;
     display: flex;
     justify-content: space-between;
+    line-height: 30px;
     align-items: center;
 }
 
@@ -489,7 +511,7 @@ input-line, input-area {
 
 .property_face {
     height: 122px;
-    padding: 15px 20px 0 25px;
+    padding: 15px 30px 0 30px;
     width: 370px;
     position: relative;
     display: flex;
@@ -798,6 +820,11 @@ hr {
     margin-bottom: 20px;
     border: 0;
     border-top: 1px solid #eee;
+}
+
+hr.line {
+    color: #eaebec;
+    margin: 10px 30px;
 }
 
 input {

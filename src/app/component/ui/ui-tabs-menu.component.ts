@@ -25,7 +25,7 @@ import {UITab} from './ui-tab.component';
             display: inline-flex;
             font-size: 12px;
             justify-content: left;
-            padding: 23px 25px 0 25px;
+            padding: 23px 30px 0 30px;
             box-sizing: border-box;
             border-bottom: 1px solid #3b5998;
             margin-bottom: 15px;

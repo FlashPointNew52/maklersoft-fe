@@ -378,7 +378,9 @@ export class TabListUserComponent implements OnInit {
 
     private eventTabs(tab: any) {
         tab.getEvent().subscribe(event =>{
-            if(event.type == "update"){
+            if(event.type == "new"){
+
+            } else if(event.type == "update"){
                 for(let i = 0; i < this.users.length; ++i){
                     if(this.users[i].id == event.value.id){
                         this.selectedUser[this.selectedUser.indexOf(this.users[i])] = event.value;

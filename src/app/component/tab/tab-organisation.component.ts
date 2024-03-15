@@ -446,11 +446,12 @@ import {ObjectBlock} from "../../class/objectBlock";
                         ></input-line>
                         <sliding-tag [value]="organisation?.tag" (newValue)="organisation.tag = $event"></sliding-tag>
                     </ng-container>
-                    <input-area [name]="'Дополнительно'" [value]="organisation?.description" [disabled]="!editEnabled"
+                    <input-area [name]="'Дополнительно'" [value]="organisation?.description"
                                 (newValue)="organisation.description = $event" [update]="update"></input-area>
                 </ui-tab>
                 <ui-tab [title]="'ФИЛИАЛЫ'">
                 </ui-tab>
+
                 <div more class="more" (click)="contextMenu($event);" (offClick)="this._hubService.shared_var['cm_hidden'] = true">ЕЩЁ...
 <!--                    <div>-->
 <!--                        <div class="delete" (click)="delete()">Удалить организацию</div>-->
@@ -501,6 +502,7 @@ export class TabOrganisationComponent implements OnInit, AfterViewInit {
                 private _organisationService: OrganisationService,
                 private _sessionService: SessionService
     ) {
+        this.utilsObj = new Utils(_sessionService, _personService, _organisationService);
     }
 
     ngOnInit() {
@@ -528,7 +530,7 @@ export class TabOrganisationComponent implements OnInit, AfterViewInit {
         if (this.organisation.ourCompany) {
             delete this.organisation.contact;
             delete this.organisation.contactId;
-            this.organisation.agentId = this.organisation.agent.id || null;
+            this.organisation.agentId = this.organisation.agent ? this.organisation.agent.id : null;
         } else {
             delete this.organisation.agent;
             delete this.organisation.agentId;
@@ -541,8 +543,9 @@ export class TabOrganisationComponent implements OnInit, AfterViewInit {
 
         setTimeout(()=>{
             this._organisationService.save(this.organisation).subscribe(org => {
+                let type = this.organisation.id ? 'update' : 'new';
                 this.organisation = org;
-                this.tab.setEvent({type: 'update', value: this.organisation});
+                this.tab.setEvent({type, value: this.organisation});
                 this.toggleEdit();
             });
         }, 50);
@@ -735,6 +738,13 @@ export class TabOrganisationComponent implements OnInit, AfterViewInit {
         this.utilsObj.findContact(event, this.organisation).subscribe(data => {
             if (data.id) this._hubService.getProperty("modal-window").showMessage("Контакт с таким номером телефона уже существует");
         });
+    }
+
+    openNotebook(name, event) {
+        let block = this._hubService.getProperty("notebook");
+
+        block.setMode(name, event);
+        block.setShow(true, event);
     }
 
     public delete() {
